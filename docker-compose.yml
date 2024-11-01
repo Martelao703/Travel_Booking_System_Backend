@@ -1,0 +1,22 @@
+services:
+  db:
+    container_name: postgres
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1418
+      POSTGRES_DB: travel_booking_system
+    ports:
+      - "5332:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - db
+    restart: unless-stopped
+
+networks:
+  db:
+    driver: bridge
+
+volumes:
+  db_data:

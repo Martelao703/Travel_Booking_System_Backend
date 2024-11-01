@@ -1,0 +1,31 @@
+package com.david.travel_booking_system.model.enums;
+
+public enum PropertyType {
+    Hotel,
+    Apartment,
+    Resort,
+    Villa,
+    Cabin,
+    Cottage,
+    GlampingSite,
+    ServicedApartment,
+    VacationHome,
+    GuestHouse,
+    Hostel,
+    Motel,
+    BandB,
+    Ryokan,
+    ResortVillage,
+    HomeStay,
+    Campground,
+    CountryHouse,
+    FarmStay,
+    Boat,
+    LuxuryTent,
+    SelfCateringAccommodation,
+    TinyHouse,
+    Aparthotel,
+    Chalet,
+    Inn,
+    Lodge
+}
