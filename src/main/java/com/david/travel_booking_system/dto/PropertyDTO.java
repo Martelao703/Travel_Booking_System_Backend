@@ -1,7 +1,7 @@
 package com.david.travel_booking_system.dto;
 
 import com.david.travel_booking_system.model.Property;
-import com.david.travel_booking_system.model.enums.PropertyType;
+import com.david.travel_booking_system.enums.PropertyType;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;

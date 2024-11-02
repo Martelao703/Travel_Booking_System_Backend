@@ -1,4 +1,4 @@
-package com.david.travel_booking_system.model.enums;
+package com.david.travel_booking_system.enums;
 
 public enum BedType {
     SINGLE,

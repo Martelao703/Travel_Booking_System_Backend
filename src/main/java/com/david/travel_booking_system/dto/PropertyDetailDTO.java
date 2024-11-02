@@ -1,11 +1,8 @@
 package com.david.travel_booking_system.dto;
 
-import com.david.travel_booking_system.model.RoomType;
-import com.david.travel_booking_system.model.enums.PropertyType;
+import com.david.travel_booking_system.enums.PropertyType;
+import com.david.travel_booking_system.model.Property;
 import com.david.travel_booking_system.util.Coordinates;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -47,13 +44,13 @@ public class PropertyDetailDTO {
     @Max(value = 5, message = "Number of stars cannot exceed 5")
     private Double userRating;
 
-    private List<String> amenities = new ArrayList<>();
+    private List<String> amenities;
 
-    private List<String> nearbyServices = new ArrayList<>();
+    private List<String> nearbyServices;
 
-    private List<String> houseRules = new ArrayList<>();
+    private List<String> houseRules;
 
-    private List<RoomTypeDTO> roomTypes = new ArrayList<>();
+    private List<RoomTypeDTO> roomTypes;
 
     public PropertyDetailDTO(Integer id, PropertyType propertyType, String name, String city, String address,
                              Coordinates coordinates, String description, Integer stars, Double userRating,
@@ -68,32 +65,16 @@ public class PropertyDetailDTO {
         this.description = description;
         this.stars = stars;
         this.userRating = userRating;
-        this.amenities = amenities;
-        this.nearbyServices = nearbyServices;
-        this.houseRules = houseRules;
-        this.roomTypes = roomTypes;
+
+        // Shallow copy for lists
+        this.amenities = amenities != null ? new ArrayList<>(amenities) : new ArrayList<>();
+        this.nearbyServices = nearbyServices != null ? new ArrayList<>(nearbyServices) : new ArrayList<>();
+        this.houseRules = houseRules != null ? new ArrayList<>(houseRules) : new ArrayList<>();
+        this.roomTypes = roomTypes != null ? new ArrayList<>(roomTypes) : new ArrayList<>();
     }
 
-    /*public PropertyDetailDTO(Integer id, PropertyType propertyType, String name, String city, String address,
-                             Coordinates coordinates, String description, int stars, double userRating, List<String> amenities,
-                             List<String> nearbyServices, List<String> houseRules, List<RoomTypeDTO> roomTypes) {
-        this.id = id;
-        this.propertyType = propertyType;
-        this.name = name;
-        this.city = city;
-        this.address = address;
-        this.coordinates = coordinates;
-        this.description = description;
-        this.stars = stars;
-        this.userRating = userRating;
-        this.amenities = amenities != null ? amenities : new ArrayList<>();
-        this.nearbyServices = nearbyServices != null ? nearbyServices : new ArrayList<>();
-        this.houseRules = houseRules != null ? houseRules : new ArrayList<>();
-        this.roomTypes = roomTypes != null ? roomTypes : new ArrayList<>();
-    }*/
-
-    /*public PropertyDTO from(Property property) {
-        return new PropertyDTO(
+    public PropertyDetailDTO from(Property property) {
+        return new PropertyDetailDTO(
                 property.getId(),
                 property.getPropertyType(),
                 property.getName(),
@@ -108,5 +89,5 @@ public class PropertyDetailDTO {
                 property.getHouseRules(),
                 RoomTypeDTO.from(property.getRoomTypes())
         );
-    }*/
+    }
 }

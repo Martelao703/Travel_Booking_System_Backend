@@ -1,12 +1,11 @@
 package com.david.travel_booking_system.model;
 
-import com.david.travel_booking_system.model.enums.PropertyType;
+import com.david.travel_booking_system.enums.PropertyType;
 import com.david.travel_booking_system.util.Coordinates;
 import jakarta.persistence.*;
 import lombok.Data;
 import jakarta.validation.constraints.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -64,56 +63,5 @@ public class Property {
     @OneToMany(mappedBy = "property", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RoomType> roomTypes;
 
-    public Property() {
-        this.amenities = new ArrayList<>();
-        this.nearbyServices = new ArrayList<>();
-        this.houseRules = new ArrayList<>();
-        this.roomTypes = new ArrayList<>();
-    }
-
-    public Property(Integer id, PropertyType propertyType, String name, String city, String address,
-                    Coordinates coordinates) {
-        this.id = id;
-        this.propertyType = propertyType;
-        this.name = name;
-        this.city = city;
-        this.address = address;
-        this.coordinates = coordinates;
-        this.amenities = new ArrayList<>();
-        this.nearbyServices = new ArrayList<>();
-        this.houseRules = new ArrayList<>();
-        this.roomTypes = new ArrayList<>();
-    }
-
-    public void addAmenity(String amenity) {
-        amenities.add(amenity);
-    }
-
-    public void removeAmenity(String amenity) {
-        amenities.remove(amenity);
-    }
-
-    public void addNearbyService(String nearbyService) {
-        nearbyServices.add(nearbyService);
-    }
-
-    public void removeNearbyService(String nearbyService) {
-        nearbyServices.remove(nearbyService);
-    }
-
-    public void addHouseRule(String houseRule) {
-        houseRules.add(houseRule);
-    }
-
-    public void removeHouseRule(String houseRule) {
-        houseRules.remove(houseRule);
-    }
-
-    public void addRoomType(RoomType roomType) {
-        roomTypes.add(roomType);
-    }
-
-    public void removeRoomType(RoomType roomType) {
-        roomTypes.remove(roomType);
-    }
+    public Property() {}
 }
