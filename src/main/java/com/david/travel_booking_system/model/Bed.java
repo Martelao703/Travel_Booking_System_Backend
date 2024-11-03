@@ -19,14 +19,15 @@ public class Bed {
     @NotNull(message = "Room type cannot be null")
     private RoomType roomType;
 
+    @Column(nullable = false)
     @NotNull(message = "Bed type cannot be null")
     private BedType bedType;
 
     @Min(value = 0, message = "Length cannot be less than 0")
-    private double length;
+    private Double length;
 
     @Min(value = 0, message = "Width cannot be less than 0")
-    private double width;
+    private Double width;
 
     public Bed() {}
 
@@ -36,4 +37,11 @@ public class Bed {
         this.bedType = bedType;
     }
 
+    public Bed(Integer id, RoomType roomType, BedType bedType, Double length, Double width) {
+        this.id = id;
+        this.roomType = roomType;
+        this.bedType = bedType;
+        this.length = length;
+        this.width = width;
+    }
 }

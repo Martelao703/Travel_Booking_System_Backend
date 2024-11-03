@@ -21,26 +21,48 @@ public class RoomType {
     @NotNull(message = "Property cannot be null")
     private Property property;
 
+    @Column(nullable = false)
     @NotNull(message = "Name cannot be null")
+    @Size(max = 50, message = "Name cannot exceed 50 characters")
     private String name;
 
+    @Column(nullable = false)
     @NotNull(message = "Price per night cannot be null")
     @Min(value = 0, message = "Price per night cannot be less than 0")
     private double pricePerNight;
 
+    @Column(nullable = false)
     @NotNull(message = "Size cannot be null")
     @Min(value = 0, message = "Size cannot be less than 0")
     private double size;
 
+    @Column(nullable = false)
     @NotNull(message = "Max capacity cannot be null")
     @Min(value = 0, message = "Max capacity cannot be less than 0")
     private int maxCapacity;
 
-    @Size(max = 200, message = "Description cannot exceed 1000 characters")
+    @Column(nullable = false)
+    @NotNull(message = "hasPrivateBathroom cannot be null")
+    private boolean hasPrivateBathroom;
+
+    @Column(nullable = false)
+    @NotNull(message = "hasPrivateKitchen cannot be null")
+    private boolean hasPrivateKitchen;
+
+    @Size(max = 1000, message = "Description cannot exceed 1000 characters")
     private String description;
+
+    @Size(max = 50, message = "View cannot exceed 50 characters")
+    private String view;
 
     @ElementCollection
     private List<String> roomFacilities;
+
+    @ElementCollection
+    private List<String> bathroomFacilities;
+
+    @ElementCollection
+    private List<String> kitchenFacilities;
 
     @ElementCollection
     private List<String> roomRules;
@@ -49,37 +71,4 @@ public class RoomType {
     private List<Bed> beds;
 
     public RoomType() {}
-
-    public RoomType(Integer id, Property property, String name, double pricePerNight, double size, int maxCapacity) {
-        this.id = id;
-        this.property = property;
-        this.name = name;
-        this.pricePerNight = pricePerNight;
-        this.size = size;
-        this.maxCapacity = maxCapacity;
-    }
-
-    public void addRoomFacility(String roomFacility) {
-        roomFacilities.add(roomFacility);
-    }
-
-    public void removeRoomFacility(String roomFacility) {
-        roomFacilities.remove(roomFacility);
-    }
-
-    public void addRoomRule(String roomRule) {
-        roomRules.add(roomRule);
-    }
-
-    public void removeRoomRule(String roomRule) {
-        roomRules.remove(roomRule);
-    }
-
-    public void addBed(Bed bed) {
-        beds.add(bed);
-    }
-
-    public void removeBed(Bed bed) {
-        beds.remove(bed);
-    }
 }

@@ -1,45 +1,61 @@
 package com.david.travel_booking_system.dto;
 
+import com.david.travel_booking_system.model.RoomType;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+@Data
 public class RoomTypeDTO {
+    @NotNull(message = "Room type ID cannot be null")
     private Integer id;
+
+    @NotNull(message = "Property ID cannot be null")
     private Integer propertyId;
+
+    @NotNull(message = "Name cannot be null")
+    @Size(max = 50, message = "Name cannot exceed 50 characters")
     private String name;
+
+    @NotNull(message = "Price per night cannot be null")
+    @Min(value = 0, message = "Price per night cannot be less than 0")
     private double pricePerNight;
-    private double size;
+
+    @NotNull(message = "Max capacity cannot be null")
+    @Min(value = 0, message = "Max capacity cannot be less than 0")
     private int maxCapacity;
-    private String description;
-    private List<String> roomFacilities;
-    private List<String> roomRules;
+
     private List<BedDTO> beds;
 
-    public RoomTypeDTO(Integer id, Integer propertyId, String name, double pricePerNight, double size, int maxCapacity,
-                       String description, List<String> roomFacilities, List<String> roomRules, List<BedDTO> beds) {
+    public RoomTypeDTO(Integer id, Integer propertyId, String name, double pricePerNight, int maxCapacity,
+                       List<BedDTO> beds) {
         this.id = id;
         this.propertyId = propertyId;
         this.name = name;
         this.pricePerNight = pricePerNight;
-        this.size = size;
         this.maxCapacity = maxCapacity;
-        this.description = description;
-        this.roomFacilities = roomFacilities;
-        this.roomRules = roomRules;
-        this.beds = beds;
+
+        // Shallow copy for lists
+        this.beds = beds != null ? new ArrayList<>(beds) : new ArrayList<>();
     }
 
-    /*public static RoomTypeDTO from(RoomType roomType) {
+    public static RoomTypeDTO from(RoomType roomType) {
         return new RoomTypeDTO(
                 roomType.getId(),
+                roomType.getProperty().getId(),
                 roomType.getName(),
                 roomType.getPricePerNight(),
-                roomType.getSize(),
                 roomType.getMaxCapacity(),
-                roomType.getDescription(),
-                roomType.getRoomFacilities(),
-                roomType.getRoomRules(),
                 BedDTO.from(roomType.getBeds())
         );
-    }*/
+    }
+
+    public static List<RoomTypeDTO> from(List<RoomType> roomTypes) {
+        return roomTypes.stream().map(RoomTypeDTO::from).collect(Collectors.toList());
+    }
 }

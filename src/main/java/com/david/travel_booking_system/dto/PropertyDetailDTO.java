@@ -2,7 +2,6 @@ package com.david.travel_booking_system.dto;
 
 import com.david.travel_booking_system.enums.PropertyType;
 import com.david.travel_booking_system.model.Property;
-import com.david.travel_booking_system.util.Coordinates;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -11,6 +10,7 @@ import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 public class PropertyDetailDTO {
@@ -30,8 +30,11 @@ public class PropertyDetailDTO {
     @NotNull(message = "Address cannot be null")
     private String address;
 
-    @NotNull(message = "Coordinates cannot be null")
-    private Coordinates coordinates;
+    @NotNull(message = "Latitude cannot be null")
+    private Double latitude;
+
+    @NotNull(message = "Longitude cannot be null")
+    private Double longitude;
 
     @Size(max = 1000, message = "Description cannot exceed 1000 characters")
     private String description;
@@ -45,15 +48,12 @@ public class PropertyDetailDTO {
     private Double userRating;
 
     private List<String> amenities;
-
     private List<String> nearbyServices;
-
     private List<String> houseRules;
-
     private List<RoomTypeDTO> roomTypes;
 
     public PropertyDetailDTO(Integer id, PropertyType propertyType, String name, String city, String address,
-                             Coordinates coordinates, String description, Integer stars, Double userRating,
+                             Double latitude, Double longitude, String description, Integer stars, Double userRating,
                              List<String> amenities, List<String> nearbyServices, List<String> houseRules,
                              List<RoomTypeDTO> roomTypes) {
         this.id = id;
@@ -61,7 +61,8 @@ public class PropertyDetailDTO {
         this.name = name;
         this.city = city;
         this.address = address;
-        this.coordinates = coordinates;
+        this.latitude = latitude;
+        this.longitude = longitude;
         this.description = description;
         this.stars = stars;
         this.userRating = userRating;
@@ -73,14 +74,15 @@ public class PropertyDetailDTO {
         this.roomTypes = roomTypes != null ? new ArrayList<>(roomTypes) : new ArrayList<>();
     }
 
-    public PropertyDetailDTO from(Property property) {
+    public static PropertyDetailDTO from(Property property) {
         return new PropertyDetailDTO(
                 property.getId(),
                 property.getPropertyType(),
                 property.getName(),
                 property.getCity(),
                 property.getAddress(),
-                property.getCoordinates(),
+                property.getCoordinates().getLatitude(),
+                property.getCoordinates().getLongitude(),
                 property.getDescription(),
                 property.getStars(),
                 property.getUserRating(),
@@ -89,5 +91,9 @@ public class PropertyDetailDTO {
                 property.getHouseRules(),
                 RoomTypeDTO.from(property.getRoomTypes())
         );
+    }
+
+    public static List<PropertyDetailDTO> from(List<Property> properties) {
+        return properties.stream().map(PropertyDetailDTO::from).collect(Collectors.toList());
     }
 }

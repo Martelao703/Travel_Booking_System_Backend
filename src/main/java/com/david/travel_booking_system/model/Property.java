@@ -3,8 +3,8 @@ package com.david.travel_booking_system.model;
 import com.david.travel_booking_system.enums.PropertyType;
 import com.david.travel_booking_system.util.Coordinates;
 import jakarta.persistence.*;
-import lombok.Data;
 import jakarta.validation.constraints.*;
+import lombok.Data;
 
 import java.util.List;
 
@@ -21,7 +21,8 @@ public class Property {
     private PropertyType propertyType;
 
     @Column(nullable = false, length = 50)
-    @NotNull(message = "Name cannot be null") @Size(max = 50, message = "Name cannot exceed 50 characters")
+    @NotNull(message = "Name cannot be null")
+    @Size(max = 50, message = "Name cannot exceed 50 characters")
     private String name;
 
     @Column(nullable = false)

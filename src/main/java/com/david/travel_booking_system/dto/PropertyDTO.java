@@ -9,6 +9,9 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Data
 @AllArgsConstructor
 public class PropertyDTO {
@@ -36,7 +39,7 @@ public class PropertyDTO {
     @Max(value = 5, message = "Number of stars cannot exceed 5")
     private Double userRating;
 
-    public PropertyDTO from(Property property) {
+    public static PropertyDTO from(Property property) {
         return new PropertyDTO(
                 property.getId(),
                 property.getPropertyType(),
@@ -46,5 +49,9 @@ public class PropertyDTO {
                 property.getStars(),
                 property.getUserRating()
         );
+    }
+
+    public static List<PropertyDTO> from (List<Property> properties) {
+        return properties.stream().map(PropertyDTO::from).collect(Collectors.toList());
     }
 }
