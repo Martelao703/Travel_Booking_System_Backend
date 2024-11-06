@@ -31,14 +31,12 @@ public class Bed {
 
     public Bed() {}
 
-    public Bed(Integer id, RoomType roomType, BedType bedType) {
-        this.id = id;
+    public Bed(RoomType roomType, BedType bedType) {
         this.roomType = roomType;
         this.bedType = bedType;
     }
 
-    public Bed(Integer id, RoomType roomType, BedType bedType, Double length, Double width) {
-        this.id = id;
+    public Bed(RoomType roomType, BedType bedType, Double length, Double width) {
         this.roomType = roomType;
         this.bedType = bedType;
         this.length = length;

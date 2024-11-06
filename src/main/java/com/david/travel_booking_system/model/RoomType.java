@@ -71,4 +71,44 @@ public class RoomType {
     private List<Bed> beds;
 
     public RoomType() {}
+
+    public void addRoomFacility(String roomFacility) {
+        roomFacilities.add(roomFacility);
+    }
+
+    public void removeRoomFacility(String roomFacility) {
+        roomFacilities.remove(roomFacility);
+    }
+
+    public void addBathroomFacility(String bathroomFacility) {
+        bathroomFacilities.add(bathroomFacility);
+    }
+
+    public void removeBathroomFacility(String bathroomFacility) {
+        bathroomFacilities.remove(bathroomFacility);
+    }
+
+    public void addKitchenFacility(String kitchenFacility) {
+        kitchenFacilities.add(kitchenFacility);
+    }
+
+    public void removeKitchenFacility(String kitchenFacility) {
+        kitchenFacilities.remove(kitchenFacility);
+    }
+
+    public void addRoomRule(String roomRule) {
+        roomRules.add(roomRule);
+    }
+
+    public void removeRoomRule(String roomRule) {
+        roomRules.remove(roomRule);
+    }
+
+    public void addBed(Bed bed) {
+        beds.add(bed);
+    }
+
+    public void removeBed(Bed bed) {
+        beds.remove(bed);
+    }
 }

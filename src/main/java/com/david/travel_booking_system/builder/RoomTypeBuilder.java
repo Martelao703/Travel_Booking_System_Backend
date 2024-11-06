@@ -17,11 +17,10 @@ public class RoomTypeBuilder {
     private boolean hasPrivateKitchen;
     private String description;
     private String view;
-    private final List<String> roomFacilities = new ArrayList<>();
-    private final List<String> bathroomFacilities = new ArrayList<>();
-    private final List<String> kitchenFacilities = new ArrayList<>();
-    private final List<String> roomRules = new ArrayList<>();
-    private final List<Bed> beds = new ArrayList<>();
+    private List<String> roomFacilities = new ArrayList<>();;
+    private List<String> bathroomFacilities = new ArrayList<>();;
+    private List<String> kitchenFacilities = new ArrayList<>();;
+    private List<String> roomRules = new ArrayList<>();;
 
     public RoomTypeBuilder property(Property property) {
         this.property = property;
@@ -68,28 +67,23 @@ public class RoomTypeBuilder {
         return this;
     }
 
-    public RoomTypeBuilder addRoomFacility(String roomFacility) {
-        this.roomFacilities.add(roomFacility);
+    public RoomTypeBuilder roomFacilities(List<String> roomFacilities) {
+        this.roomFacilities = new ArrayList<>(roomFacilities);
         return this;
     }
 
-    public RoomTypeBuilder addBathroomFacility(String bathroomFacility) {
-        this.bathroomFacilities.add(bathroomFacility);
+    public RoomTypeBuilder bathroomFacilities(List<String> bathroomFacilities) {
+        this.bathroomFacilities = new ArrayList<>(bathroomFacilities);
         return this;
     }
 
-    public RoomTypeBuilder addKitchenFacility(String kitchenFacility) {
-        this.kitchenFacilities.add(kitchenFacility);
+    public RoomTypeBuilder kitchenFacilities(List<String> kitchenFacilities) {
+        this.kitchenFacilities = new ArrayList<>(kitchenFacilities);
         return this;
     }
 
-    public RoomTypeBuilder addRoomRule(String roomRule) {
-        this.roomRules.add(roomRule);
-        return this;
-    }
-
-    public RoomTypeBuilder addBed(Bed bed) {
-        this.beds.add(bed);
+    public RoomTypeBuilder roomRules(List<String> roomRules) {
+        this.roomRules = new ArrayList<>(roomRules);
         return this;
     }
 
@@ -104,13 +98,10 @@ public class RoomTypeBuilder {
         roomType.setHasPrivateKitchen(hasPrivateKitchen);
         roomType.setDescription(description);
         roomType.setView(view);
-
-        // Shallow copy for lists
-        roomType.setRoomFacilities(new ArrayList<>(this.roomFacilities));
-        roomType.setBathroomFacilities(new ArrayList<>(this.bathroomFacilities));
-        roomType.setKitchenFacilities(new ArrayList<>(this.kitchenFacilities));
-        roomType.setRoomRules(new ArrayList<>(this.roomRules));
-        roomType.setBeds(new ArrayList<>(this.beds));
+        roomType.setRoomFacilities(new ArrayList<>(roomFacilities));
+        roomType.setBathroomFacilities(new ArrayList<>(bathroomFacilities));
+        roomType.setKitchenFacilities(new ArrayList<>(kitchenFacilities));
+        roomType.setRoomRules(new ArrayList<>(roomRules));
 
         return roomType;
     }

@@ -1,7 +1,6 @@
 package com.david.travel_booking_system.builder;
 
 import com.david.travel_booking_system.model.Property;
-import com.david.travel_booking_system.model.RoomType;
 import com.david.travel_booking_system.util.Coordinates;
 
 import java.util.ArrayList;
@@ -15,10 +14,9 @@ public class PropertyBuilder {
     private String description;
     private Integer stars;
     private Double userRating;
-    private final List<String> amenities = new ArrayList<>();
-    private final List<String> nearbyServices = new ArrayList<>();
-    private final List<String> houseRules = new ArrayList<>();
-    private final List<RoomType> roomTypes = new ArrayList<>();
+    private List<String> amenities = new ArrayList<>();
+    private List<String> nearbyServices = new ArrayList<>();
+    private List<String> houseRules = new ArrayList<>();
 
     public PropertyBuilder name(String name) {
         this.name = name;
@@ -55,24 +53,18 @@ public class PropertyBuilder {
         return this;
     }
 
-    public PropertyBuilder addAmenity(String amenity) {
-        this.amenities.add(amenity);
+    public PropertyBuilder amenities(List<String> amenities) {
+        this.amenities = new ArrayList<>(amenities);
         return this;
     }
 
-
-    public PropertyBuilder addNearbyService(String nearbyService) {
-        this.nearbyServices.add(nearbyService);
+    public PropertyBuilder nearbyServices(List<String> nearbyServices) {
+        this.nearbyServices = new ArrayList<>(nearbyServices);
         return this;
     }
 
-    public PropertyBuilder addHouseRule(String houseRule) {
-        this.houseRules.add(houseRule);
-        return this;
-    }
-
-    public PropertyBuilder addRoomType(RoomType roomType) {
-        this.roomTypes.add(roomType);
+    public PropertyBuilder houseRules(List<String> houseRules) {
+        this.houseRules = new ArrayList<>(houseRules);
         return this;
     }
 
@@ -85,12 +77,9 @@ public class PropertyBuilder {
         property.setDescription(this.description);
         property.setStars(this.stars);
         property.setUserRating(this.userRating);
-
-        // Shallow copy for lists
         property.setAmenities(new ArrayList<>(this.amenities));
         property.setNearbyServices(new ArrayList<>(this.nearbyServices));
         property.setHouseRules(new ArrayList<>(this.houseRules));
-        property.setRoomTypes(new ArrayList<>(this.roomTypes));
 
         return property;
     }

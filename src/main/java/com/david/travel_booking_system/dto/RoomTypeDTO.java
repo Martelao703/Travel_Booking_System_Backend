@@ -1,6 +1,8 @@
 package com.david.travel_booking_system.dto;
 
 import com.david.travel_booking_system.model.RoomType;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -30,29 +32,28 @@ public class RoomTypeDTO {
     @Min(value = 0, message = "Max capacity cannot be less than 0")
     private int maxCapacity;
 
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     private List<BedDTO> beds;
 
-    public RoomTypeDTO(Integer id, Integer propertyId, String name, double pricePerNight, int maxCapacity,
-                       List<BedDTO> beds) {
+    public RoomTypeDTO(Integer id, Integer propertyId, String name, double pricePerNight, int maxCapacity) {
         this.id = id;
         this.propertyId = propertyId;
         this.name = name;
         this.pricePerNight = pricePerNight;
         this.maxCapacity = maxCapacity;
-
-        // Shallow copy for lists
-        this.beds = beds != null ? new ArrayList<>(beds) : new ArrayList<>();
     }
 
     public static RoomTypeDTO from(RoomType roomType) {
-        return new RoomTypeDTO(
+        RoomTypeDTO roomTypeDTO = new RoomTypeDTO(
                 roomType.getId(),
                 roomType.getProperty().getId(),
                 roomType.getName(),
                 roomType.getPricePerNight(),
-                roomType.getMaxCapacity(),
-                BedDTO.from(roomType.getBeds())
+                roomType.getMaxCapacity()
         );
+        roomTypeDTO.setBeds(BedDTO.from(roomType.getBeds()));
+
+        return roomTypeDTO;
     }
 
     public static List<RoomTypeDTO> from(List<RoomType> roomTypes) {

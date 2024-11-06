@@ -1,7 +1,10 @@
 package com.david.travel_booking_system.controller;
 
+import com.david.travel_booking_system.dto.PropertyDTO;
+import com.david.travel_booking_system.dto.PropertyDetailDTO;
 import com.david.travel_booking_system.model.Property;
 import com.david.travel_booking_system.service.PropertyService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,12 +21,13 @@ public class PropertyController {
     }
 
     @PostMapping
-    public Property createProperty(@RequestBody Property property) {
-        return propertyService.createProperty(property);
+    public PropertyDetailDTO createProperty(@RequestBody @Valid PropertyDetailDTO propertyDetailDTO) {
+        return PropertyDetailDTO.from(propertyService.createProperty(propertyDetailDTO));
     }
 
+    /*
     @GetMapping
-    public List<Property> getProperties() {
+    public List<PropertyDTO> getProperties() {
         return propertyService.getProperties();
-    }
+    }*/
 }

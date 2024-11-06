@@ -65,4 +65,36 @@ public class Property {
     private List<RoomType> roomTypes;
 
     public Property() {}
+
+    public void addAmenity(String amenity) {
+        amenities.add(amenity);
+    }
+
+    public void removeAmenity(String amenity) {
+        amenities.remove(amenity);
+    }
+
+    public void addNearbyService(String nearbyService) {
+        nearbyServices.add(nearbyService);
+    }
+
+    public void removeNearbyService(String nearbyService) {
+        nearbyServices.remove(nearbyService);
+    }
+
+    public void addHouseRule(String houseRule) {
+        houseRules.add(houseRule);
+    }
+
+    public void removeHouseRule(String houseRule) {
+        houseRules.remove(houseRule);
+    }
+
+    public void addRoomType(RoomType roomType) {
+        roomTypes.add(roomType);
+    }
+
+    public void removeRoomType(RoomType roomType) {
+        roomTypes.remove(roomType);
+    }
 }

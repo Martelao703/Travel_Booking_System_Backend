@@ -2,6 +2,8 @@ package com.david.travel_booking_system.dto;
 
 import com.david.travel_booking_system.enums.PropertyType;
 import com.david.travel_booking_system.model.Property;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -47,15 +49,20 @@ public class PropertyDetailDTO {
     @Max(value = 5, message = "Number of stars cannot exceed 5")
     private Double userRating;
 
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     private List<String> amenities;
+
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     private List<String> nearbyServices;
+
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     private List<String> houseRules;
-    private List<RoomTypeDTO> roomTypes;
+
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    private List<RoomTypeDetailDTO> roomTypes;
 
     public PropertyDetailDTO(Integer id, PropertyType propertyType, String name, String city, String address,
-                             Double latitude, Double longitude, String description, Integer stars, Double userRating,
-                             List<String> amenities, List<String> nearbyServices, List<String> houseRules,
-                             List<RoomTypeDTO> roomTypes) {
+                             Double latitude, Double longitude, String description, Integer stars, Double userRating) {
         this.id = id;
         this.propertyType = propertyType;
         this.name = name;
@@ -66,16 +73,10 @@ public class PropertyDetailDTO {
         this.description = description;
         this.stars = stars;
         this.userRating = userRating;
-
-        // Shallow copy for lists
-        this.amenities = amenities != null ? new ArrayList<>(amenities) : new ArrayList<>();
-        this.nearbyServices = nearbyServices != null ? new ArrayList<>(nearbyServices) : new ArrayList<>();
-        this.houseRules = houseRules != null ? new ArrayList<>(houseRules) : new ArrayList<>();
-        this.roomTypes = roomTypes != null ? new ArrayList<>(roomTypes) : new ArrayList<>();
     }
 
     public static PropertyDetailDTO from(Property property) {
-        return new PropertyDetailDTO(
+        PropertyDetailDTO propertyDetailDTO = new PropertyDetailDTO(
                 property.getId(),
                 property.getPropertyType(),
                 property.getName(),
@@ -85,12 +86,14 @@ public class PropertyDetailDTO {
                 property.getCoordinates().getLongitude(),
                 property.getDescription(),
                 property.getStars(),
-                property.getUserRating(),
-                property.getAmenities(),
-                property.getNearbyServices(),
-                property.getHouseRules(),
-                RoomTypeDTO.from(property.getRoomTypes())
+                property.getUserRating()
         );
+        propertyDetailDTO.setAmenities(new ArrayList<>(property.getAmenities()));
+        propertyDetailDTO.setNearbyServices(new ArrayList<>(property.getNearbyServices()));
+        propertyDetailDTO.setHouseRules(new ArrayList<>(property.getHouseRules()));
+        propertyDetailDTO.setRoomTypes(RoomTypeDetailDTO.from(property.getRoomTypes()));
+
+        return propertyDetailDTO;
     }
 
     public static List<PropertyDetailDTO> from(List<Property> properties) {
