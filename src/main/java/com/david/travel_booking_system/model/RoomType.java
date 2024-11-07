@@ -42,11 +42,11 @@ public class RoomType {
     private int maxCapacity;
 
     @Column(nullable = false)
-    @NotNull(message = "hasPrivateBathroom cannot be null")
+    @NotNull(message = "Private bathroom availability cannot be null")
     private boolean hasPrivateBathroom;
 
     @Column(nullable = false)
-    @NotNull(message = "hasPrivateKitchen cannot be null")
+    @NotNull(message = "Private kitchen availability cannot be null")
     private boolean hasPrivateKitchen;
 
     @Size(max = 1000, message = "Description cannot exceed 1000 characters")
@@ -66,6 +66,9 @@ public class RoomType {
 
     @ElementCollection
     private List<String> roomRules;
+
+    @OneToMany(mappedBy = "roomType", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Room> rooms;
 
     @OneToMany(mappedBy = "roomType", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Bed> beds;
@@ -102,6 +105,14 @@ public class RoomType {
 
     public void removeRoomRule(String roomRule) {
         roomRules.remove(roomRule);
+    }
+
+    public void addRoom(Room room) {
+        rooms.add(room);
+    }
+
+    public void removeRoom(Room room) {
+        rooms.remove(room);
     }
 
     public void addBed(Bed bed) {

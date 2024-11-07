@@ -33,6 +33,9 @@ public class RoomTypeDTO {
     private int maxCapacity;
 
     @JsonSetter(nulls = Nulls.AS_EMPTY)
+    private List<RoomDTO> rooms;
+
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     private List<BedDTO> beds;
 
     public RoomTypeDTO(Integer id, Integer propertyId, String name, double pricePerNight, int maxCapacity) {
@@ -51,6 +54,7 @@ public class RoomTypeDTO {
                 roomType.getPricePerNight(),
                 roomType.getMaxCapacity()
         );
+        roomTypeDTO.setRooms(RoomDTO.from(roomType.getRooms()));
         roomTypeDTO.setBeds(BedDTO.from(roomType.getBeds()));
 
         return roomTypeDTO;

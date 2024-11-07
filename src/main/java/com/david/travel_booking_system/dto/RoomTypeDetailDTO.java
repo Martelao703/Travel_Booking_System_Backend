@@ -63,6 +63,9 @@ public class RoomTypeDetailDTO {
     private List<String> roomRules;
 
     @JsonSetter(nulls = Nulls.AS_EMPTY)
+    private List<RoomDTO> rooms;
+
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     private List<BedDTO> beds;
 
     public RoomTypeDetailDTO(Integer id, Integer propertyId, String name, double pricePerNight, double size,
@@ -97,6 +100,7 @@ public class RoomTypeDetailDTO {
         roomTypeDetailDTO.setBathroomFacilities(new ArrayList<>(roomType.getBathroomFacilities()));
         roomTypeDetailDTO.setKitchenFacilities(new ArrayList<>(roomType.getKitchenFacilities()));
         roomTypeDetailDTO.setRoomRules(new ArrayList<>(roomType.getRoomRules()));
+        roomTypeDetailDTO.setRooms(RoomDTO.from(roomType.getRooms()));
         roomTypeDetailDTO.setBeds(BedDTO.from(roomType.getBeds()));
 
         return roomTypeDetailDTO;
