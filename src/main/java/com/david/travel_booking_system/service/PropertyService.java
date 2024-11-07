@@ -8,6 +8,7 @@ import com.david.travel_booking_system.model.Property;
 import com.david.travel_booking_system.model.RoomType;
 import com.david.travel_booking_system.repository.PropertyRepository;
 import com.david.travel_booking_system.util.Coordinates;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +32,7 @@ public class PropertyService {
     /* Basic CRUD -------------------------------------------------------------------------------------------------- */
 
     @Transactional
-    public Property createProperty(PropertyDetailDTO propertyDetailDTO) {
+    public Property createProperty(@Valid PropertyDetailDTO propertyDetailDTO) {
         // Prepare flattened attributes from DTO
         Coordinates coordinates = new Coordinates(propertyDetailDTO.getLatitude(), propertyDetailDTO.getLongitude());
 
