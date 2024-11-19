@@ -102,6 +102,8 @@ public class RoomTypeBuilder {
         roomType.setBathroomFacilities(new ArrayList<>(bathroomFacilities));
         roomType.setKitchenFacilities(new ArrayList<>(kitchenFacilities));
         roomType.setRoomRules(new ArrayList<>(roomRules));
+        roomType.setRooms(new ArrayList<>());
+        roomType.setBeds(new ArrayList<>());
 
         return roomType;
     }

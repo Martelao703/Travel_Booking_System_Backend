@@ -13,7 +13,6 @@ public class PropertyBuilder {
     private Coordinates coordinates;
     private String description;
     private Integer stars;
-    private Double userRating;
     private List<String> amenities = new ArrayList<>();
     private List<String> nearbyServices = new ArrayList<>();
     private List<String> houseRules = new ArrayList<>();
@@ -48,11 +47,6 @@ public class PropertyBuilder {
         return this;
     }
 
-    public PropertyBuilder userRating(Double userRating) {
-        this.userRating = userRating;
-        return this;
-    }
-
     public PropertyBuilder amenities(List<String> amenities) {
         this.amenities = new ArrayList<>(amenities);
         return this;
@@ -76,10 +70,10 @@ public class PropertyBuilder {
         property.setCoordinates(this.coordinates);
         property.setDescription(this.description);
         property.setStars(this.stars);
-        property.setUserRating(this.userRating);
         property.setAmenities(new ArrayList<>(this.amenities));
         property.setNearbyServices(new ArrayList<>(this.nearbyServices));
         property.setHouseRules(new ArrayList<>(this.houseRules));
+        property.setRoomTypes(new ArrayList<>());
 
         return property;
     }

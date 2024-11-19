@@ -15,8 +15,8 @@ public class RoomDTO {
     @NotNull(message = "Room ID cannot be null")
     private Integer id;
 
-    @NotNull(message = "Room type cannot be null")
-    private RoomType roomType;
+    @NotNull(message = "Room type ID cannot be null")
+    private Integer roomTypeId;
 
     @NotNull(message = "Floor number cannot be null")
     private Integer floorNumber;
@@ -33,7 +33,7 @@ public class RoomDTO {
     public static RoomDTO from(Room room) {
         return new RoomDTO(
                 room.getId(),
-                room.getRoomType(),
+                room.getRoomType().getId(),
                 room.getFloorNumber(),
                 room.isAvailable(),
                 room.isCleaned(),

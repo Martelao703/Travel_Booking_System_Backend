@@ -2,7 +2,7 @@ package com.david.travel_booking_system.controller;
 
 import com.david.travel_booking_system.dto.PropertyDTO;
 import com.david.travel_booking_system.dto.PropertyDetailDTO;
-import com.david.travel_booking_system.model.Property;
+import com.david.travel_booking_system.dto.createRequest.PropertyCreateRequestDTO;
 import com.david.travel_booking_system.service.PropertyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -20,13 +20,17 @@ public class PropertyController {
     }
 
     @PostMapping
-    public PropertyDetailDTO createProperty(@RequestBody PropertyDetailDTO propertyDetailDTO) {
-        return PropertyDetailDTO.from(propertyService.createProperty(propertyDetailDTO));
+    public PropertyDetailDTO createProperty(@RequestBody PropertyCreateRequestDTO propertyCreateRequestDTO) {
+        return PropertyDetailDTO.from(propertyService.createProperty(propertyCreateRequestDTO));
     }
 
-    /*
     @GetMapping
     public List<PropertyDTO> getProperties() {
-        return propertyService.getProperties();
-    }*/
+        return PropertyDTO.from(propertyService.getProperties());
+    }
+
+    @GetMapping("/{id}")
+    public PropertyDetailDTO getProperty(@PathVariable Integer id) {
+        return PropertyDetailDTO.from(propertyService.getPropertyById(id));
+    }
 }
