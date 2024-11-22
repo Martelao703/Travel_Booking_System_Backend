@@ -32,6 +32,12 @@ public class PropertyDetailDTO {
     @NotNull(message = "Address cannot be null")
     private String address;
 
+    @NotNull(message = "Active status cannot be null")
+    private boolean isActive;
+
+    @NotNull(message = "Maintenance status cannot be null")
+    private boolean isUnderMaintenance;
+
     @NotNull(message = "Latitude cannot be null")
     private Double latitude;
 
@@ -62,12 +68,15 @@ public class PropertyDetailDTO {
     private List<RoomTypeDetailDTO> roomTypes;
 
     public PropertyDetailDTO(Integer id, PropertyType propertyType, String name, String city, String address,
-                             Double latitude, Double longitude, String description, Integer stars, Double userRating) {
+                             boolean isActive, boolean isUnderMaintenance, Double latitude, Double longitude,
+                             String description, Integer stars, Double userRating) {
         this.id = id;
         this.propertyType = propertyType;
         this.name = name;
         this.city = city;
         this.address = address;
+        this.isActive = isActive;
+        this.isUnderMaintenance = isUnderMaintenance;
         this.latitude = latitude;
         this.longitude = longitude;
         this.description = description;
@@ -82,6 +91,8 @@ public class PropertyDetailDTO {
                 property.getName(),
                 property.getCity(),
                 property.getAddress(),
+                property.isActive(),
+                property.isUnderMaintenance(),
                 property.getCoordinates().getLatitude(),
                 property.getCoordinates().getLongitude(),
                 property.getDescription(),

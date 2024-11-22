@@ -10,6 +10,8 @@ public class PropertyBuilder {
     private String name;
     private String city;
     private String address;
+    private boolean isActive;
+    private boolean isUnderMaintenance;
     private Coordinates coordinates;
     private String description;
     private Integer stars;
@@ -29,6 +31,16 @@ public class PropertyBuilder {
 
     public PropertyBuilder address(String address) {
         this.address = address;
+        return this;
+    }
+
+    public PropertyBuilder isActive(boolean isActive) {
+        this.isActive = isActive;
+        return this;
+    }
+
+    public PropertyBuilder isUnderMaintenance(boolean isUnderMaintenance) {
+        this.isUnderMaintenance = isUnderMaintenance;
         return this;
     }
 
@@ -67,6 +79,8 @@ public class PropertyBuilder {
         property.setName(this.name);
         property.setCity(this.city);
         property.setAddress(this.address);
+        property.setActive(this.isActive);
+        property.setUnderMaintenance(this.isUnderMaintenance);
         property.setCoordinates(this.coordinates);
         property.setDescription(this.description);
         property.setStars(this.stars);

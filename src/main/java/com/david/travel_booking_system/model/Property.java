@@ -33,6 +33,14 @@ public class Property {
     @NotNull(message = "Address cannot be null")
     private String address;
 
+    @Column(nullable = false)
+    @NotNull(message = "Active status cannot be null")
+    private boolean isActive;
+
+    @Column(nullable = false)
+    @NotNull(message = "Maintenance status cannot be null")
+    private boolean isUnderMaintenance;
+
     @Embedded
     @Column(nullable = false)
     @NotNull(message = "Coordinates cannot be null")

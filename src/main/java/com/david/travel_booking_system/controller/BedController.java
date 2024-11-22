@@ -4,6 +4,7 @@ import com.david.travel_booking_system.dto.BedDTO;
 import com.david.travel_booking_system.dto.createRequest.BedCreateRequestDTO;
 import com.david.travel_booking_system.service.BedService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,17 +20,20 @@ public class BedController {
     }
 
     @PostMapping
-    public BedDTO createBed(@RequestBody BedCreateRequestDTO bedCreateRequestDTO) {
-        return BedDTO.from(bedService.createBed(bedCreateRequestDTO));
+    public ResponseEntity<BedDTO> createBed(@RequestBody BedCreateRequestDTO bedCreateRequestDTO) {
+        BedDTO createdBed = BedDTO.from(bedService.createBed(bedCreateRequestDTO));
+        return ResponseEntity.status(201).body(createdBed); // Return 201 Created
     }
 
     @GetMapping
-    public List<BedDTO> getBeds() {
-        return BedDTO.from(bedService.getBeds());
+    public ResponseEntity<List<BedDTO>> getBeds() {
+        List<BedDTO> beds = BedDTO.from(bedService.getBeds());
+        return ResponseEntity.ok(beds); // Return 200 OK
     }
 
     @GetMapping("/{id}")
-    public BedDTO getBed(@PathVariable Integer id) {
-        return BedDTO.from(bedService.getBedById(id));
+    public ResponseEntity<BedDTO> getBed(@PathVariable Integer id) {
+        BedDTO bed = BedDTO.from(bedService.getBedById(id));
+        return ResponseEntity.ok(bed); // Return 200 OK
     }
 }

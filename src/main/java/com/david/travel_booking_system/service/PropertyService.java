@@ -52,13 +52,22 @@ public class PropertyService {
         return property;
     }
 
+    @Transactional(readOnly = true)
     public List<Property> getProperties() {
         return propertyRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     public Property getPropertyById(Integer id) {
         return propertyRepository.findById(id).
                 orElseThrow(() -> new EntityNotFoundException("Property with ID " + id + " not found"));
+    }
+
+    @Transactional
+    public void deleteProperty(Integer id) {
+        Property property = propertyRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Property with ID " + id + " not found."));
+        propertyRepository.delete(property);
     }
 
     /* Add to / Remove from lists ---------------------------------------------------------------------------------- */

@@ -5,6 +5,7 @@ import com.david.travel_booking_system.dto.RoomTypeDetailDTO;
 import com.david.travel_booking_system.dto.createRequest.RoomTypeCreateRequestDTO;
 import com.david.travel_booking_system.service.RoomTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,17 +21,20 @@ public class RoomTypeController {
     }
 
     @PostMapping
-    public RoomTypeDetailDTO createRoomType(@RequestBody RoomTypeCreateRequestDTO roomTypeCreateRequestDTO) {
-        return RoomTypeDetailDTO.from(roomTypeService.createRoomType(roomTypeCreateRequestDTO));
+    public ResponseEntity<RoomTypeDetailDTO> createRoomType(@RequestBody RoomTypeCreateRequestDTO roomTypeCreateRequestDTO) {
+        RoomTypeDetailDTO createdRoomType = RoomTypeDetailDTO.from(roomTypeService.createRoomType(roomTypeCreateRequestDTO));
+        return ResponseEntity.status(201).body(createdRoomType); // Return 201 Created
     }
 
     @GetMapping
-    public List<RoomTypeDTO> getRoomTypes() {
-        return RoomTypeDTO.from(roomTypeService.getRoomTypes());
+    public ResponseEntity<List<RoomTypeDTO>> getRoomTypes() {
+        List<RoomTypeDTO> roomTypes = RoomTypeDTO.from(roomTypeService.getRoomTypes());
+        return ResponseEntity.ok(roomTypes); // Return 200 OK
     }
 
     @GetMapping("/{id}")
-    public RoomTypeDetailDTO getRoomType(@PathVariable Integer id) {
-        return RoomTypeDetailDTO.from(roomTypeService.getRoomTypeById(id));
+    public ResponseEntity<RoomTypeDetailDTO> getRoomType(@PathVariable Integer id) {
+        RoomTypeDetailDTO roomType = RoomTypeDetailDTO.from(roomTypeService.getRoomTypeById(id));
+        return ResponseEntity.ok(roomType); // Return 200 OK
     }
 }
