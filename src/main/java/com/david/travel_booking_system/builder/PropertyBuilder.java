@@ -1,5 +1,6 @@
 package com.david.travel_booking_system.builder;
 
+import com.david.travel_booking_system.enums.PropertyType;
 import com.david.travel_booking_system.model.Property;
 import com.david.travel_booking_system.util.Coordinates;
 
@@ -7,10 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PropertyBuilder {
+    private PropertyType propertyType;
     private String name;
     private String city;
     private String address;
-    private boolean isActive;
     private boolean isUnderMaintenance;
     private Coordinates coordinates;
     private String description;
@@ -18,6 +19,11 @@ public class PropertyBuilder {
     private List<String> amenities = new ArrayList<>();
     private List<String> nearbyServices = new ArrayList<>();
     private List<String> houseRules = new ArrayList<>();
+
+    public PropertyBuilder propertyType(PropertyType propertyType) {
+        this.propertyType = propertyType;
+        return this;
+    }
 
     public PropertyBuilder name(String name) {
         this.name = name;
@@ -31,11 +37,6 @@ public class PropertyBuilder {
 
     public PropertyBuilder address(String address) {
         this.address = address;
-        return this;
-    }
-
-    public PropertyBuilder isActive(boolean isActive) {
-        this.isActive = isActive;
         return this;
     }
 
@@ -76,10 +77,10 @@ public class PropertyBuilder {
 
     public Property build() {
         Property property = new Property();
+        property.setPropertyType(this.propertyType);
         property.setName(this.name);
         property.setCity(this.city);
         property.setAddress(this.address);
-        property.setActive(this.isActive);
         property.setUnderMaintenance(this.isUnderMaintenance);
         property.setCoordinates(this.coordinates);
         property.setDescription(this.description);

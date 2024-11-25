@@ -26,9 +26,6 @@ public class PropertyCreateRequestDTO {
     @NotNull(message = "Address cannot be null")
     private String address;
 
-    @NotNull(message = "Active status cannot be null")
-    private boolean isActive;
-
     @NotNull(message = "Maintenance status cannot be null")
     private boolean isUnderMaintenance;
 

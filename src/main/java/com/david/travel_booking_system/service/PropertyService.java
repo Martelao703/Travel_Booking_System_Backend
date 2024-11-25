@@ -35,9 +35,11 @@ public class PropertyService {
 
         // Build Property object from DTO
         Property property = new PropertyBuilder()
+                .propertyType(propertyCreateRequestDTO.getPropertyType())
                 .name(propertyCreateRequestDTO.getName())
                 .city(propertyCreateRequestDTO.getCity())
                 .address(propertyCreateRequestDTO.getAddress())
+                .isUnderMaintenance(propertyCreateRequestDTO.isUnderMaintenance())
                 .coordinates(coordinates)
                 .description(propertyCreateRequestDTO.getDescription())
                 .stars(propertyCreateRequestDTO.getStars())

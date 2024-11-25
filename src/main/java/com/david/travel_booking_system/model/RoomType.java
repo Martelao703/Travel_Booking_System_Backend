@@ -21,22 +21,22 @@ public class RoomType {
     @NotNull(message = "Property cannot be null")
     private Property property;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     @NotNull(message = "Name cannot be null")
     @Size(max = 50, message = "Name cannot exceed 50 characters")
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "DOUBLE CHECK (pricePerNight >= 0)")
     @NotNull(message = "Price per night cannot be null")
     @Min(value = 0, message = "Price per night cannot be less than 0")
     private double pricePerNight;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "DOUBLE CHECK (size >= 0)")
     @NotNull(message = "Size cannot be null")
     @Min(value = 0, message = "Size cannot be less than 0")
     private double size;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "INT CHECK (maxCapacity >= 0)")
     @NotNull(message = "Max capacity cannot be null")
     @Min(value = 0, message = "Max capacity cannot be less than 0")
     private int maxCapacity;
@@ -49,9 +49,11 @@ public class RoomType {
     @NotNull(message = "Private kitchen availability cannot be null")
     private boolean hasPrivateKitchen;
 
+    @Column(length = 1000)
     @Size(max = 1000, message = "Description cannot exceed 1000 characters")
     private String description;
 
+    @Column(length = 50)
     @Size(max = 50, message = "View cannot exceed 50 characters")
     private String view;
 

@@ -20,13 +20,16 @@ public class Bed {
     @NotNull(message = "Room type cannot be null")
     private RoomType roomType;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @NotNull(message = "Bed type cannot be null")
     private BedType bedType;
 
+    @Column(columnDefinition = "DOUBLE CHECK (length >= 0)")
     @Min(value = 0, message = "Length cannot be less than 0")
     private Double length;
 
+    @Column(columnDefinition = "DOUBLE CHECK (width >= 0)")
     @Min(value = 0, message = "Width cannot be less than 0")
     private Double width;
 

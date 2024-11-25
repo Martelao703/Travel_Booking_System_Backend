@@ -16,6 +16,7 @@ public class Property {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "property_id_sequence")
     private Integer id;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @NotNull(message = "Property type cannot be null")
     private PropertyType propertyType;
@@ -33,9 +34,9 @@ public class Property {
     @NotNull(message = "Address cannot be null")
     private String address;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
     @NotNull(message = "Active status cannot be null")
-    private boolean isActive;
+    private boolean isActive = true;
 
     @Column(nullable = false)
     @NotNull(message = "Maintenance status cannot be null")
@@ -55,10 +56,10 @@ public class Property {
     @Max(value = 5, message = "Number of stars cannot exceed 5")
     private Integer stars;
 
-    @Column(columnDefinition = "DOUBLE CHECK (userRating >= 0 AND userRating <= 5)")
+    @Column(columnDefinition = "DOUBLE DEFAULT NULL CHECK (userRating >= 0 AND userRating <= 5)")
     @Min(value = 0, message = "User rating cannot be less than 0")
     @Max(value = 5, message = "User rating cannot exceed 5")
-    private Double userRating;
+    private Double userRating = null;
 
     @ElementCollection
     private List<String> amenities;
