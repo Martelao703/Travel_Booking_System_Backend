@@ -6,6 +6,8 @@ import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Data
 public class UserCreateRequestDTO {
     @NotNull(message = "First name cannot be null")
@@ -26,5 +28,5 @@ public class UserCreateRequestDTO {
     private String address;
 
     @Past(message = "Date of birth must be in the past")
-    private String dateOfBirth;
+    private LocalDate dateOfBirth;
 }

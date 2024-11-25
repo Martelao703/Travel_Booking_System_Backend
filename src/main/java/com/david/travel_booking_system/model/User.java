@@ -37,7 +37,7 @@ public class User {
     @Email(message = "Invalid email format")
     private String email;
 
-    @Column(length = 15)
+    @Column(length = 15, unique = true)
     @Size(max = 15, message = "Phone number cannot exceed 15 characters")
     private String phoneNumber;
 

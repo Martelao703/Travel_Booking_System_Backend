@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,11 +29,11 @@ public class BookingDTO {
 
     @NotNull(message = "Check-in date cannot be null")
     @Future(message = "Check-in date must be in the future")
-    private String checkInDate;
+    private LocalDate checkInDate;
 
     @NotNull(message = "Check-out date cannot be null")
     @Future(message = "Check-out date must be in the future")
-    private String checkOutDate;
+    private LocalDate checkOutDate;
 
     @NotNull(message = "Number of guests cannot be null")
     @Min(value = 1, message = "Number of guests must be at least 1")
@@ -42,8 +43,8 @@ public class BookingDTO {
     @Min(value = 0, message = "Total price must be greater than 0")
     private double totalPrice;
 
-    public BookingDTO(Integer id, Integer userId, Integer roomId, String status, boolean isPaid, String checkInDate,
-                      String checkOutDate, int numberOfGuests, double totalPrice) {
+    public BookingDTO(Integer id, Integer userId, Integer roomId, String status, boolean isPaid, LocalDate checkInDate,
+                      LocalDate checkOutDate, int numberOfGuests, double totalPrice) {
         this.id = id;
         this.userId = userId;
         this.roomId = roomId;
@@ -62,8 +63,8 @@ public class BookingDTO {
             booking.getRoom().getId(),
             booking.getStatus().toString(),
             booking.isPaid(),
-            booking.getCheckInDate().toString(),
-            booking.getCheckOutDate().toString(),
+            booking.getCheckInDate(),
+            booking.getCheckOutDate(),
             booking.getNumberOfGuests(),
             booking.getTotalPrice()
         );
