@@ -68,7 +68,7 @@ public class PropertyService {
     @Transactional
     public void deleteProperty(Integer id) {
         Property property = propertyRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Property with ID " + id + " not found."));
+                .orElseThrow(() -> new EntityNotFoundException("Property with ID " + id + " not found"));
         propertyRepository.delete(property);
     }
 

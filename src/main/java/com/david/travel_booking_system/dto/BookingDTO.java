@@ -1,6 +1,7 @@
 package com.david.travel_booking_system.dto;
 
 import com.david.travel_booking_system.model.Booking;
+import com.david.travel_booking_system.validation.ValidDateRange;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Data
+@ValidDateRange
 public class BookingDTO {
     @NotNull(message = "ID cannot be null")
     private Integer id;

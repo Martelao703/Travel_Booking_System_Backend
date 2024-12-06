@@ -22,6 +22,10 @@ public class Room {
     @NotNull(message = "Floor number cannot be null")
     private Integer floorNumber;
 
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
+    @NotNull(message = "Active status cannot be null")
+    private boolean isActive = true;
+
     @Column(nullable = false)
     @NotNull(message = "Availability status cannot be null")
     private boolean isAvailable;

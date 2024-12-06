@@ -2,6 +2,7 @@ package com.david.travel_booking_system.dto;
 
 import com.david.travel_booking_system.model.Room;
 import com.david.travel_booking_system.model.RoomType;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,6 +22,9 @@ public class RoomDTO {
     @NotNull(message = "Floor number cannot be null")
     private Integer floorNumber;
 
+    @NotNull(message = "Active status cannot be null")
+    private boolean isActive = true;
+
     @NotNull(message = "Availability status cannot be null")
     private boolean isAvailable;
 
@@ -35,6 +39,7 @@ public class RoomDTO {
                 room.getId(),
                 room.getRoomType().getId(),
                 room.getFloorNumber(),
+                room.isActive(),
                 room.isAvailable(),
                 room.isCleaned(),
                 room.isUnderMaintenance()

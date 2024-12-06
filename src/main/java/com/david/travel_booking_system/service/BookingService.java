@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -27,13 +29,62 @@ public class BookingService {
         this.roomService = roomService;
     }
 
+    
     /* Basic CRUD -------------------------------------------------------------------------------------------------- */
 
     @Transactional
     public Booking createBooking(@Valid BookingCreateRequestDTO bookingCreateRequestDTO) {
-        /*User user = userService.getUserById(bookingCreateRequestDTO.getUserId());
-        Room room = roomService.getRoomById(bookingCreateRequestDTO.getRoomId());*/
-        return null;
+        // Find associated User and Room
+        User user = userService.getUserById(bookingCreateRequestDTO.getUserId());
+        Room room = roomService.getRoomById(bookingCreateRequestDTO.getRoomId());
+
+        // Check if property is active
+        if (!room.getRoomType().getProperty().isActive()) {
+            throw new IllegalArgumentException("Property is not active");
+        }
+
+        // Check if room is active
+        if (!room.isActive()) {
+            throw new IllegalArgumentException("Room is not active");
+        }
+
+        // Check if number of guests exceeds max capacity of room type
+        if (bookingCreateRequestDTO.getNumberOfGuests() > room.getRoomType().getMaxCapacity()) {
+            throw new IllegalArgumentException("Number of guests exceeds max capacity of room type");
+        }
+
+        // Check for overlapping bookings
+        boolean isOverlapping = bookingRepository.existsByRoom_IdAndCheckInDateBeforeAndCheckOutDateAfter(
+                room.getId(),
+                bookingCreateRequestDTO.getCheckOutDate(),
+                bookingCreateRequestDTO.getCheckInDate()
+        );
+
+        if (isOverlapping) {
+            throw new IllegalArgumentException("Room is already booked for the selected dates");
+        }
+
+        // Build Booking object from DTO
+        Booking booking = new Booking(
+                user,
+                room,
+                bookingCreateRequestDTO.getCheckInDate(),
+                bookingCreateRequestDTO.getCheckOutDate(),
+                bookingCreateRequestDTO.getNumberOfGuests(),
+                calculateTotalPrice(room.getRoomType().getPricePerNight(), bookingCreateRequestDTO.getCheckInDate(),
+                        bookingCreateRequestDTO.getCheckOutDate())
+        );
+
+        // Save Booking
+        bookingRepository.save(booking);
+
+        return booking;
+    }
+
+    // Helper method to calculate total price of booking
+    private double calculateTotalPrice(double pricePerNight, LocalDate checkInDate, LocalDate checkOutDate) {
+        long days = ChronoUnit.DAYS.between(checkInDate, checkOutDate);
+        return pricePerNight * days;
     }
 
     @Transactional(readOnly = true)
