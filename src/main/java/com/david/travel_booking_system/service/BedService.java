@@ -52,12 +52,23 @@ public class BedService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<Bed> getBeds() {
         return bedRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     public Bed getBedById(Integer id) {
         return bedRepository.findById(id).
                 orElseThrow(() -> new EntityNotFoundException("Bed with id " + id + " not found"));
+    }
+
+    @Transactional
+    public void deleteBedById(Integer id) {
+        Bed bed = getBedById(id);
+
+        // Check if bed is in a booked room
+
+        bedRepository.deleteById(id);
     }
 }

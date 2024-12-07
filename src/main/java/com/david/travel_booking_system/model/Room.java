@@ -5,6 +5,8 @@ import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.List;
+
 @Entity
 @Data
 public class Room {
@@ -37,6 +39,9 @@ public class Room {
     @Column(nullable = false)
     @NotNull(message = "Maintenance status cannot be null")
     private boolean isUnderMaintenance;
+
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
+    private List<Booking> bookings;
 
     public Room() {}
 

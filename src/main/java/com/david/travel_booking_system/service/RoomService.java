@@ -18,11 +18,13 @@ import java.util.stream.Collectors;
 public class RoomService {
     private final RoomRepository roomRepository;
     private final RoomTypeService roomTypeService;
+    private final BookingService bookingService;
 
     @Autowired
-    public RoomService(RoomRepository roomRepository, RoomTypeService roomTypeService) {
+    public RoomService(RoomRepository roomRepository, RoomTypeService roomTypeService, BookingService bookingService) {
         this.roomRepository = roomRepository;
         this.roomTypeService = roomTypeService;
+        this.bookingService = bookingService;
     }
 
     /* Basic CRUD -------------------------------------------------------------------------------------------------- */
@@ -32,7 +34,7 @@ public class RoomService {
         // Find associated RoomType
         RoomType roomType = roomTypeService.getRoomTypeById(roomCreateRequestDTO.getRoomTypeId());
 
-        // Build Bed object from DTO
+        // Build Room object from DTO
         Room room = new Room(roomType, roomCreateRequestDTO.getFloorNumber(), roomCreateRequestDTO.isAvailable(),
                 roomCreateRequestDTO.isCleaned(), roomCreateRequestDTO.isUnderMaintenance());
 
@@ -52,12 +54,29 @@ public class RoomService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<Room> getRooms() {
         return roomRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     public Room getRoomById(Integer id) {
         return roomRepository.findById(id).
                 orElseThrow(() -> new EntityNotFoundException("Room with id " + id + " not found"));
     }
+
+    @Transactional
+    public void deleteRoom(Integer id) {
+        Room room = getRoomById(id);
+
+        // Check if room has bookings
+        boolean hasBookings = bookingService.existsBookingsForRoom(id);
+        if (hasBookings) {
+            throw new IllegalStateException("Cannot delete a room with bookings");
+        }
+
+        roomRepository.delete(room);
+    }
+
+    /* Helper methods ---------------------------------------------------------------------------------------------- */
 }

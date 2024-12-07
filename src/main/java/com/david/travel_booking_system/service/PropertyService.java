@@ -4,6 +4,8 @@ import com.david.travel_booking_system.builder.PropertyBuilder;
 import com.david.travel_booking_system.dto.PropertyDetailDTO;
 import com.david.travel_booking_system.dto.createRequest.PropertyCreateRequestDTO;
 import com.david.travel_booking_system.model.Property;
+import com.david.travel_booking_system.model.Room;
+import com.david.travel_booking_system.model.RoomType;
 import com.david.travel_booking_system.repository.PropertyRepository;
 import com.david.travel_booking_system.util.Coordinates;
 import jakarta.persistence.EntityNotFoundException;
@@ -20,10 +22,12 @@ import java.util.stream.Collectors;
 @Service
 public class PropertyService {
     private final PropertyRepository propertyRepository;
+    private final BookingService bookingService;
 
     @Autowired
-    public PropertyService(PropertyRepository propertyRepository) {
+    public PropertyService(PropertyRepository propertyRepository, BookingService bookingService) {
         this.propertyRepository = propertyRepository;
+        this.bookingService = bookingService;
     }
 
     /* Basic CRUD -------------------------------------------------------------------------------------------------- */
@@ -67,8 +71,14 @@ public class PropertyService {
 
     @Transactional
     public void deleteProperty(Integer id) {
-        Property property = propertyRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Property with ID " + id + " not found"));
+        Property property = getPropertyById(id);
+
+        // Check if property has any booked rooms
+        boolean hasBookings = bookingService.existsBookingsForProperty(id);
+        if (hasBookings) {
+            throw new IllegalStateException("Cannot delete a property with booked rooms");
+        }
+
         propertyRepository.delete(property);
     }
 

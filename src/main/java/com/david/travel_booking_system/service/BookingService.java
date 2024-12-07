@@ -5,7 +5,6 @@ import com.david.travel_booking_system.model.Booking;
 import com.david.travel_booking_system.model.Room;
 import com.david.travel_booking_system.model.User;
 import com.david.travel_booking_system.repository.BookingRepository;
-import com.david.travel_booking_system.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +58,6 @@ public class BookingService {
                 bookingCreateRequestDTO.getCheckOutDate(),
                 bookingCreateRequestDTO.getCheckInDate()
         );
-
         if (isOverlapping) {
             throw new IllegalArgumentException("Room is already booked for the selected dates");
         }
@@ -75,16 +73,14 @@ public class BookingService {
                         bookingCreateRequestDTO.getCheckOutDate())
         );
 
+        // Add the new Booking to its User's and Room's bookings list
+        user.getBookings().add(booking);
+        room.getBookings().add(booking);
+
         // Save Booking
         bookingRepository.save(booking);
 
         return booking;
-    }
-
-    // Helper method to calculate total price of booking
-    private double calculateTotalPrice(double pricePerNight, LocalDate checkInDate, LocalDate checkOutDate) {
-        long days = ChronoUnit.DAYS.between(checkInDate, checkOutDate);
-        return pricePerNight * days;
     }
 
     @Transactional(readOnly = true)
@@ -99,4 +95,24 @@ public class BookingService {
     }
 
     /* Add to / Remove from lists ---------------------------------------------------------------------------------- */
+
+    /* Helper methods ---------------------------------------------------------------------------------------------- */
+
+    public boolean existsBookingsForProperty(Integer propertyId) {
+        return bookingRepository.existsBookingsForProperty(propertyId);
+    }
+
+    public boolean existsBookingsForRoomType(Integer roomTypeId) {
+        return bookingRepository.existsBookingsForRoomType(roomTypeId);
+    }
+
+    public boolean existsBookingsForRoom(Integer roomId) {
+        return bookingRepository.existsBookingsForRoom(roomId);
+    }
+
+    // Calculate total price of booking
+    private double calculateTotalPrice(double pricePerNight, LocalDate checkInDate, LocalDate checkOutDate) {
+        long days = ChronoUnit.DAYS.between(checkInDate, checkOutDate);
+        return pricePerNight * days;
+    }
 }

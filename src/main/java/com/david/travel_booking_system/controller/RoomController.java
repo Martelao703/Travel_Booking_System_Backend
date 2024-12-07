@@ -36,4 +36,10 @@ public class RoomController {
         RoomDTO room = RoomDTO.from(roomService.getRoomById(id));
         return ResponseEntity.ok(room); // Return 200 OK
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteRoom(@PathVariable Integer id) {
+        roomService.deleteRoom(id);
+        return ResponseEntity.noContent().build(); // Return 204 No Content
+    }
 }
