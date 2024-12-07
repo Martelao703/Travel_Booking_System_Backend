@@ -1,5 +1,6 @@
-package com.david.travel_booking_system.dto;
+package com.david.travel_booking_system.dto.detail;
 
+import com.david.travel_booking_system.dto.RoomTypeDTO;
 import com.david.travel_booking_system.enums.PropertyType;
 import com.david.travel_booking_system.model.Property;
 import com.fasterxml.jackson.annotation.JsonSetter;
@@ -32,6 +33,12 @@ public class PropertyDetailDTO {
     @NotNull(message = "Address cannot be null")
     private String address;
 
+    @NotNull(message = "Active status cannot be null")
+    private boolean isActive;
+
+    @NotNull(message = "Maintenance status cannot be null")
+    private boolean isUnderMaintenance;
+
     @NotNull(message = "Latitude cannot be null")
     private Double latitude;
 
@@ -59,15 +66,18 @@ public class PropertyDetailDTO {
     private List<String> houseRules;
 
     @JsonSetter(nulls = Nulls.AS_EMPTY)
-    private List<RoomTypeDetailDTO> roomTypes;
+    private List<RoomTypeDTO> roomTypes;
 
     public PropertyDetailDTO(Integer id, PropertyType propertyType, String name, String city, String address,
-                             Double latitude, Double longitude, String description, Integer stars, Double userRating) {
+                             boolean isActive, boolean isUnderMaintenance, Double latitude, Double longitude,
+                             String description, Integer stars, Double userRating) {
         this.id = id;
         this.propertyType = propertyType;
         this.name = name;
         this.city = city;
         this.address = address;
+        this.isActive = isActive;
+        this.isUnderMaintenance = isUnderMaintenance;
         this.latitude = latitude;
         this.longitude = longitude;
         this.description = description;
@@ -82,6 +92,8 @@ public class PropertyDetailDTO {
                 property.getName(),
                 property.getCity(),
                 property.getAddress(),
+                property.isActive(),
+                property.isUnderMaintenance(),
                 property.getCoordinates().getLatitude(),
                 property.getCoordinates().getLongitude(),
                 property.getDescription(),
@@ -91,7 +103,7 @@ public class PropertyDetailDTO {
         propertyDetailDTO.setAmenities(new ArrayList<>(property.getAmenities()));
         propertyDetailDTO.setNearbyServices(new ArrayList<>(property.getNearbyServices()));
         propertyDetailDTO.setHouseRules(new ArrayList<>(property.getHouseRules()));
-        propertyDetailDTO.setRoomTypes(RoomTypeDetailDTO.from(property.getRoomTypes()));
+        propertyDetailDTO.setRoomTypes(RoomTypeDTO.from(property.getRoomTypes()));
 
         return propertyDetailDTO;
     }

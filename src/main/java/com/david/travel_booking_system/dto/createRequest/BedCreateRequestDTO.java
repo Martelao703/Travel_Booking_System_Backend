@@ -7,9 +7,6 @@ import lombok.Data;
 
 @Data
 public class BedCreateRequestDTO {
-    @NotNull(message = "Room type ID cannot be null")
-    private Integer roomTypeId;
-
     @NotNull(message = "Bed type cannot be null")
     private BedType bedType;
 

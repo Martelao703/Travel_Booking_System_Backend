@@ -5,6 +5,9 @@ import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Data
 public class Room {
@@ -22,6 +25,10 @@ public class Room {
     @NotNull(message = "Floor number cannot be null")
     private Integer floorNumber;
 
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
+    @NotNull(message = "Active status cannot be null")
+    private boolean isActive = true;
+
     @Column(nullable = false)
     @NotNull(message = "Availability status cannot be null")
     private boolean isAvailable;
@@ -34,6 +41,9 @@ public class Room {
     @NotNull(message = "Maintenance status cannot be null")
     private boolean isUnderMaintenance;
 
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
+    private List<Booking> bookings;
+
     public Room() {}
 
     public Room(RoomType roomType, Integer floorNumber, boolean isAvailable, boolean isCleaned, boolean isUnderMaintenance) {
@@ -42,5 +52,6 @@ public class Room {
         this.isAvailable = isAvailable;
         this.isCleaned = isCleaned;
         this.isUnderMaintenance = isUnderMaintenance;
+        this.bookings = new ArrayList<>();
     }
 }

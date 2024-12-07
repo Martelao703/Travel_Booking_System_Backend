@@ -1,10 +1,9 @@
-package com.david.travel_booking_system.dto;
+package com.david.travel_booking_system.dto.createResponse;
 
+import com.david.travel_booking_system.dto.detail.RoomTypeDetailDTO;
 import com.david.travel_booking_system.model.RoomType;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -15,7 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Data
-public class RoomTypeDetailDTO {
+public class RoomTypeCreateResponseDTO {
     @NotNull(message = "Room type ID cannot be null")
     private Integer id;
 
@@ -62,15 +61,9 @@ public class RoomTypeDetailDTO {
     @JsonSetter(nulls = Nulls.AS_EMPTY)
     private List<String> roomRules;
 
-    @JsonSetter(nulls = Nulls.AS_EMPTY)
-    private List<RoomDTO> rooms;
-
-    @JsonSetter(nulls = Nulls.AS_EMPTY)
-    private List<BedDTO> beds;
-
-    public RoomTypeDetailDTO(Integer id, Integer propertyId, String name, double pricePerNight, double size,
-                             int maxCapacity, boolean hasPrivateBathroom, boolean hasPrivateKitchen, String description,
-                             String view) {
+    public RoomTypeCreateResponseDTO(Integer id, Integer propertyId, String name, double pricePerNight, double size,
+                                     int maxCapacity, boolean hasPrivateBathroom, boolean hasPrivateKitchen,
+                                     String description, String view) {
         this.id = id;
         this.propertyId = propertyId;
         this.name = name;
@@ -83,30 +76,28 @@ public class RoomTypeDetailDTO {
         this.view = view;
     }
 
-    public static RoomTypeDetailDTO from(RoomType roomType) {
-        RoomTypeDetailDTO roomTypeDetailDTO = new RoomTypeDetailDTO(
-                roomType.getId(),
-                roomType.getProperty().getId(),
-                roomType.getName(),
-                roomType.getPricePerNight(),
-                roomType.getSize(),
-                roomType.getMaxCapacity(),
-                roomType.isHasPrivateBathroom(),
-                roomType.isHasPrivateKitchen(),
-                roomType.getDescription(),
-                roomType.getView()
+    public static RoomTypeCreateResponseDTO from(RoomType roomType) {
+        RoomTypeCreateResponseDTO roomTypeCreateResponseDTO = new RoomTypeCreateResponseDTO(
+            roomType.getId(),
+            roomType.getProperty().getId(),
+            roomType.getName(),
+            roomType.getPricePerNight(),
+            roomType.getSize(),
+            roomType.getMaxCapacity(),
+            roomType.isHasPrivateBathroom(),
+            roomType.isHasPrivateKitchen(),
+            roomType.getDescription(),
+            roomType.getView()
         );
-        roomTypeDetailDTO.setRoomFacilities(new ArrayList<>(roomType.getRoomFacilities()));
-        roomTypeDetailDTO.setBathroomFacilities(new ArrayList<>(roomType.getBathroomFacilities()));
-        roomTypeDetailDTO.setKitchenFacilities(new ArrayList<>(roomType.getKitchenFacilities()));
-        roomTypeDetailDTO.setRoomRules(new ArrayList<>(roomType.getRoomRules()));
-        roomTypeDetailDTO.setRooms(RoomDTO.from(roomType.getRooms()));
-        roomTypeDetailDTO.setBeds(BedDTO.from(roomType.getBeds()));
+        roomTypeCreateResponseDTO.setRoomFacilities(new ArrayList<>(roomType.getRoomFacilities()));
+        roomTypeCreateResponseDTO.setBathroomFacilities(new ArrayList<>(roomType.getBathroomFacilities()));
+        roomTypeCreateResponseDTO.setKitchenFacilities(new ArrayList<>(roomType.getKitchenFacilities()));
+        roomTypeCreateResponseDTO.setRoomRules(new ArrayList<>(roomType.getRoomRules()));
 
-        return roomTypeDetailDTO;
+        return roomTypeCreateResponseDTO;
     }
 
-    public static List<RoomTypeDetailDTO> from(List<RoomType> roomTypes) {
-        return roomTypes.stream().map(RoomTypeDetailDTO::from).collect(Collectors.toList());
+    public static List<RoomTypeCreateResponseDTO> from(List<RoomType> roomTypes) {
+        return roomTypes.stream().map(RoomTypeCreateResponseDTO::from).collect(Collectors.toList());
     }
 }

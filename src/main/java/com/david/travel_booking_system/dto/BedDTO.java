@@ -16,9 +16,6 @@ public class BedDTO {
     @NotNull(message = "Bed ID cannot be null")
     private Integer id;
 
-    @NotNull(message = "Room type ID cannot be null")
-    private Integer roomTypeId;
-
     @NotNull(message = "Bed type cannot be null")
     private BedType bedType;
 
@@ -31,7 +28,6 @@ public class BedDTO {
     public static BedDTO from(Bed bed) {
         return new BedDTO(
                 bed.getId(),
-                bed.getRoomType().getId(),
                 bed.getBedType(),
                 bed.getLength(),
                 bed.getWidth()

@@ -28,6 +28,9 @@ public class PropertyDTO {
     @NotNull(message = "City cannot be null")
     private String city;
 
+    @NotNull(message = "Maintenance status cannot be null")
+    private boolean isUnderMaintenance;
+
     @Size(max = 1000, message = "Description cannot exceed 1000 characters")
     private String description;
 
@@ -45,6 +48,7 @@ public class PropertyDTO {
                 property.getPropertyType(),
                 property.getName(),
                 property.getCity(),
+                property.isUnderMaintenance(),
                 property.getDescription(),
                 property.getStars(),
                 property.getUserRating()
