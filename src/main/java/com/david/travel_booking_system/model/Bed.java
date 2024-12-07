@@ -6,6 +6,9 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Data
 public class Bed {
@@ -13,11 +16,6 @@ public class Bed {
     @SequenceGenerator(name = "bed_id_sequence", sequenceName = "bed_id_sequence", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bed_id_sequence")
     private Integer id;
-
-    @ManyToOne
-    @JoinColumn(name = "room_type_id", nullable = false)
-    @NotNull(message = "Room type cannot be null")
-    private RoomType roomType;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -32,17 +30,20 @@ public class Bed {
     @Min(value = 0, message = "Width cannot be less than 0")
     private Double width;
 
+    @ManyToMany(mappedBy = "beds")
+    private List<RoomType> roomTypes;
+
     public Bed() {}
 
-    public Bed(RoomType roomType, BedType bedType) {
-        this.roomType = roomType;
+    public Bed(BedType bedType) {
         this.bedType = bedType;
+        this.roomTypes = new ArrayList<>();
     }
 
-    public Bed(RoomType roomType, BedType bedType, Double length, Double width) {
-        this.roomType = roomType;
+    public Bed(BedType bedType, Double length, Double width) {
         this.bedType = bedType;
         this.length = length;
         this.width = width;
+        this.roomTypes = new ArrayList<>();
     }
 }

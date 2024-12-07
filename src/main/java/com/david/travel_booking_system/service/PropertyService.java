@@ -1,11 +1,8 @@
 package com.david.travel_booking_system.service;
 
 import com.david.travel_booking_system.builder.PropertyBuilder;
-import com.david.travel_booking_system.dto.PropertyDetailDTO;
 import com.david.travel_booking_system.dto.createRequest.PropertyCreateRequestDTO;
 import com.david.travel_booking_system.model.Property;
-import com.david.travel_booking_system.model.Room;
-import com.david.travel_booking_system.model.RoomType;
 import com.david.travel_booking_system.repository.PropertyRepository;
 import com.david.travel_booking_system.util.Coordinates;
 import jakarta.persistence.EntityNotFoundException;
@@ -14,10 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class PropertyService {

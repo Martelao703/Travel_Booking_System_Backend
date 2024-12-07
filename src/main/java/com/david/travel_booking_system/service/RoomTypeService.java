@@ -1,7 +1,6 @@
 package com.david.travel_booking_system.service;
 
 import com.david.travel_booking_system.builder.RoomTypeBuilder;
-import com.david.travel_booking_system.dto.RoomTypeDetailDTO;
 import com.david.travel_booking_system.dto.createRequest.RoomTypeCreateRequestDTO;
 import com.david.travel_booking_system.model.Property;
 import com.david.travel_booking_system.model.RoomType;
@@ -12,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 

@@ -110,6 +110,10 @@ public class BookingService {
         return bookingRepository.existsBookingsForRoom(roomId);
     }
 
+    public boolean existsBookingsForBed(Integer bedId) {
+        return bookingRepository.existsBookingsForBed(bedId);
+    }
+
     // Calculate total price of booking
     private double calculateTotalPrice(double pricePerNight, LocalDate checkInDate, LocalDate checkOutDate) {
         long days = ChronoUnit.DAYS.between(checkInDate, checkOutDate);

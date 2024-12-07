@@ -5,6 +5,7 @@ import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -51,5 +52,6 @@ public class Room {
         this.isAvailable = isAvailable;
         this.isCleaned = isCleaned;
         this.isUnderMaintenance = isUnderMaintenance;
+        this.bookings = new ArrayList<>();
     }
 }

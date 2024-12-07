@@ -1,7 +1,8 @@
 package com.david.travel_booking_system.controller;
 
 import com.david.travel_booking_system.dto.PropertyDTO;
-import com.david.travel_booking_system.dto.PropertyDetailDTO;
+import com.david.travel_booking_system.dto.createResponse.PropertyCreateResponseDTO;
+import com.david.travel_booking_system.dto.detail.PropertyDetailDTO;
 import com.david.travel_booking_system.dto.createRequest.PropertyCreateRequestDTO;
 import com.david.travel_booking_system.service.PropertyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +22,9 @@ public class PropertyController {
     }
 
     @PostMapping
-    public ResponseEntity<PropertyDetailDTO> createProperty(@RequestBody PropertyCreateRequestDTO propertyCreateRequestDTO) {
-        PropertyDetailDTO createdProperty = PropertyDetailDTO.from(propertyService.createProperty(propertyCreateRequestDTO));
+    public ResponseEntity<PropertyCreateResponseDTO> createProperty(@RequestBody PropertyCreateRequestDTO propertyCreateRequestDTO) {
+        PropertyCreateResponseDTO createdProperty =
+                PropertyCreateResponseDTO.from(propertyService.createProperty(propertyCreateRequestDTO));
         return ResponseEntity.status(201).body(createdProperty); // Return 201 Created
     }
 

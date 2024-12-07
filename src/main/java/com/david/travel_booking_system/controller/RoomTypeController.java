@@ -1,7 +1,8 @@
 package com.david.travel_booking_system.controller;
 
 import com.david.travel_booking_system.dto.RoomTypeDTO;
-import com.david.travel_booking_system.dto.RoomTypeDetailDTO;
+import com.david.travel_booking_system.dto.createResponse.RoomTypeCreateResponseDTO;
+import com.david.travel_booking_system.dto.detail.RoomTypeDetailDTO;
 import com.david.travel_booking_system.dto.createRequest.RoomTypeCreateRequestDTO;
 import com.david.travel_booking_system.service.RoomTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +22,9 @@ public class RoomTypeController {
     }
 
     @PostMapping
-    public ResponseEntity<RoomTypeDetailDTO> createRoomType(@RequestBody RoomTypeCreateRequestDTO roomTypeCreateRequestDTO) {
-        RoomTypeDetailDTO createdRoomType = RoomTypeDetailDTO.from(roomTypeService.createRoomType(roomTypeCreateRequestDTO));
+    public ResponseEntity<RoomTypeCreateResponseDTO> createRoomType(@RequestBody RoomTypeCreateRequestDTO roomTypeCreateRequestDTO) {
+        RoomTypeCreateResponseDTO createdRoomType =
+                RoomTypeCreateResponseDTO.from(roomTypeService.createRoomType(roomTypeCreateRequestDTO));
         return ResponseEntity.status(201).body(createdRoomType); // Return 201 Created
     }
 

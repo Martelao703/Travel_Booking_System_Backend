@@ -2,6 +2,7 @@ package com.david.travel_booking_system.controller;
 
 import com.david.travel_booking_system.dto.RoomDTO;
 import com.david.travel_booking_system.dto.createRequest.RoomCreateRequestDTO;
+import com.david.travel_booking_system.dto.detail.RoomDetailDTO;
 import com.david.travel_booking_system.service.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +21,8 @@ public class RoomController {
     }
 
     @PostMapping
-    public ResponseEntity<RoomDTO> createRoom(@RequestBody RoomCreateRequestDTO roomCreateRequestDTO) {
-        RoomDTO createdRoom = RoomDTO.from(roomService.createRoom(roomCreateRequestDTO));
+    public ResponseEntity<RoomDetailDTO> createRoom(@RequestBody RoomCreateRequestDTO roomCreateRequestDTO) {
+        RoomDetailDTO createdRoom = RoomDetailDTO.from(roomService.createRoom(roomCreateRequestDTO));
         return ResponseEntity.status(201).body(createdRoom); // Return 201 Created
     }
 
@@ -32,8 +33,8 @@ public class RoomController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RoomDTO> getRoom(@PathVariable Integer id) {
-        RoomDTO room = RoomDTO.from(roomService.getRoomById(id));
+    public ResponseEntity<RoomDetailDTO> getRoom(@PathVariable Integer id) {
+        RoomDetailDTO room = RoomDetailDTO.from(roomService.getRoomById(id));
         return ResponseEntity.ok(room); // Return 200 OK
     }
 

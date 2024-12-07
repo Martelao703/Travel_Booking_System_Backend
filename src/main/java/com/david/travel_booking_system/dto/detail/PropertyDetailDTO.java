@@ -1,5 +1,6 @@
-package com.david.travel_booking_system.dto;
+package com.david.travel_booking_system.dto.detail;
 
+import com.david.travel_booking_system.dto.RoomTypeDTO;
 import com.david.travel_booking_system.enums.PropertyType;
 import com.david.travel_booking_system.model.Property;
 import com.fasterxml.jackson.annotation.JsonSetter;
@@ -65,7 +66,7 @@ public class PropertyDetailDTO {
     private List<String> houseRules;
 
     @JsonSetter(nulls = Nulls.AS_EMPTY)
-    private List<RoomTypeDetailDTO> roomTypes;
+    private List<RoomTypeDTO> roomTypes;
 
     public PropertyDetailDTO(Integer id, PropertyType propertyType, String name, String city, String address,
                              boolean isActive, boolean isUnderMaintenance, Double latitude, Double longitude,
@@ -102,7 +103,7 @@ public class PropertyDetailDTO {
         propertyDetailDTO.setAmenities(new ArrayList<>(property.getAmenities()));
         propertyDetailDTO.setNearbyServices(new ArrayList<>(property.getNearbyServices()));
         propertyDetailDTO.setHouseRules(new ArrayList<>(property.getHouseRules()));
-        propertyDetailDTO.setRoomTypes(RoomTypeDetailDTO.from(property.getRoomTypes()));
+        propertyDetailDTO.setRoomTypes(RoomTypeDTO.from(property.getRoomTypes()));
 
         return propertyDetailDTO;
     }

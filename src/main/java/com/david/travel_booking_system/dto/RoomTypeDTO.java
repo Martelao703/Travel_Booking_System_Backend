@@ -1,5 +1,6 @@
 package com.david.travel_booking_system.dto;
 
+import com.david.travel_booking_system.dto.detail.BedDetailDTO;
 import com.david.travel_booking_system.model.RoomType;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
@@ -8,7 +9,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 

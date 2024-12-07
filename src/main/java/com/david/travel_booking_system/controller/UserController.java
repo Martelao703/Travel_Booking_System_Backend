@@ -2,6 +2,8 @@ package com.david.travel_booking_system.controller;
 
 import com.david.travel_booking_system.dto.UserDTO;
 import com.david.travel_booking_system.dto.createRequest.UserCreateRequestDTO;
+import com.david.travel_booking_system.dto.createResponse.UserCreateResponseDTO;
+import com.david.travel_booking_system.dto.detail.UserDetailDTO;
 import com.david.travel_booking_system.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +22,8 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDTO> createUser(@RequestBody UserCreateRequestDTO userCreateRequestDTO) {
-        UserDTO createdUser = UserDTO.from(userService.createUser(userCreateRequestDTO));
+    public ResponseEntity<UserCreateResponseDTO> createUser(@RequestBody UserCreateRequestDTO userCreateRequestDTO) {
+        UserCreateResponseDTO createdUser = UserCreateResponseDTO.from(userService.createUser(userCreateRequestDTO));
         return ResponseEntity.status(201).body(createdUser); // Return 201 Created
     }
 
@@ -32,8 +34,8 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDTO> getUser(@PathVariable Integer id) {
-        UserDTO user = UserDTO.from(userService.getUserById(id));
+    public ResponseEntity<UserDetailDTO> getUser(@PathVariable Integer id) {
+        UserDetailDTO user = UserDetailDTO.from(userService.getUserById(id));
         return ResponseEntity.ok(user); // Return 200 OK
     }
 }

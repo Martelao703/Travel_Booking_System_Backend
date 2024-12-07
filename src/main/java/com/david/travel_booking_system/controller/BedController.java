@@ -1,6 +1,7 @@
 package com.david.travel_booking_system.controller;
 
 import com.david.travel_booking_system.dto.BedDTO;
+import com.david.travel_booking_system.dto.detail.BedDetailDTO;
 import com.david.travel_booking_system.dto.createRequest.BedCreateRequestDTO;
 import com.david.travel_booking_system.service.BedService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +21,8 @@ public class BedController {
     }
 
     @PostMapping
-    public ResponseEntity<BedDTO> createBed(@RequestBody BedCreateRequestDTO bedCreateRequestDTO) {
-        BedDTO createdBed = BedDTO.from(bedService.createBed(bedCreateRequestDTO));
+    public ResponseEntity<BedDetailDTO> createBed(@RequestBody BedCreateRequestDTO bedCreateRequestDTO) {
+        BedDetailDTO createdBed = BedDetailDTO.from(bedService.createBed(bedCreateRequestDTO));
         return ResponseEntity.status(201).body(createdBed); // Return 201 Created
     }
 
@@ -32,8 +33,14 @@ public class BedController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BedDTO> getBed(@PathVariable Integer id) {
-        BedDTO bed = BedDTO.from(bedService.getBedById(id));
+    public ResponseEntity<BedDetailDTO> getBed(@PathVariable Integer id) {
+        BedDetailDTO bed = BedDetailDTO.from(bedService.getBedById(id));
         return ResponseEntity.ok(bed); // Return 200 OK
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteBed(@PathVariable Integer id) {
+        bedService.deleteBed(id);
+        return ResponseEntity.noContent().build(); // Return 204 No Content
     }
 }

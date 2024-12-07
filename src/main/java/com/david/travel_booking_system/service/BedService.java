@@ -1,6 +1,5 @@
 package com.david.travel_booking_system.service;
 
-import com.david.travel_booking_system.dto.BedDTO;
 import com.david.travel_booking_system.dto.createRequest.BedCreateRequestDTO;
 import com.david.travel_booking_system.model.Bed;
 import com.david.travel_booking_system.model.RoomType;
@@ -18,26 +17,22 @@ import java.util.stream.Collectors;
 public class BedService {
     private final BedRepository bedRepository;
     private final RoomTypeService roomTypeService;
+    private final BookingService bookingService;
 
     @Autowired
-    public BedService(BedRepository bedRepository, RoomTypeService roomTypeService) {
+    public BedService(BedRepository bedRepository, RoomTypeService roomTypeService, BookingService bookingService) {
         this.bedRepository = bedRepository;
         this.roomTypeService = roomTypeService;
+        this.bookingService = bookingService;
     }
 
     /* Basic CRUD -------------------------------------------------------------------------------------------------- */
 
     @Transactional
     public Bed createBed(@Valid BedCreateRequestDTO bedCreateRequestDTO) {
-        // Find associated RoomType
-        RoomType roomType = roomTypeService.getRoomTypeById(bedCreateRequestDTO.getRoomTypeId());
-
         // Build Bed object from DTO
-        Bed bed = new Bed(roomType, bedCreateRequestDTO.getBedType(), bedCreateRequestDTO.getLength(),
+        Bed bed = new Bed(bedCreateRequestDTO.getBedType(), bedCreateRequestDTO.getLength(),
                 bedCreateRequestDTO.getWidth());
-
-        // Add the new Bed to its RoomType's beds list
-        roomType.getBeds().add(bed);
 
         // Save Bed
         bed = bedRepository.save(bed);
@@ -64,11 +59,15 @@ public class BedService {
     }
 
     @Transactional
-    public void deleteBedById(Integer id) {
+    public void deleteBed(Integer id) {
         Bed bed = getBedById(id);
 
-        // Check if bed is in a booked room
+        // Check if bed is associated with any room types with booked rooms
+        boolean hasBookings = bookingService.existsBookingsForBed(id);
+        if (hasBookings) {
+            throw new IllegalStateException("Cannot delete a bed associated with booked rooms");
+        }
 
-        bedRepository.deleteById(id);
+        bedRepository.delete(bed);
     }
 }

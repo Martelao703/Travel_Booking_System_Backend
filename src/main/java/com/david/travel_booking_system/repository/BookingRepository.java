@@ -36,6 +36,13 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
             "AND b.status = 'CONFIRMED' OR b.status = 'PENDING' ")
     boolean existsBookingsForRoom(@Param("roomId") Integer roomId);
 
-    // Check if any room of the room type
+    // Check if any room of all room types associated with a bed has bookings
+    @Query("SELECT CASE WHEN COUNT(b) > 0 THEN TRUE ELSE FALSE END " +
+            "FROM Booking b " +
+            "JOIN b.room r " +
+            "JOIN r.roomType rt " +
+            "JOIN rt.beds bed " +
+            "WHERE bed.id = :bedId " +
+            "AND b.status = 'CONFIRMED' OR b.status = 'PENDING' ")
     boolean existsBookingsForBed(Integer bedId);
 }
