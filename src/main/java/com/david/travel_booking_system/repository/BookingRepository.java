@@ -45,4 +45,11 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
             "WHERE bed.id = :bedId " +
             "AND b.status = 'CONFIRMED' OR b.status = 'PENDING' ")
     boolean existsBookingsForBed(Integer bedId);
+
+    // Check if a user has bookings
+    @Query("SELECT CASE WHEN COUNT(b) > 0 THEN TRUE ELSE FALSE END " +
+            "FROM Booking b " +
+            "WHERE b.user.id = :userId " +
+            "AND b.status = 'CONFIRMED' OR b.status = 'PENDING' ")
+    boolean existsBookingsForUser(@Param("userId") Integer userId);
 }

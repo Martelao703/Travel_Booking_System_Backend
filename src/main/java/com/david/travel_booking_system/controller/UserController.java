@@ -38,4 +38,10 @@ public class UserController {
         UserDetailDTO user = UserDetailDTO.from(userService.getUserById(id));
         return ResponseEntity.ok(user); // Return 200 OK
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build(); // Return 204 No Content
+    }
 }

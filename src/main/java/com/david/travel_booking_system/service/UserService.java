@@ -16,10 +16,12 @@ import java.util.Optional;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final BookingService bookingService;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, BookingService bookingService) {
         this.userRepository = userRepository;
+        this.bookingService = bookingService;
     }
 
     /* Basic CRUD -------------------------------------------------------------------------------------------------- */
@@ -65,6 +67,19 @@ public class UserService {
     public User getUserById(Integer userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User with id " + userId + " not found"));
+    }
+
+    @Transactional
+    public void deleteUser(Integer userId) {
+        User user = getUserById(userId);
+
+        // Check if user has any bookings in progress
+        boolean hasBookings = bookingService.existsBookingsForUser(user.getId());
+        if (hasBookings) {
+            throw new IllegalStateException("Cannot delete user with bookings in progress");
+        }
+
+        userRepository.deleteById(userId);
     }
 
     /* Add to / Remove from lists ---------------------------------------------------------------------------------- */

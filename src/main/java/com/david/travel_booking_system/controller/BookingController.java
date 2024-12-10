@@ -36,4 +36,10 @@ public class BookingController {
         BookingDTO booking = BookingDTO.from(bookingService.getBookingById(id));
         return ResponseEntity.ok(booking); // Return 200 OK
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteBooking(@PathVariable Integer id) {
+        bookingService.deleteBooking(id);
+        return ResponseEntity.noContent().build(); // Return 204 No Content
+    }
 }
