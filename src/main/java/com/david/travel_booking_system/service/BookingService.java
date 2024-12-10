@@ -1,6 +1,7 @@
 package com.david.travel_booking_system.service;
 
 import com.david.travel_booking_system.dto.createRequest.BookingCreateRequestDTO;
+import com.david.travel_booking_system.enums.BookingStatus;
 import com.david.travel_booking_system.model.Booking;
 import com.david.travel_booking_system.model.Room;
 import com.david.travel_booking_system.model.User;
@@ -94,6 +95,18 @@ public class BookingService {
                 .orElseThrow(() -> new EntityNotFoundException("Booking with id " + bookingId + " not found"));
     }
 
+    @Transactional
+    public void deleteBooking(Integer id) {
+        Booking booking = getBookingById(id);
+
+        // Check if booking is still in progress
+        if (booking.getStatus() == BookingStatus.CONFIRMED || booking.getStatus() == BookingStatus.PENDING) {
+            throw new IllegalStateException("Cannot delete booking with status ' " + booking.getStatus() + " ' ");
+        }
+
+        bookingRepository.deleteById(id);
+    }
+
     /* Add to / Remove from lists ---------------------------------------------------------------------------------- */
 
     /* Helper methods ---------------------------------------------------------------------------------------------- */
@@ -112,6 +125,10 @@ public class BookingService {
 
     public boolean existsBookingsForBed(Integer bedId) {
         return bookingRepository.existsBookingsForBed(bedId);
+    }
+
+    public boolean existsBookingsForUser(Integer userId) {
+        return bookingRepository.existsBookingsForUser(userId);
     }
 
     // Calculate total price of booking
