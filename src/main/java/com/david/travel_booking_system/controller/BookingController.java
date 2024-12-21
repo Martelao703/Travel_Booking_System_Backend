@@ -1,6 +1,6 @@
 package com.david.travel_booking_system.controller;
 
-import com.david.travel_booking_system.dto.BookingDTO;
+import com.david.travel_booking_system.dto.basic.BookingBasicDTO;
 import com.david.travel_booking_system.dto.createRequest.BookingCreateRequestDTO;
 import com.david.travel_booking_system.service.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+/*
+ * More info on the DTO architecture/usage on the DTO_README.md file on the dto package
+ */
 
 @RestController
 @RequestMapping("/api/booking")
@@ -19,21 +23,23 @@ public class BookingController {
         this.bookingService = bookingService;
     }
 
+    /* Returns BasicDTO instead of DetailDTO due to the entity's absence of non-nested collection fields */
     @PostMapping
-    public ResponseEntity<BookingDTO> createBooking(@RequestBody BookingCreateRequestDTO bookingCreateRequestDTO) {
-        BookingDTO createdBooking = BookingDTO.from(bookingService.createBooking(bookingCreateRequestDTO));
+    public ResponseEntity<BookingBasicDTO> createBooking(@RequestBody BookingCreateRequestDTO bookingCreateRequestDTO) {
+        BookingBasicDTO createdBooking = BookingBasicDTO.from(bookingService.createBooking(bookingCreateRequestDTO));
         return ResponseEntity.status(201).body(createdBooking); // Return 201 Created
     }
 
     @GetMapping
-    public ResponseEntity<List<BookingDTO>> getBookings() {
-        List<BookingDTO> bookings = BookingDTO.from(bookingService.getBookings());
+    public ResponseEntity<List<BookingBasicDTO>> getBookings() {
+        List<BookingBasicDTO> bookings = BookingBasicDTO.from(bookingService.getBookings());
         return ResponseEntity.ok(bookings); // Return 200 OK
     }
 
+    /* Returns BasicDTO instead of FullDTO due to the entity's absence of collection fields */
     @GetMapping("/{id}")
-    public ResponseEntity<BookingDTO> getBooking(@PathVariable Integer id) {
-        BookingDTO booking = BookingDTO.from(bookingService.getBookingById(id));
+    public ResponseEntity<BookingBasicDTO> getBooking(@PathVariable Integer id) {
+        BookingBasicDTO booking = BookingBasicDTO.from(bookingService.getBookingById(id));
         return ResponseEntity.ok(booking); // Return 200 OK
     }
 
