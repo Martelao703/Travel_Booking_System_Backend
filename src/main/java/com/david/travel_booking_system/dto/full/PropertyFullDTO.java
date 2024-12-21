@@ -1,5 +1,6 @@
-package com.david.travel_booking_system.dto.detail;
+package com.david.travel_booking_system.dto.full;
 
+import com.david.travel_booking_system.dto.basic.RoomTypeBasicDTO;
 import com.david.travel_booking_system.enums.PropertyType;
 import com.david.travel_booking_system.model.Property;
 import lombok.Data;
@@ -9,7 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Data
-public class PropertyDetailDTO {
+public class PropertyFullDTO {
     private Integer id;
     private PropertyType propertyType;
     private String name;
@@ -27,9 +28,11 @@ public class PropertyDetailDTO {
     private List<String> nearbyServices;
     private List<String> houseRules;
 
-    public PropertyDetailDTO(Integer id, PropertyType propertyType, String name, String city, String address,
-                             boolean isActive, boolean isUnderMaintenance, Double latitude, Double longitude,
-                             String description, Integer stars, Double userRating) {
+    private List<RoomTypeBasicDTO> roomTypes;
+
+    public PropertyFullDTO(Integer id, PropertyType propertyType, String name, String city, String address,
+                           boolean isActive, boolean isUnderMaintenance, Double latitude, Double longitude,
+                           String description, Integer stars, Double userRating) {
         this.id = id;
         this.propertyType = propertyType;
         this.name = name;
@@ -44,8 +47,8 @@ public class PropertyDetailDTO {
         this.userRating = userRating;
     }
 
-    public static PropertyDetailDTO from(Property property) {
-        PropertyDetailDTO propertyDetailDTO = new PropertyDetailDTO(
+    public static PropertyFullDTO from(Property property) {
+        PropertyFullDTO propertyFullDTO = new PropertyFullDTO(
                 property.getId(),
                 property.getPropertyType(),
                 property.getName(),
@@ -59,14 +62,16 @@ public class PropertyDetailDTO {
                 property.getStars(),
                 property.getUserRating()
         );
-        propertyDetailDTO.setAmenities(new ArrayList<>(property.getAmenities()));
-        propertyDetailDTO.setNearbyServices(new ArrayList<>(property.getNearbyServices()));
-        propertyDetailDTO.setHouseRules(new ArrayList<>(property.getHouseRules()));
+        propertyFullDTO.setAmenities(new ArrayList<>(property.getAmenities()));
+        propertyFullDTO.setNearbyServices(new ArrayList<>(property.getNearbyServices()));
+        propertyFullDTO.setHouseRules(new ArrayList<>(property.getHouseRules()));
 
-        return propertyDetailDTO;
+        propertyFullDTO.setRoomTypes(RoomTypeBasicDTO.from(property.getRoomTypes()));
+
+        return propertyFullDTO;
     }
 
-    public static List<PropertyDetailDTO> from(List<Property> properties) {
-        return properties.stream().map(PropertyDetailDTO::from).collect(Collectors.toList());
+    public static List<PropertyFullDTO> from(List<Property> properties) {
+        return properties.stream().map(PropertyFullDTO::from).collect(Collectors.toList());
     }
 }

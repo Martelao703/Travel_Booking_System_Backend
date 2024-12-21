@@ -1,6 +1,5 @@
 package com.david.travel_booking_system.service;
 
-import com.david.travel_booking_system.dto.RoomDTO;
 import com.david.travel_booking_system.dto.createRequest.RoomCreateRequestDTO;
 import com.david.travel_booking_system.model.Room;
 import com.david.travel_booking_system.model.RoomType;

@@ -1,20 +1,21 @@
-package com.david.travel_booking_system.dto;
+package com.david.travel_booking_system.dto.updateRequest;
 
-import com.david.travel_booking_system.model.Property;
 import com.david.travel_booking_system.enums.PropertyType;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
+
+
 
 @Data
-@AllArgsConstructor
-public class PropertyDTO {
+public class PropertyUpdateRequestDTO {
     @NotNull(message = "Property ID cannot be null")
     private Integer id;
 
@@ -28,8 +29,20 @@ public class PropertyDTO {
     @NotNull(message = "City cannot be null")
     private String city;
 
+    @NotNull(message = "Address cannot be null")
+    private String address;
+
+    @NotNull(message = "Active status cannot be null")
+    private boolean isActive;
+
     @NotNull(message = "Maintenance status cannot be null")
     private boolean isUnderMaintenance;
+
+    @NotNull(message = "Latitude cannot be null")
+    private Double latitude;
+
+    @NotNull(message = "Longitude cannot be null")
+    private Double longitude;
 
     @Size(max = 1000, message = "Description cannot exceed 1000 characters")
     private String description;
@@ -38,24 +51,12 @@ public class PropertyDTO {
     @Max(value = 5, message = "Number of stars cannot exceed 5")
     private Integer stars;
 
-    @Min(value = 0, message = "Number of stars cannot be less than 0")
-    @Max(value = 5, message = "Number of stars cannot exceed 5")
-    private Double userRating;
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    private List<String> amenities;
 
-    public static PropertyDTO from(Property property) {
-        return new PropertyDTO(
-                property.getId(),
-                property.getPropertyType(),
-                property.getName(),
-                property.getCity(),
-                property.isUnderMaintenance(),
-                property.getDescription(),
-                property.getStars(),
-                property.getUserRating()
-        );
-    }
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    private List<String> nearbyServices;
 
-    public static List<PropertyDTO> from (List<Property> properties) {
-        return properties.stream().map(PropertyDTO::from).collect(Collectors.toList());
-    }
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
+    private List<String> houseRules;
 }
