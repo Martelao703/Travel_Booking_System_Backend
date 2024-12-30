@@ -1,4 +1,4 @@
-package com.david.travel_booking_system.dto.createRequest;
+package com.david.travel_booking_system.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
@@ -10,7 +10,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class RoomTypeCreateRequestDTO {
+public class RoomTypeRequestDTO {
     @NotNull(message = "Property ID cannot be null")
     private Integer propertyId;
 

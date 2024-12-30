@@ -1,9 +1,11 @@
 package com.david.travel_booking_system.controller;
 
 import com.david.travel_booking_system.dto.basic.RoomBasicDTO;
-import com.david.travel_booking_system.dto.createRequest.RoomCreateRequestDTO;
+import com.david.travel_booking_system.dto.request.createRequest.RoomCreateRequestDTO;
 import com.david.travel_booking_system.dto.full.RoomFullDTO;
+import com.david.travel_booking_system.dto.request.updateRequest.RoomUpdateRequestDTO;
 import com.david.travel_booking_system.service.RoomService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +28,7 @@ public class RoomController {
 
     /* Returns BasicDTO instead of DetailDTO due to the entity's absence of non-nested collection fields */
     @PostMapping
-    public ResponseEntity<RoomBasicDTO> createRoom(@RequestBody RoomCreateRequestDTO roomCreateRequestDTO) {
+    public ResponseEntity<RoomBasicDTO> createRoom(@RequestBody @Valid RoomCreateRequestDTO roomCreateRequestDTO) {
         RoomBasicDTO createdRoom = RoomBasicDTO.from(roomService.createRoom(roomCreateRequestDTO));
         return ResponseEntity.status(201).body(createdRoom); // Return 201 Created
     }
@@ -41,6 +43,14 @@ public class RoomController {
     public ResponseEntity<RoomFullDTO> getRoom(@PathVariable Integer id) {
         RoomFullDTO room = RoomFullDTO.from(roomService.getRoomById(id));
         return ResponseEntity.ok(room); // Return 200 OK
+    }
+
+    /* Returns BasicDTO instead of DetailDTO due to the entity's absence of non-nested collection fields */
+    @PutMapping("/{id}")
+    public ResponseEntity<RoomBasicDTO> updateRoom(@PathVariable Integer id,
+                                                   @RequestBody @Valid RoomUpdateRequestDTO roomUpdateRequestDTO) {
+        RoomBasicDTO updatedRoom = RoomBasicDTO.from(roomService.updateRoom(id, roomUpdateRequestDTO));
+        return ResponseEntity.ok(updatedRoom); // Return 200 OK
     }
 
     @DeleteMapping("/{id}")

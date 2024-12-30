@@ -1,6 +1,5 @@
 package com.david.travel_booking_system.validation;
 
-import com.david.travel_booking_system.dto.createRequest.BookingCreateRequestDTO;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.beans.BeanUtils;

@@ -1,16 +1,17 @@
 package com.david.travel_booking_system.service;
 
 import com.david.travel_booking_system.builder.PropertyBuilder;
-import com.david.travel_booking_system.dto.createRequest.PropertyCreateRequestDTO;
+import com.david.travel_booking_system.dto.request.createRequest.PropertyCreateRequestDTO;
+import com.david.travel_booking_system.dto.request.updateRequest.PropertyUpdateRequestDTO;
 import com.david.travel_booking_system.model.Property;
 import com.david.travel_booking_system.repository.PropertyRepository;
 import com.david.travel_booking_system.util.Coordinates;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -27,7 +28,7 @@ public class PropertyService {
     /* Basic CRUD -------------------------------------------------------------------------------------------------- */
 
     @Transactional
-    public Property createProperty(@Valid PropertyCreateRequestDTO propertyCreateRequestDTO) {
+    public Property createProperty(PropertyCreateRequestDTO propertyCreateRequestDTO) {
         // Prepare attributes from DTO
         Coordinates coordinates = new Coordinates(propertyCreateRequestDTO.getLatitude(), propertyCreateRequestDTO.getLongitude());
 
@@ -47,9 +48,7 @@ public class PropertyService {
                 .build();
 
         // Save Property
-        property = propertyRepository.save(property);
-
-        return property;
+        return propertyRepository.save(property);
     }
 
     @Transactional(readOnly = true)
@@ -64,6 +63,40 @@ public class PropertyService {
     }
 
     @Transactional
+    public Property updateProperty(Integer id, PropertyUpdateRequestDTO propertyUpdateRequestDTO) {
+        Property property = getPropertyById(id);
+
+        // Check if property has any booked rooms
+        boolean hasBookings = bookingService.existsBookingsForProperty(id);
+        if (hasBookings) {
+            throw new IllegalStateException("Cannot update a property with booked rooms");
+        }
+
+        // Update fields
+        property.setPropertyType(propertyUpdateRequestDTO.getPropertyType());
+        property.setName(propertyUpdateRequestDTO.getName());
+        property.setCity(propertyUpdateRequestDTO.getCity());
+        property.setAddress(propertyUpdateRequestDTO.getAddress());
+        property.setActive(propertyUpdateRequestDTO.isActive());
+        property.setUnderMaintenance(propertyUpdateRequestDTO.isUnderMaintenance());
+
+        Coordinates coordinates = new Coordinates(propertyUpdateRequestDTO.getLatitude(), propertyUpdateRequestDTO.getLongitude());
+        property.setCoordinates(coordinates);
+
+        property.setDescription(propertyUpdateRequestDTO.getDescription());
+        property.setStars(propertyUpdateRequestDTO.getStars());
+        property.setUserRating(propertyUpdateRequestDTO.getUserRating());
+
+        property.setAmenities(new ArrayList<>(propertyUpdateRequestDTO.getAmenities()));
+        property.setNearbyServices(new ArrayList<>(propertyUpdateRequestDTO.getNearbyServices()));
+        property.setHouseRules(new ArrayList<>(propertyUpdateRequestDTO.getHouseRules()));
+
+        // Save updated property
+        return propertyRepository.save(property);
+    }
+
+
+    @Transactional
     public void deleteProperty(Integer id) {
         Property property = getPropertyById(id);
 
@@ -73,6 +106,7 @@ public class PropertyService {
             throw new IllegalStateException("Cannot delete a property with booked rooms");
         }
 
+        // Delete property
         propertyRepository.delete(property);
     }
 

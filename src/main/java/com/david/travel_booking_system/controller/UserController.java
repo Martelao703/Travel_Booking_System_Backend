@@ -1,9 +1,11 @@
 package com.david.travel_booking_system.controller;
 
 import com.david.travel_booking_system.dto.basic.UserBasicDTO;
-import com.david.travel_booking_system.dto.createRequest.UserCreateRequestDTO;
+import com.david.travel_booking_system.dto.request.createRequest.UserCreateRequestDTO;
 import com.david.travel_booking_system.dto.full.UserFullDTO;
+import com.david.travel_booking_system.dto.request.updateRequest.UserUpdateRequestDTO;
 import com.david.travel_booking_system.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +28,7 @@ public class UserController {
 
     /* Returns BasicDTO instead of DetailDTO due to the entity's absence of non-nested collection fields */
     @PostMapping
-    public ResponseEntity<UserBasicDTO> createUser(@RequestBody UserCreateRequestDTO userCreateRequestDTO) {
+    public ResponseEntity<UserBasicDTO> createUser(@RequestBody @Valid UserCreateRequestDTO userCreateRequestDTO) {
         UserBasicDTO createdUser = UserBasicDTO.from(userService.createUser(userCreateRequestDTO));
         return ResponseEntity.status(201).body(createdUser); // Return 201 Created
     }
@@ -41,6 +43,13 @@ public class UserController {
     public ResponseEntity<UserFullDTO> getUser(@PathVariable Integer id) {
         UserFullDTO user = UserFullDTO.from(userService.getUserById(id));
         return ResponseEntity.ok(user); // Return 200 OK
+    }
+
+    /* Returns BasicDTO instead of DetailDTO due to the entity's absence of non-nested collection fields */
+    @PutMapping("/{id}")
+    public ResponseEntity<UserBasicDTO> updateUser(@PathVariable Integer id, @RequestBody @Valid UserUpdateRequestDTO userUpdateRequestDTO) {
+        UserBasicDTO updatedUser = UserBasicDTO.from(userService.updateUser(id, userUpdateRequestDTO));
+        return ResponseEntity.ok(updatedUser); // Return 200 OK
     }
 
     @DeleteMapping("/{id}")

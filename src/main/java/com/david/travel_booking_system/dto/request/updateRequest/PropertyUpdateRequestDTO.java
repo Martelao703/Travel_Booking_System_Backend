@@ -1,4 +1,4 @@
-package com.david.travel_booking_system.dto.updateRequest;
+package com.david.travel_booking_system.dto.request.updateRequest;
 
 import com.david.travel_booking_system.enums.PropertyType;
 import com.fasterxml.jackson.annotation.JsonSetter;
@@ -10,9 +10,6 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.util.List;
-
-
-
 
 @Data
 public class PropertyUpdateRequestDTO {
@@ -50,6 +47,10 @@ public class PropertyUpdateRequestDTO {
     @Min(value = 0, message = "Number of stars cannot be less than 0")
     @Max(value = 5, message = "Number of stars cannot exceed 5")
     private Integer stars;
+
+    @Min(value = 0, message = "User rating cannot be less than 0")
+    @Max(value = 5, message = "User rating cannot exceed 5")
+    private Double userRating = null;
 
     @JsonSetter(nulls = Nulls.AS_EMPTY)
     private List<String> amenities;

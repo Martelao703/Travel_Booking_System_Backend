@@ -1,13 +1,13 @@
 package com.david.travel_booking_system.service;
 
-import com.david.travel_booking_system.dto.createRequest.BookingCreateRequestDTO;
+import com.david.travel_booking_system.dto.request.createRequest.BookingCreateRequestDTO;
+import com.david.travel_booking_system.dto.request.updateRequest.BookingUpdateRequestDTO;
 import com.david.travel_booking_system.enums.BookingStatus;
 import com.david.travel_booking_system.model.Booking;
 import com.david.travel_booking_system.model.Room;
 import com.david.travel_booking_system.model.User;
 import com.david.travel_booking_system.repository.BookingRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +33,7 @@ public class BookingService {
     /* Basic CRUD -------------------------------------------------------------------------------------------------- */
 
     @Transactional
-    public Booking createBooking(@Valid BookingCreateRequestDTO bookingCreateRequestDTO) {
+    public Booking createBooking(BookingCreateRequestDTO bookingCreateRequestDTO) {
         // Find associated User and Room
         User user = userService.getUserById(bookingCreateRequestDTO.getUserId());
         Room room = roomService.getRoomById(bookingCreateRequestDTO.getRoomId());
@@ -79,9 +79,7 @@ public class BookingService {
         room.getBookings().add(booking);
 
         // Save Booking
-        bookingRepository.save(booking);
-
-        return booking;
+        return bookingRepository.save(booking);
     }
 
     @Transactional(readOnly = true)
@@ -96,6 +94,20 @@ public class BookingService {
     }
 
     @Transactional
+    public Booking updateBooking(Integer id, BookingUpdateRequestDTO bookingUpdateRequestDTO) {
+        Booking booking = getBookingById(id);
+
+        // Update Booking
+        booking.setCheckInDate(bookingUpdateRequestDTO.getCheckInDate());
+        booking.setCheckOutDate(bookingUpdateRequestDTO.getCheckOutDate());
+        booking.setNumberOfGuests(bookingUpdateRequestDTO.getNumberOfGuests());
+        booking.setTotalPrice(calculateTotalPrice(booking.getRoom().getRoomType().getPricePerNight(),
+                bookingUpdateRequestDTO.getCheckInDate(), bookingUpdateRequestDTO.getCheckOutDate()));
+
+        return bookingRepository.save(booking);
+    }
+
+    @Transactional
     public void deleteBooking(Integer id) {
         Booking booking = getBookingById(id);
 
@@ -104,6 +116,7 @@ public class BookingService {
             throw new IllegalStateException("Cannot delete booking with status ' " + booking.getStatus() + " ' ");
         }
 
+        // Delete Booking
         bookingRepository.deleteById(id);
     }
 

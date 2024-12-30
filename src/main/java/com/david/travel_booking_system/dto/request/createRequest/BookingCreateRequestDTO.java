@@ -1,4 +1,4 @@
-package com.david.travel_booking_system.dto.createRequest;
+package com.david.travel_booking_system.dto.request.createRequest;
 
 import com.david.travel_booking_system.validation.ValidDateRange;
 import jakarta.validation.constraints.Future;

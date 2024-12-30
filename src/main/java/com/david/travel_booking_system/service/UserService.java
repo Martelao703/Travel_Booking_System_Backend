@@ -1,11 +1,11 @@
 package com.david.travel_booking_system.service;
 
 import com.david.travel_booking_system.builder.UserBuilder;
-import com.david.travel_booking_system.dto.createRequest.UserCreateRequestDTO;
+import com.david.travel_booking_system.dto.request.createRequest.UserCreateRequestDTO;
+import com.david.travel_booking_system.dto.request.updateRequest.UserUpdateRequestDTO;
 import com.david.travel_booking_system.model.User;
 import com.david.travel_booking_system.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +27,7 @@ public class UserService {
     /* Basic CRUD -------------------------------------------------------------------------------------------------- */
 
     @Transactional
-    public User createUser(@Valid UserCreateRequestDTO userCreateRequestDTO) {
+    public User createUser(UserCreateRequestDTO userCreateRequestDTO) {
         // Validate email uniqueness
         Optional<User> existingUserByEmail = userRepository.findByEmail(userCreateRequestDTO.getEmail());
         if (existingUserByEmail.isPresent()) {
@@ -53,9 +53,7 @@ public class UserService {
                 .build();
 
         // Save User
-        user = userRepository.save(user);
-
-        return user;
+        return userRepository.save(user);
     }
 
     @Transactional(readOnly = true)
@@ -70,6 +68,23 @@ public class UserService {
     }
 
     @Transactional
+    public User updateUser(Integer id, UserUpdateRequestDTO userUpdateRequestDTO) {
+        User user = getUserById(id);
+
+        // Update User object from DTO
+        user.setActive(userUpdateRequestDTO.isActive());
+        user.setFirstName(userUpdateRequestDTO.getFirstName());
+        user.setLastName(userUpdateRequestDTO.getLastName());
+        user.setEmail(userUpdateRequestDTO.getEmail());
+        user.setPhoneNumber(userUpdateRequestDTO.getPhoneNumber());
+        user.setAddress(userUpdateRequestDTO.getAddress());
+        user.setDateOfBirth(userUpdateRequestDTO.getDateOfBirth());
+
+        // Save User
+        return userRepository.save(user);
+    }
+
+    @Transactional
     public void deleteUser(Integer userId) {
         User user = getUserById(userId);
 
@@ -79,6 +94,7 @@ public class UserService {
             throw new IllegalStateException("Cannot delete user with bookings in progress");
         }
 
+        // Delete user
         userRepository.deleteById(userId);
     }
 

@@ -1,4 +1,4 @@
-package com.david.travel_booking_system.dto.createRequest;
+package com.david.travel_booking_system.dto.request;
 
 import com.david.travel_booking_system.enums.BedType;
 import jakarta.validation.constraints.Min;
@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class BedCreateRequestDTO {
+public class BedRequestDTO {
     @NotNull(message = "Bed type cannot be null")
     private BedType bedType;
 

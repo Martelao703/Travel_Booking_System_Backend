@@ -2,9 +2,11 @@ package com.david.travel_booking_system.controller;
 
 import com.david.travel_booking_system.dto.basic.PropertyBasicDTO;
 import com.david.travel_booking_system.dto.detail.PropertyDetailDTO;
-import com.david.travel_booking_system.dto.createRequest.PropertyCreateRequestDTO;
+import com.david.travel_booking_system.dto.request.createRequest.PropertyCreateRequestDTO;
 import com.david.travel_booking_system.dto.full.PropertyFullDTO;
+import com.david.travel_booking_system.dto.request.updateRequest.PropertyUpdateRequestDTO;
 import com.david.travel_booking_system.service.PropertyService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +28,7 @@ public class PropertyController {
     }
 
     @PostMapping
-    public ResponseEntity<PropertyDetailDTO> createProperty(@RequestBody PropertyCreateRequestDTO propertyCreateRequestDTO) {
+    public ResponseEntity<PropertyDetailDTO> createProperty(@RequestBody @Valid PropertyCreateRequestDTO propertyCreateRequestDTO) {
         PropertyDetailDTO createdProperty = PropertyDetailDTO.from(propertyService.createProperty(propertyCreateRequestDTO));
         return ResponseEntity.status(201).body(createdProperty); // Return 201 Created
     }
@@ -42,6 +44,14 @@ public class PropertyController {
         PropertyFullDTO property = PropertyFullDTO.from(propertyService.getPropertyById(id));
         return ResponseEntity.ok(property); // Return 200 OK
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<PropertyDetailDTO> updateProperty(@PathVariable Integer id,
+                                                            @RequestBody PropertyUpdateRequestDTO propertyUpdateRequestDTO) {
+        PropertyDetailDTO updatedPropertyDTO = PropertyDetailDTO.from(propertyService.updateProperty(id, propertyUpdateRequestDTO));
+        return ResponseEntity.ok(updatedPropertyDTO); // Return 200 OK
+    }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProperty(@PathVariable Integer id) {
