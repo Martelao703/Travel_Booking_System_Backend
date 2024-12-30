@@ -24,4 +24,28 @@ entities may return different DTOs based on the complexity of the entity.
 
 ## Request Objects
 
-For create/update requests, the project uses a single DTO for each entity, which includes all fields needed to create or update the entity.
+The project organizes request DTOs into one of the following two categories:
+
+1. **General `RequestDTO`**:
+    - Used when the same fields are required for both `create` and `update` operations of an entity.
+    - Contain all fields needed to create or update an entity.
+    - Entities that use this DTO do not have specific `CreateRequestDTO` or `UpdateRequestDTO`.
+
+2. **Specific RequestDTOs**:
+    - **`CreateRequestDTO`**:
+        - Used for endpoints that handle the creation of new entities.
+        - Contain all fields needed to create a new entity.
+    - **`UpdateRequestDTO`**:
+        - Used for endpoints that handle updates to existing entities.
+        - Contain only the fields that can be updated.
+
+### Entities and Corresponding Request DTOs
+
+| Entity       | Request DTOs   |
+|--------------|----------------|
+| **User**     | -              |
+| **Booking**  | -              |
+| **Property** | Create, Update |
+| **RoomType** | General        |
+| **Room**     | Create, Update |
+| **Bed**      | -              |

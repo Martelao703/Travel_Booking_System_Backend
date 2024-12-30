@@ -1,11 +1,11 @@
 package com.david.travel_booking_system.service;
 
-import com.david.travel_booking_system.dto.createRequest.RoomCreateRequestDTO;
+import com.david.travel_booking_system.dto.request.createRequest.RoomCreateRequestDTO;
+import com.david.travel_booking_system.dto.request.updateRequest.RoomUpdateRequestDTO;
 import com.david.travel_booking_system.model.Room;
 import com.david.travel_booking_system.model.RoomType;
 import com.david.travel_booking_system.repository.RoomRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +29,7 @@ public class RoomService {
     /* Basic CRUD -------------------------------------------------------------------------------------------------- */
 
     @Transactional
-    public Room createRoom(@Valid RoomCreateRequestDTO roomCreateRequestDTO) {
+    public Room createRoom(RoomCreateRequestDTO roomCreateRequestDTO) {
         // Find associated RoomType
         RoomType roomType = roomTypeService.getRoomTypeById(roomCreateRequestDTO.getRoomTypeId());
 
@@ -41,9 +41,7 @@ public class RoomService {
         roomType.getRooms().add(room);
 
         // Save Room
-        room = roomRepository.save(room);
-
-        return room;
+        return roomRepository.save(room);
     }
 
     @Transactional
@@ -65,6 +63,20 @@ public class RoomService {
     }
 
     @Transactional
+    public Room updateRoom(Integer id, RoomUpdateRequestDTO roomUpdateRequestDTO) {
+        Room room = getRoomById(id);
+
+        // Update fields
+        room.setFloorNumber(roomUpdateRequestDTO.getFloorNumber());
+        room.setActive(roomUpdateRequestDTO.isActive());
+        room.setAvailable(roomUpdateRequestDTO.isAvailable());
+        room.setCleaned(roomUpdateRequestDTO.isCleaned());
+        room.setUnderMaintenance(roomUpdateRequestDTO.isUnderMaintenance());
+
+        return roomRepository.save(room);
+    }
+
+    @Transactional
     public void deleteRoom(Integer id) {
         Room room = getRoomById(id);
 
@@ -74,6 +86,7 @@ public class RoomService {
             throw new IllegalStateException("Cannot delete a room with bookings");
         }
 
+        // Delete Room
         roomRepository.delete(room);
     }
 

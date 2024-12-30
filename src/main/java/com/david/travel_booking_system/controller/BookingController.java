@@ -1,8 +1,10 @@
 package com.david.travel_booking_system.controller;
 
 import com.david.travel_booking_system.dto.basic.BookingBasicDTO;
-import com.david.travel_booking_system.dto.createRequest.BookingCreateRequestDTO;
+import com.david.travel_booking_system.dto.request.createRequest.BookingCreateRequestDTO;
+import com.david.travel_booking_system.dto.request.updateRequest.BookingUpdateRequestDTO;
 import com.david.travel_booking_system.service.BookingService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +27,7 @@ public class BookingController {
 
     /* Returns BasicDTO instead of DetailDTO due to the entity's absence of non-nested collection fields */
     @PostMapping
-    public ResponseEntity<BookingBasicDTO> createBooking(@RequestBody BookingCreateRequestDTO bookingCreateRequestDTO) {
+    public ResponseEntity<BookingBasicDTO> createBooking(@RequestBody @Valid BookingCreateRequestDTO bookingCreateRequestDTO) {
         BookingBasicDTO createdBooking = BookingBasicDTO.from(bookingService.createBooking(bookingCreateRequestDTO));
         return ResponseEntity.status(201).body(createdBooking); // Return 201 Created
     }
@@ -41,6 +43,14 @@ public class BookingController {
     public ResponseEntity<BookingBasicDTO> getBooking(@PathVariable Integer id) {
         BookingBasicDTO booking = BookingBasicDTO.from(bookingService.getBookingById(id));
         return ResponseEntity.ok(booking); // Return 200 OK
+    }
+
+    /* Returns BasicDTO instead of DetailDTO due to the entity's absence of non-nested collection fields */
+    @PutMapping("/{id}")
+    public ResponseEntity<BookingBasicDTO> updateBooking(@PathVariable Integer id,
+                                                         @RequestBody @Valid BookingUpdateRequestDTO bookingUpdateRequestDTO) {
+        BookingBasicDTO updatedBooking = BookingBasicDTO.from(bookingService.updateBooking(id, bookingUpdateRequestDTO));
+        return ResponseEntity.ok(updatedBooking); // Return 200 OK
     }
 
     @DeleteMapping("/{id}")

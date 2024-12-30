@@ -2,9 +2,10 @@ package com.david.travel_booking_system.controller;
 
 import com.david.travel_booking_system.dto.basic.RoomTypeBasicDTO;
 import com.david.travel_booking_system.dto.detail.RoomTypeDetailDTO;
-import com.david.travel_booking_system.dto.createRequest.RoomTypeCreateRequestDTO;
+import com.david.travel_booking_system.dto.request.RoomTypeRequestDTO;
 import com.david.travel_booking_system.dto.full.RoomTypeFullDTO;
 import com.david.travel_booking_system.service.RoomTypeService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,9 +26,10 @@ public class RoomTypeController {
         this.roomTypeService = roomTypeService;
     }
 
+    /* Receives a general RequestDTO instead of a specific CreateRequestDTO due to the entity not needing specific request DTOs*/
     @PostMapping
-    public ResponseEntity<RoomTypeDetailDTO> createRoomType(@RequestBody RoomTypeCreateRequestDTO roomTypeCreateRequestDTO) {
-        RoomTypeDetailDTO createdRoomType = RoomTypeDetailDTO.from(roomTypeService.createRoomType(roomTypeCreateRequestDTO));
+    public ResponseEntity<RoomTypeDetailDTO> createRoomType(@RequestBody @Valid RoomTypeRequestDTO roomTypeRequestDTO) {
+        RoomTypeDetailDTO createdRoomType = RoomTypeDetailDTO.from(roomTypeService.createRoomType(roomTypeRequestDTO));
         return ResponseEntity.status(201).body(createdRoomType); // Return 201 Created
     }
 
@@ -41,6 +43,13 @@ public class RoomTypeController {
     public ResponseEntity<RoomTypeFullDTO> getRoomType(@PathVariable Integer id) {
         RoomTypeFullDTO roomType = RoomTypeFullDTO.from(roomTypeService.getRoomTypeById(id));
         return ResponseEntity.ok(roomType); // Return 200 OK
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<RoomTypeDetailDTO> updateRoomType(@PathVariable Integer id,
+                                                            @RequestBody @Valid RoomTypeRequestDTO roomTypeRequestDTO) {
+        RoomTypeDetailDTO updatedRoomType = RoomTypeDetailDTO.from(roomTypeService.updateRoomType(id, roomTypeRequestDTO));
+        return ResponseEntity.ok(updatedRoomType); // Return 200 OK
     }
 
     @DeleteMapping("/{id}")

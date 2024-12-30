@@ -1,11 +1,9 @@
 package com.david.travel_booking_system.service;
 
-import com.david.travel_booking_system.dto.createRequest.BedCreateRequestDTO;
+import com.david.travel_booking_system.dto.request.BedRequestDTO;
 import com.david.travel_booking_system.model.Bed;
-import com.david.travel_booking_system.model.RoomType;
 import com.david.travel_booking_system.repository.BedRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,20 +27,18 @@ public class BedService {
     /* Basic CRUD -------------------------------------------------------------------------------------------------- */
 
     @Transactional
-    public Bed createBed(@Valid BedCreateRequestDTO bedCreateRequestDTO) {
+    public Bed createBed(BedRequestDTO bedRequestDTO) {
         // Build Bed object from DTO
-        Bed bed = new Bed(bedCreateRequestDTO.getBedType(), bedCreateRequestDTO.getLength(),
-                bedCreateRequestDTO.getWidth());
+        Bed bed = new Bed(bedRequestDTO.getBedType(), bedRequestDTO.getLength(),
+                bedRequestDTO.getWidth());
 
         // Save Bed
-        bed = bedRepository.save(bed);
-
-        return bed;
+        return bedRepository.save(bed);
     }
 
     @Transactional
-    public List<Bed> createBeds(List<BedCreateRequestDTO> bedCreateRequestDTOs) {
-        return bedCreateRequestDTOs.stream()
+    public List<Bed> createBeds(List<BedRequestDTO> bedRequestDTOS) {
+        return bedRequestDTOS.stream()
                 .map(this::createBed)
                 .collect(Collectors.toList());
     }
@@ -59,6 +55,19 @@ public class BedService {
     }
 
     @Transactional
+    public Bed updateBed(Integer id, BedRequestDTO bedRequestDTO) {
+        Bed bed = getBedById(id);
+
+        // Update Bed object from DTO
+        bed.setBedType(bedRequestDTO.getBedType());
+        bed.setLength(bedRequestDTO.getLength());
+        bed.setWidth(bedRequestDTO.getWidth());
+
+        // Save Bed
+        return bedRepository.save(bed);
+    }
+
+    @Transactional
     public void deleteBed(Integer id) {
         Bed bed = getBedById(id);
 
@@ -68,6 +77,7 @@ public class BedService {
             throw new IllegalStateException("Cannot delete a bed associated with booked rooms");
         }
 
+        // Delete Bed
         bedRepository.delete(bed);
     }
 }
