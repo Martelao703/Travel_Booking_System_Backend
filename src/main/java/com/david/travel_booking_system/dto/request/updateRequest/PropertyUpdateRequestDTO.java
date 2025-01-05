@@ -13,9 +13,6 @@ import java.util.List;
 
 @Data
 public class PropertyUpdateRequestDTO {
-    @NotNull(message = "Property ID cannot be null")
-    private Integer id;
-
     @NotNull(message = "Property type cannot be null")
     private PropertyType propertyType;
 
@@ -30,10 +27,10 @@ public class PropertyUpdateRequestDTO {
     private String address;
 
     @NotNull(message = "Active status cannot be null")
-    private boolean isActive;
+    private boolean active;
 
     @NotNull(message = "Maintenance status cannot be null")
-    private boolean isUnderMaintenance;
+    private boolean underMaintenance;
 
     @NotNull(message = "Latitude cannot be null")
     private Double latitude;
@@ -50,7 +47,7 @@ public class PropertyUpdateRequestDTO {
 
     @Min(value = 0, message = "User rating cannot be less than 0")
     @Max(value = 5, message = "User rating cannot exceed 5")
-    private Double userRating = null;
+    private Double userRating;
 
     @JsonSetter(nulls = Nulls.AS_EMPTY)
     private List<String> amenities;

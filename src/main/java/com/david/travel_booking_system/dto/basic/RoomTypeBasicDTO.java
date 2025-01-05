@@ -1,11 +1,9 @@
 package com.david.travel_booking_system.dto.basic;
 
-import com.david.travel_booking_system.model.RoomType;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import lombok.Getter;
 
 @Data
 @AllArgsConstructor
@@ -16,27 +14,21 @@ public class RoomTypeBasicDTO {
     private double pricePerNight;
     private double size;
     private int maxCapacity;
+
+    @Getter(AccessLevel.NONE)
     private boolean hasPrivateBathroom;
+
+    @Getter(AccessLevel.NONE)
     private boolean hasPrivateKitchen;
+
     private String description;
     private String view;
 
-    public static RoomTypeBasicDTO from(RoomType roomType) {
-        return new RoomTypeBasicDTO(
-                roomType.getId(),
-                roomType.getProperty().getId(),
-                roomType.getName(),
-                roomType.getPricePerNight(),
-                roomType.getSize(),
-                roomType.getMaxCapacity(),
-                roomType.isHasPrivateBathroom(),
-                roomType.isHasPrivateKitchen(),
-                roomType.getDescription(),
-                roomType.getView()
-        );
+    public boolean hasPrivateBathroom() {
+        return hasPrivateBathroom;
     }
 
-    public static List<RoomTypeBasicDTO> from(List<RoomType> roomTypes) {
-        return roomTypes.stream().map(RoomTypeBasicDTO::from).collect(Collectors.toList());
+    public boolean hasPrivateKitchen() {
+        return hasPrivateKitchen;
     }
 }

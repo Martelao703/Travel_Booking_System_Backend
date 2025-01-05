@@ -2,8 +2,10 @@ package com.david.travel_booking_system.controller;
 
 import com.david.travel_booking_system.dto.basic.RoomTypeBasicDTO;
 import com.david.travel_booking_system.dto.detail.RoomTypeDetailDTO;
-import com.david.travel_booking_system.dto.request.RoomTypeRequestDTO;
 import com.david.travel_booking_system.dto.full.RoomTypeFullDTO;
+import com.david.travel_booking_system.dto.request.createRequest.RoomTypeCreateRequestDTO;
+import com.david.travel_booking_system.dto.request.updateRequest.RoomTypeUpdateRequestDTO;
+import com.david.travel_booking_system.mapper.RoomTypeMapper;
 import com.david.travel_booking_system.service.RoomTypeService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,35 +22,45 @@ import java.util.List;
 @RequestMapping("/api/room-type")
 public class RoomTypeController {
     private final RoomTypeService roomTypeService;
+    private final RoomTypeMapper roomTypeMapper;
 
     @Autowired
-    public RoomTypeController(RoomTypeService roomTypeService) {
+    public RoomTypeController(RoomTypeService roomTypeService, RoomTypeMapper roomTypeMapper) {
         this.roomTypeService = roomTypeService;
+        this.roomTypeMapper = roomTypeMapper;
     }
 
     /* Receives a general RequestDTO instead of a specific CreateRequestDTO due to the entity not needing specific request DTOs*/
     @PostMapping
-    public ResponseEntity<RoomTypeDetailDTO> createRoomType(@RequestBody @Valid RoomTypeRequestDTO roomTypeRequestDTO) {
-        RoomTypeDetailDTO createdRoomType = RoomTypeDetailDTO.from(roomTypeService.createRoomType(roomTypeRequestDTO));
+    public ResponseEntity<RoomTypeDetailDTO> createRoomType(
+            @RequestBody @Valid RoomTypeCreateRequestDTO roomTypeCreateRequestDTO
+    ) {
+        RoomTypeDetailDTO createdRoomType = roomTypeMapper.toDetailDTO(
+                roomTypeService.createRoomType(roomTypeCreateRequestDTO)
+        );
         return ResponseEntity.status(201).body(createdRoomType); // Return 201 Created
     }
 
     @GetMapping
     public ResponseEntity<List<RoomTypeBasicDTO>> getRoomTypes() {
-        List<RoomTypeBasicDTO> roomTypes = RoomTypeBasicDTO.from(roomTypeService.getRoomTypes());
+        List<RoomTypeBasicDTO> roomTypes = roomTypeMapper.toBasicDTOs(roomTypeService.getRoomTypes());
         return ResponseEntity.ok(roomTypes); // Return 200 OK
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<RoomTypeFullDTO> getRoomType(@PathVariable Integer id) {
-        RoomTypeFullDTO roomType = RoomTypeFullDTO.from(roomTypeService.getRoomTypeById(id));
+        RoomTypeFullDTO roomType = roomTypeMapper.toFullDTO(roomTypeService.getRoomTypeById(id));
         return ResponseEntity.ok(roomType); // Return 200 OK
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<RoomTypeDetailDTO> updateRoomType(@PathVariable Integer id,
-                                                            @RequestBody @Valid RoomTypeRequestDTO roomTypeRequestDTO) {
-        RoomTypeDetailDTO updatedRoomType = RoomTypeDetailDTO.from(roomTypeService.updateRoomType(id, roomTypeRequestDTO));
+    public ResponseEntity<RoomTypeDetailDTO> updateRoomType(
+            @PathVariable Integer id,
+            @RequestBody @Valid RoomTypeUpdateRequestDTO roomTypeUpdateRequestDTO
+    ) {
+        RoomTypeDetailDTO updatedRoomType = roomTypeMapper.toDetailDTO(
+                roomTypeService.updateRoomType(id, roomTypeUpdateRequestDTO)
+        );
         return ResponseEntity.ok(updatedRoomType); // Return 200 OK
     }
 

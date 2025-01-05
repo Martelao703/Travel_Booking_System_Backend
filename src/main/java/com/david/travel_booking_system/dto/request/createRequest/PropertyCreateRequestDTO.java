@@ -27,7 +27,7 @@ public class PropertyCreateRequestDTO {
     private String address;
 
     @NotNull(message = "Maintenance status cannot be null")
-    private boolean isUnderMaintenance;
+    private boolean underMaintenance;
 
     @NotNull(message = "Latitude cannot be null")
     private Double latitude;

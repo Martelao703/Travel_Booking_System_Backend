@@ -35,7 +35,7 @@ public class Booking {
 
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     @NotNull(message = "Paid status cannot be null")
-    private boolean isPaid = false;
+    private boolean paid = false;
 
     @Column(nullable = false, columnDefinition = "DATE CHECK (check_in_date > CURRENT_DATE)")
     @NotNull(message = "Check-in date cannot be null")

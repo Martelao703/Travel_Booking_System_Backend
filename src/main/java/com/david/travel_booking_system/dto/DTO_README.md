@@ -43,9 +43,9 @@ The project organizes request DTOs into one of the following two categories:
 
 | Entity       | Request DTOs   |
 |--------------|----------------|
-| **User**     | -              |
-| **Booking**  | -              |
+| **User**     | Create, Update |
+| **Booking**  | Create, Update |
 | **Property** | Create, Update |
 | **RoomType** | General        |
 | **Room**     | Create, Update |
-| **Bed**      | -              |
+| **Bed**      | General        |

@@ -2,12 +2,11 @@ package com.david.travel_booking_system.dto.full;
 
 import com.david.travel_booking_system.dto.basic.BedBasicDTO;
 import com.david.travel_booking_system.dto.basic.RoomBasicDTO;
-import com.david.travel_booking_system.model.RoomType;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Data
 public class RoomTypeFullDTO {
@@ -17,8 +16,13 @@ public class RoomTypeFullDTO {
     private double pricePerNight;
     private double size;
     private int maxCapacity;
+
+    @Getter(AccessLevel.NONE)
     private boolean hasPrivateBathroom;
+
+    @Getter(AccessLevel.NONE)
     private boolean hasPrivateKitchen;
+
     private String description;
     private String view;
 
@@ -44,31 +48,11 @@ public class RoomTypeFullDTO {
         this.view = view;
     }
 
-    public static RoomTypeFullDTO from(RoomType roomType) {
-        RoomTypeFullDTO roomTypeFullDTO = new RoomTypeFullDTO(
-                roomType.getId(),
-                roomType.getProperty().getId(),
-                roomType.getName(),
-                roomType.getPricePerNight(),
-                roomType.getSize(),
-                roomType.getMaxCapacity(),
-                roomType.isHasPrivateBathroom(),
-                roomType.isHasPrivateKitchen(),
-                roomType.getDescription(),
-                roomType.getView()
-        );
-        roomTypeFullDTO.setRoomFacilities(new ArrayList<>(roomType.getRoomFacilities()));
-        roomTypeFullDTO.setBathroomFacilities(new ArrayList<>(roomType.getBathroomFacilities()));
-        roomTypeFullDTO.setKitchenFacilities(new ArrayList<>(roomType.getKitchenFacilities()));
-        roomTypeFullDTO.setRoomRules(new ArrayList<>(roomType.getRoomRules()));
-
-        roomTypeFullDTO.setRooms(RoomBasicDTO.from(roomType.getRooms()));
-        roomTypeFullDTO.setBeds(BedBasicDTO.from(roomType.getBeds()));
-
-        return roomTypeFullDTO;
+    public boolean hasPrivateBathroom() {
+        return hasPrivateBathroom;
     }
 
-    public static List<RoomTypeFullDTO> from(List<RoomType> roomTypes) {
-        return roomTypes.stream().map(RoomTypeFullDTO::from).collect(Collectors.toList());
+    public boolean hasPrivateKitchen() {
+        return hasPrivateKitchen;
     }
 }

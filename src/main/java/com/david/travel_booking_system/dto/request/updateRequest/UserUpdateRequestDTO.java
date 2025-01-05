@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Data
 public class UserUpdateRequestDTO {
     @NotNull(message = "Active status cannot be null")
-    private boolean isActive = true;
+    private boolean active = true;
 
     @NotNull(message = "First name cannot be null")
     @Size(max = 50, message = "First name cannot exceed 50 characters")
