@@ -5,6 +5,7 @@ import com.david.travel_booking_system.dto.detail.PropertyDetailDTO;
 import com.david.travel_booking_system.dto.request.createRequest.PropertyCreateRequestDTO;
 import com.david.travel_booking_system.dto.full.PropertyFullDTO;
 import com.david.travel_booking_system.dto.request.updateRequest.PropertyUpdateRequestDTO;
+import com.david.travel_booking_system.mapper.PropertyMapper;
 import com.david.travel_booking_system.service.PropertyService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,37 +22,46 @@ import java.util.List;
 @RequestMapping("/api/property")
 public class PropertyController {
     private final PropertyService propertyService;
+    private final PropertyMapper propertyMapper;
 
     @Autowired
-    public PropertyController(PropertyService propertyService) {
+    public PropertyController(PropertyService propertyService, PropertyMapper propertyMapper) {
         this.propertyService = propertyService;
+        this.propertyMapper = propertyMapper;
     }
 
     @PostMapping
-    public ResponseEntity<PropertyDetailDTO> createProperty(@RequestBody @Valid PropertyCreateRequestDTO propertyCreateRequestDTO) {
-        PropertyDetailDTO createdProperty = PropertyDetailDTO.from(propertyService.createProperty(propertyCreateRequestDTO));
+    public ResponseEntity<PropertyDetailDTO> createProperty(
+            @RequestBody @Valid PropertyCreateRequestDTO propertyCreateRequestDTO
+    ) {
+        PropertyDetailDTO createdProperty = propertyMapper.toDetailDTO(
+                propertyService.createProperty(propertyCreateRequestDTO)
+        );
         return ResponseEntity.status(201).body(createdProperty); // Return 201 Created
     }
 
     @GetMapping
     public ResponseEntity<List<PropertyBasicDTO>> getProperties() {
-        List<PropertyBasicDTO> properties = PropertyBasicDTO.from(propertyService.getProperties());
+        List<PropertyBasicDTO> properties = propertyMapper.toBasicDTOs(propertyService.getProperties());
         return ResponseEntity.ok(properties); // Return 200 OK
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<PropertyFullDTO> getProperty(@PathVariable Integer id) {
-        PropertyFullDTO property = PropertyFullDTO.from(propertyService.getPropertyById(id));
+        PropertyFullDTO property = propertyMapper.toFullDTO(propertyService.getPropertyById(id));
         return ResponseEntity.ok(property); // Return 200 OK
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PropertyDetailDTO> updateProperty(@PathVariable Integer id,
-                                                            @RequestBody PropertyUpdateRequestDTO propertyUpdateRequestDTO) {
-        PropertyDetailDTO updatedPropertyDTO = PropertyDetailDTO.from(propertyService.updateProperty(id, propertyUpdateRequestDTO));
+    public ResponseEntity<PropertyDetailDTO> updateProperty(
+            @PathVariable Integer id,
+            @RequestBody @Valid PropertyUpdateRequestDTO propertyUpdateRequestDTO
+    ) {
+        PropertyDetailDTO updatedPropertyDTO = propertyMapper.toDetailDTO(
+                propertyService.updateProperty(id, propertyUpdateRequestDTO)
+        );
         return ResponseEntity.ok(updatedPropertyDTO); // Return 200 OK
     }
-
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProperty(@PathVariable Integer id) {

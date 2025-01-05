@@ -3,6 +3,7 @@ package com.david.travel_booking_system.controller;
 import com.david.travel_booking_system.dto.basic.BookingBasicDTO;
 import com.david.travel_booking_system.dto.request.createRequest.BookingCreateRequestDTO;
 import com.david.travel_booking_system.dto.request.updateRequest.BookingUpdateRequestDTO;
+import com.david.travel_booking_system.mapper.BookingMapper;
 import com.david.travel_booking_system.service.BookingService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,37 +20,43 @@ import java.util.List;
 @RequestMapping("/api/booking")
 public class BookingController {
     private final BookingService bookingService;
+    private final BookingMapper bookingMapper;
 
     @Autowired
-    public BookingController(BookingService bookingService) {
+    public BookingController(BookingService bookingService, BookingMapper bookingMapper) {
         this.bookingService = bookingService;
+        this.bookingMapper = bookingMapper;
     }
 
     /* Returns BasicDTO instead of DetailDTO due to the entity's absence of non-nested collection fields */
     @PostMapping
-    public ResponseEntity<BookingBasicDTO> createBooking(@RequestBody @Valid BookingCreateRequestDTO bookingCreateRequestDTO) {
-        BookingBasicDTO createdBooking = BookingBasicDTO.from(bookingService.createBooking(bookingCreateRequestDTO));
+    public ResponseEntity<BookingBasicDTO> createBooking(
+            @RequestBody @Valid BookingCreateRequestDTO bookingCreateRequestDTO
+    ) {
+        BookingBasicDTO createdBooking = bookingMapper.toBasicDTO(bookingService.createBooking(bookingCreateRequestDTO));
         return ResponseEntity.status(201).body(createdBooking); // Return 201 Created
     }
 
     @GetMapping
     public ResponseEntity<List<BookingBasicDTO>> getBookings() {
-        List<BookingBasicDTO> bookings = BookingBasicDTO.from(bookingService.getBookings());
+        List<BookingBasicDTO> bookings = bookingMapper.toBasicDTOs(bookingService.getBookings());
         return ResponseEntity.ok(bookings); // Return 200 OK
     }
 
     /* Returns BasicDTO instead of FullDTO due to the entity's absence of collection fields */
     @GetMapping("/{id}")
     public ResponseEntity<BookingBasicDTO> getBooking(@PathVariable Integer id) {
-        BookingBasicDTO booking = BookingBasicDTO.from(bookingService.getBookingById(id));
+        BookingBasicDTO booking = bookingMapper.toBasicDTO(bookingService.getBookingById(id));
         return ResponseEntity.ok(booking); // Return 200 OK
     }
 
     /* Returns BasicDTO instead of DetailDTO due to the entity's absence of non-nested collection fields */
     @PutMapping("/{id}")
-    public ResponseEntity<BookingBasicDTO> updateBooking(@PathVariable Integer id,
-                                                         @RequestBody @Valid BookingUpdateRequestDTO bookingUpdateRequestDTO) {
-        BookingBasicDTO updatedBooking = BookingBasicDTO.from(bookingService.updateBooking(id, bookingUpdateRequestDTO));
+    public ResponseEntity<BookingBasicDTO> updateBooking(
+            @PathVariable Integer id,
+            @RequestBody @Valid BookingUpdateRequestDTO bookingUpdateRequestDTO
+    ) {
+        BookingBasicDTO updatedBooking = bookingMapper.toBasicDTO(bookingService.updateBooking(id, bookingUpdateRequestDTO));
         return ResponseEntity.ok(updatedBooking); // Return 200 OK
     }
 

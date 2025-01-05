@@ -9,14 +9,14 @@ public class RoomUpdateRequestDTO {
     private Integer floorNumber;
 
     @NotNull(message = "Active status cannot be null")
-    private boolean isActive;
+    private boolean active;
 
     @NotNull(message = "Availability status cannot be null")
-    private boolean isAvailable;
+    private boolean available;
 
     @NotNull(message = "Cleanliness status cannot be null")
-    private boolean isCleaned;
+    private boolean cleaned;
 
     @NotNull(message = "Maintenance status cannot be null")
-    private boolean isUnderMaintenance;
+    private boolean underMaintenance;
 }

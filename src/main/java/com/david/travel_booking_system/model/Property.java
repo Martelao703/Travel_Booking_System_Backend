@@ -36,11 +36,11 @@ public class Property {
 
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
     @NotNull(message = "Active status cannot be null")
-    private boolean isActive = true;
+    private boolean active = true;
 
     @Column(nullable = false)
     @NotNull(message = "Maintenance status cannot be null")
-    private boolean isUnderMaintenance;
+    private boolean underMaintenance;
 
     @Embedded
     @Column(nullable = false)

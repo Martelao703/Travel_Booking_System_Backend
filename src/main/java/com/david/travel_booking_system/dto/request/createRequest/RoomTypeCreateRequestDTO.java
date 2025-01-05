@@ -1,16 +1,18 @@
-package com.david.travel_booking_system.dto.request;
+package com.david.travel_booking_system.dto.request.createRequest;
 
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Getter;
 
 import java.util.List;
 
 @Data
-public class RoomTypeRequestDTO {
+public class RoomTypeCreateRequestDTO {
     @NotNull(message = "Property ID cannot be null")
     private Integer propertyId;
 
@@ -31,9 +33,11 @@ public class RoomTypeRequestDTO {
     private int maxCapacity;
 
     @NotNull(message = "hasPrivateBathroom cannot be null")
+    @Getter(AccessLevel.NONE)
     private boolean hasPrivateBathroom;
 
     @NotNull(message = "hasPrivateKitchen cannot be null")
+    @Getter(AccessLevel.NONE)
     private boolean hasPrivateKitchen;
 
     @Size(max = 1000, message = "Description cannot exceed 1000 characters")
@@ -53,4 +57,12 @@ public class RoomTypeRequestDTO {
 
     @JsonSetter(nulls = Nulls.AS_EMPTY)
     private List<String> roomRules;
+
+    public boolean hasPrivateBathroom() {
+        return hasPrivateBathroom;
+    }
+
+    public boolean hasPrivateKitchen() {
+        return hasPrivateKitchen;
+    }
 }

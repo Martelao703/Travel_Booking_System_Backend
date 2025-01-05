@@ -20,7 +20,7 @@ public class User {
 
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
     @NotNull(message = "Active status cannot be null")
-    private boolean isActive = true;
+    private boolean active = true;
 
     @Column(nullable = false, length = 50)
     @NotNull(message = "First name cannot be null")

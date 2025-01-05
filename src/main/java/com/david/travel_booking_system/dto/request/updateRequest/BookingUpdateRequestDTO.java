@@ -14,7 +14,7 @@ public class BookingUpdateRequestDTO {
     private BookingStatus status = BookingStatus.PENDING;
 
     @NotNull(message = "Paid status cannot be null")
-    private boolean isPaid = false;
+    private boolean paid = false;
 
     @NotNull(message = "Check-in date cannot be null")
     @Future(message = "Check-in date must be in the future")

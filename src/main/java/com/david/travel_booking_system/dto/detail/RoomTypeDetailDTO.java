@@ -1,11 +1,10 @@
 package com.david.travel_booking_system.dto.detail;
 
-import com.david.travel_booking_system.model.RoomType;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Data
 public class RoomTypeDetailDTO {
@@ -15,8 +14,13 @@ public class RoomTypeDetailDTO {
     private double pricePerNight;
     private double size;
     private int maxCapacity;
+
+    @Getter(AccessLevel.NONE)
     private boolean hasPrivateBathroom;
+
+    @Getter(AccessLevel.NONE)
     private boolean hasPrivateKitchen;
+
     private String description;
     private String view;
 
@@ -40,28 +44,11 @@ public class RoomTypeDetailDTO {
         this.view = view;
     }
 
-    public static RoomTypeDetailDTO from(RoomType roomType) {
-        RoomTypeDetailDTO roomTypeDetailDTO = new RoomTypeDetailDTO(
-                roomType.getId(),
-                roomType.getProperty().getId(),
-                roomType.getName(),
-                roomType.getPricePerNight(),
-                roomType.getSize(),
-                roomType.getMaxCapacity(),
-                roomType.isHasPrivateBathroom(),
-                roomType.isHasPrivateKitchen(),
-                roomType.getDescription(),
-                roomType.getView()
-        );
-        roomTypeDetailDTO.setRoomFacilities(new ArrayList<>(roomType.getRoomFacilities()));
-        roomTypeDetailDTO.setBathroomFacilities(new ArrayList<>(roomType.getBathroomFacilities()));
-        roomTypeDetailDTO.setKitchenFacilities(new ArrayList<>(roomType.getKitchenFacilities()));
-        roomTypeDetailDTO.setRoomRules(new ArrayList<>(roomType.getRoomRules()));
-
-        return roomTypeDetailDTO;
+    public boolean hasPrivateBathroom() {
+        return hasPrivateBathroom;
     }
 
-    public static List<RoomTypeDetailDTO> from(List<RoomType> roomTypes) {
-        return roomTypes.stream().map(RoomTypeDetailDTO::from).collect(Collectors.toList());
+    public boolean hasPrivateKitchen() {
+        return hasPrivateKitchen;
     }
 }

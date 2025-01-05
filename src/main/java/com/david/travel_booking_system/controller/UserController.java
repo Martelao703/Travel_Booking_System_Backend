@@ -4,6 +4,7 @@ import com.david.travel_booking_system.dto.basic.UserBasicDTO;
 import com.david.travel_booking_system.dto.request.createRequest.UserCreateRequestDTO;
 import com.david.travel_booking_system.dto.full.UserFullDTO;
 import com.david.travel_booking_system.dto.request.updateRequest.UserUpdateRequestDTO;
+import com.david.travel_booking_system.mapper.UserMapper;
 import com.david.travel_booking_system.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,35 +21,40 @@ import java.util.List;
 @RequestMapping("/api/user")
 public class UserController {
     private final UserService userService;
+    private final UserMapper userMapper;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserMapper userMapper) {
         this.userService = userService;
+        this.userMapper = userMapper;
     }
 
     /* Returns BasicDTO instead of DetailDTO due to the entity's absence of non-nested collection fields */
     @PostMapping
     public ResponseEntity<UserBasicDTO> createUser(@RequestBody @Valid UserCreateRequestDTO userCreateRequestDTO) {
-        UserBasicDTO createdUser = UserBasicDTO.from(userService.createUser(userCreateRequestDTO));
+        UserBasicDTO createdUser = userMapper.toBasicDTO(userService.createUser(userCreateRequestDTO));
         return ResponseEntity.status(201).body(createdUser); // Return 201 Created
     }
 
     @GetMapping
     public ResponseEntity<List<UserBasicDTO>> getUsers() {
-        List<UserBasicDTO> users = UserBasicDTO.from(userService.getUsers());
+        List<UserBasicDTO> users = userMapper.toBasicDTOs(userService.getUsers());
         return ResponseEntity.ok(users); // Return 200 OK
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserFullDTO> getUser(@PathVariable Integer id) {
-        UserFullDTO user = UserFullDTO.from(userService.getUserById(id));
+        UserFullDTO user = userMapper.toFullDTO(userService.getUserById(id));
         return ResponseEntity.ok(user); // Return 200 OK
     }
 
     /* Returns BasicDTO instead of DetailDTO due to the entity's absence of non-nested collection fields */
     @PutMapping("/{id}")
-    public ResponseEntity<UserBasicDTO> updateUser(@PathVariable Integer id, @RequestBody @Valid UserUpdateRequestDTO userUpdateRequestDTO) {
-        UserBasicDTO updatedUser = UserBasicDTO.from(userService.updateUser(id, userUpdateRequestDTO));
+    public ResponseEntity<UserBasicDTO> updateUser(
+            @PathVariable Integer id,
+            @RequestBody @Valid UserUpdateRequestDTO userUpdateRequestDTO
+    ) {
+        UserBasicDTO updatedUser = userMapper.toBasicDTO(userService.updateUser(id, userUpdateRequestDTO));
         return ResponseEntity.ok(updatedUser); // Return 200 OK
     }
 

@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Getter;
 
 import java.util.List;
 
@@ -43,10 +45,12 @@ public class RoomType {
 
     @Column(nullable = false)
     @NotNull(message = "Private bathroom availability cannot be null")
+    @Getter(AccessLevel.NONE)
     private boolean hasPrivateBathroom;
 
     @Column(nullable = false)
     @NotNull(message = "Private kitchen availability cannot be null")
+    @Getter(AccessLevel.NONE)
     private boolean hasPrivateKitchen;
 
     @Column(length = 1000)
@@ -81,6 +85,14 @@ public class RoomType {
     private List<Bed> beds;
 
     public RoomType() {}
+
+    public boolean hasPrivateBathroom() {
+        return hasPrivateBathroom;
+    }
+
+    public boolean hasPrivateKitchen() {
+        return hasPrivateKitchen;
+    }
 
     public void addRoomFacility(String roomFacility) {
         roomFacilities.add(roomFacility);
