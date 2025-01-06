@@ -1,6 +1,7 @@
 package com.david.travel_booking_system.service;
 
 import com.david.travel_booking_system.dto.request.BedRequestDTO;
+import com.david.travel_booking_system.mapper.BedMapper;
 import com.david.travel_booking_system.model.Bed;
 import com.david.travel_booking_system.repository.BedRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -14,23 +15,22 @@ import java.util.stream.Collectors;
 @Service
 public class BedService {
     private final BedRepository bedRepository;
-    private final RoomTypeService roomTypeService;
     private final BookingService bookingService;
+    private final BedMapper bedMapper;
 
     @Autowired
-    public BedService(BedRepository bedRepository, RoomTypeService roomTypeService, BookingService bookingService) {
+    public BedService(BedRepository bedRepository, BookingService bookingService, BedMapper bedMapper) {
         this.bedRepository = bedRepository;
-        this.roomTypeService = roomTypeService;
         this.bookingService = bookingService;
+        this.bedMapper = bedMapper;
     }
 
     /* Basic CRUD -------------------------------------------------------------------------------------------------- */
 
     @Transactional
     public Bed createBed(BedRequestDTO bedRequestDTO) {
-        // Build Bed object from DTO
-        Bed bed = new Bed(bedRequestDTO.getBedType(), bedRequestDTO.getLength(),
-                bedRequestDTO.getWidth());
+        // Create Bed from DTO
+        Bed bed = bedMapper.createBedFromDTO(bedRequestDTO);
 
         // Save Bed
         return bedRepository.save(bed);
@@ -58,10 +58,8 @@ public class BedService {
     public Bed updateBed(Integer id, BedRequestDTO bedRequestDTO) {
         Bed bed = getBedById(id);
 
-        // Update Bed object from DTO
-        bed.setBedType(bedRequestDTO.getBedType());
-        bed.setLength(bedRequestDTO.getLength());
-        bed.setWidth(bedRequestDTO.getWidth());
+        // Update Bed from DTO
+        bedMapper.updateBedFromDTO(bed, bedRequestDTO);
 
         // Save Bed
         return bedRepository.save(bed);

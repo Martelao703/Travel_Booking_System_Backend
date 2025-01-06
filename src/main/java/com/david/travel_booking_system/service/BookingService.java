@@ -3,6 +3,7 @@ package com.david.travel_booking_system.service;
 import com.david.travel_booking_system.dto.request.createRequest.BookingCreateRequestDTO;
 import com.david.travel_booking_system.dto.request.updateRequest.BookingUpdateRequestDTO;
 import com.david.travel_booking_system.enums.BookingStatus;
+import com.david.travel_booking_system.mapper.BookingMapper;
 import com.david.travel_booking_system.model.Booking;
 import com.david.travel_booking_system.model.Room;
 import com.david.travel_booking_system.model.User;
@@ -21,15 +22,18 @@ public class BookingService {
     private final BookingRepository bookingRepository;
     private final UserService userService;
     private final RoomService roomService;
+    private final BookingMapper bookingMapper;
 
     @Autowired
-    public BookingService(BookingRepository bookingRepository, UserService userService, RoomService roomService) {
+    public BookingService(BookingRepository bookingRepository, UserService userService, RoomService roomService,
+                          BookingMapper bookingMapper) {
         this.bookingRepository = bookingRepository;
         this.userService = userService;
         this.roomService = roomService;
+        this.bookingMapper = bookingMapper;
     }
 
-    
+
     /* Basic CRUD -------------------------------------------------------------------------------------------------- */
 
     @Transactional
@@ -63,13 +67,11 @@ public class BookingService {
             throw new IllegalArgumentException("Room is already booked for the selected dates");
         }
 
-        // Build Booking object from DTO
-        Booking booking = new Booking(
-                user,
-                room,
-                bookingCreateRequestDTO.getCheckInDate(),
-                bookingCreateRequestDTO.getCheckOutDate(),
-                bookingCreateRequestDTO.getNumberOfGuests(),
+        // Create Booking from DTO
+        Booking booking = bookingMapper.createBookingFromDTO(bookingCreateRequestDTO);
+
+        // Calculate total price and set it on the Booking entity
+        booking.setTotalPrice(
                 calculateTotalPrice(room.getRoomType().getPricePerNight(), bookingCreateRequestDTO.getCheckInDate(),
                         bookingCreateRequestDTO.getCheckOutDate())
         );
@@ -97,12 +99,8 @@ public class BookingService {
     public Booking updateBooking(Integer id, BookingUpdateRequestDTO bookingUpdateRequestDTO) {
         Booking booking = getBookingById(id);
 
-        // Update Booking
-        booking.setCheckInDate(bookingUpdateRequestDTO.getCheckInDate());
-        booking.setCheckOutDate(bookingUpdateRequestDTO.getCheckOutDate());
-        booking.setNumberOfGuests(bookingUpdateRequestDTO.getNumberOfGuests());
-        booking.setTotalPrice(calculateTotalPrice(booking.getRoom().getRoomType().getPricePerNight(),
-                bookingUpdateRequestDTO.getCheckInDate(), bookingUpdateRequestDTO.getCheckOutDate()));
+        // Update Booking from DTO
+        bookingMapper.updateBookingFromDTO(booking, bookingUpdateRequestDTO);
 
         return bookingRepository.save(booking);
     }

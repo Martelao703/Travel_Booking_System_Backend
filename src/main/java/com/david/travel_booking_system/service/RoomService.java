@@ -2,6 +2,7 @@ package com.david.travel_booking_system.service;
 
 import com.david.travel_booking_system.dto.request.createRequest.RoomCreateRequestDTO;
 import com.david.travel_booking_system.dto.request.updateRequest.RoomUpdateRequestDTO;
+import com.david.travel_booking_system.mapper.RoomMapper;
 import com.david.travel_booking_system.model.Room;
 import com.david.travel_booking_system.model.RoomType;
 import com.david.travel_booking_system.repository.RoomRepository;
@@ -18,12 +19,15 @@ public class RoomService {
     private final RoomRepository roomRepository;
     private final RoomTypeService roomTypeService;
     private final BookingService bookingService;
+    private final RoomMapper roomMapper;
 
     @Autowired
-    public RoomService(RoomRepository roomRepository, RoomTypeService roomTypeService, BookingService bookingService) {
+    public RoomService(RoomRepository roomRepository, RoomTypeService roomTypeService, BookingService bookingService,
+                       RoomMapper roomMapper) {
         this.roomRepository = roomRepository;
         this.roomTypeService = roomTypeService;
         this.bookingService = bookingService;
+        this.roomMapper = roomMapper;
     }
 
     /* Basic CRUD -------------------------------------------------------------------------------------------------- */
@@ -33,9 +37,8 @@ public class RoomService {
         // Find associated RoomType
         RoomType roomType = roomTypeService.getRoomTypeById(roomCreateRequestDTO.getRoomTypeId());
 
-        // Build Room object from DTO
-        Room room = new Room(roomType, roomCreateRequestDTO.getFloorNumber(), roomCreateRequestDTO.isAvailable(),
-                roomCreateRequestDTO.isCleaned(), roomCreateRequestDTO.isUnderMaintenance());
+        // Create Room from DTO
+        Room room = roomMapper.createRoomFromDTO(roomCreateRequestDTO);
 
         // Add the new Room to its RoomType's rooms list
         roomType.getRooms().add(room);
@@ -66,12 +69,8 @@ public class RoomService {
     public Room updateRoom(Integer id, RoomUpdateRequestDTO roomUpdateRequestDTO) {
         Room room = getRoomById(id);
 
-        // Update fields
-        room.setFloorNumber(roomUpdateRequestDTO.getFloorNumber());
-        room.setActive(roomUpdateRequestDTO.isActive());
-        room.setAvailable(roomUpdateRequestDTO.isAvailable());
-        room.setCleaned(roomUpdateRequestDTO.isCleaned());
-        room.setUnderMaintenance(roomUpdateRequestDTO.isUnderMaintenance());
+        // Update Room from DTO
+        roomMapper.updateRoomFromDTO(room, roomUpdateRequestDTO);
 
         return roomRepository.save(room);
     }

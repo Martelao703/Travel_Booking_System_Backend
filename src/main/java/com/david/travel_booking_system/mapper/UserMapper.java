@@ -5,33 +5,43 @@ import com.david.travel_booking_system.dto.full.UserFullDTO;
 import com.david.travel_booking_system.dto.request.createRequest.UserCreateRequestDTO;
 import com.david.travel_booking_system.dto.request.updateRequest.UserUpdateRequestDTO;
 import com.david.travel_booking_system.model.User;
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Mapper(componentModel = "spring", uses = {BookingMapper.class})
 public interface UserMapper {
     /* from Entity to DTO -------------------------------------------------------------------------------------------*/
 
-    // Mapping to BasicDTO
+    // Map to BasicDTO
     UserBasicDTO toBasicDTO(User user);
     List<UserBasicDTO> toBasicDTOs(List<User> users);
 
-    // Mapping to FullDTO
+    // Map to FullDTO
     UserFullDTO toFullDTO(User user);
     List<UserFullDTO> toFullDTOs(List<User> users);
 
     /* from DTO to Entity -------------------------------------------------------------------------------------------*/
 
-    // Mapping from CreateRequestDTO to Entity
+    // Create User from UserCreateRequestDTO
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "active", ignore = true)
     @Mapping(target = "bookings", ignore = true)
-    User fromCreateRequestDTO(UserCreateRequestDTO dto);
+    User createUserFromDTO(UserCreateRequestDTO dto);
 
-    // Mapping from UpdateRequestDTO to Entity
+    // Update User from UserUpdateRequestDTO
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "bookings", ignore = true)
-    User fromUpdateRequestDTO(UserUpdateRequestDTO dto);
+    void updateUserFromDTO(@MappingTarget User user, UserUpdateRequestDTO inputDTO);
+
+    /* Helper methods -----------------------------------------------------------------------------------------------*/
+
+    @AfterMapping
+    default void initializeFields(@MappingTarget User user) {
+        user.setBookings(new ArrayList<>());
+    }
 }

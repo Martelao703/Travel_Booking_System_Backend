@@ -1,8 +1,8 @@
 package com.david.travel_booking_system.service;
 
-import com.david.travel_booking_system.builder.RoomTypeBuilder;
 import com.david.travel_booking_system.dto.request.createRequest.RoomTypeCreateRequestDTO;
 import com.david.travel_booking_system.dto.request.updateRequest.RoomTypeUpdateRequestDTO;
+import com.david.travel_booking_system.mapper.RoomTypeMapper;
 import com.david.travel_booking_system.model.Property;
 import com.david.travel_booking_system.model.RoomType;
 import com.david.travel_booking_system.repository.RoomTypeRepository;
@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,12 +19,15 @@ public class RoomTypeService {
     private final RoomTypeRepository roomTypeRepository;
     private final PropertyService propertyService;
     private final BookingService bookingService;
+    private final RoomTypeMapper roomTypeMapper;
 
     @Autowired
-    public RoomTypeService(RoomTypeRepository roomTypeRepository, PropertyService propertyService, BookingService bookingService) {
+    public RoomTypeService(RoomTypeRepository roomTypeRepository, PropertyService propertyService,
+                           BookingService bookingService, RoomTypeMapper roomTypeMapper) {
         this.roomTypeRepository = roomTypeRepository;
         this.propertyService = propertyService;
         this.bookingService = bookingService;
+        this.roomTypeMapper = roomTypeMapper;
     }
 
     /* Basic CRUD -------------------------------------------------------------------------------------------------- */
@@ -35,22 +37,8 @@ public class RoomTypeService {
         // Find associated Property
         Property property = propertyService.getPropertyById(roomTypeCreateRequestDTO.getPropertyId());
 
-        // Build RoomType object from DTO
-        RoomType roomType = new RoomTypeBuilder()
-                .property(property)
-                .name(roomTypeCreateRequestDTO.getName())
-                .pricePerNight(roomTypeCreateRequestDTO.getPricePerNight())
-                .size(roomTypeCreateRequestDTO.getSize())
-                .maxCapacity(roomTypeCreateRequestDTO.getMaxCapacity())
-                .hasPrivateBathroom(roomTypeCreateRequestDTO.hasPrivateBathroom())
-                .hasPrivateKitchen(roomTypeCreateRequestDTO.hasPrivateKitchen())
-                .description(roomTypeCreateRequestDTO.getDescription())
-                .view(roomTypeCreateRequestDTO.getView())
-                .roomFacilities(roomTypeCreateRequestDTO.getRoomFacilities())
-                .bathroomFacilities(roomTypeCreateRequestDTO.getBathroomFacilities())
-                .kitchenFacilities(roomTypeCreateRequestDTO.getKitchenFacilities())
-                .roomRules(roomTypeCreateRequestDTO.getRoomRules())
-                .build();
+        // Create RoomType from DTO
+        RoomType roomType = roomTypeMapper.createRoomTypeFromDTO(roomTypeCreateRequestDTO);
 
         // Add the new RoomType to its Property's roomTypes list
         property.getRoomTypes().add(roomType);
@@ -81,20 +69,8 @@ public class RoomTypeService {
     public RoomType updateRoomType(Integer id, RoomTypeUpdateRequestDTO roomTypeUpdateRequestDTO) {
         RoomType roomType = getRoomTypeById(id);
 
-        // Update fields
-        roomType.setName(roomTypeUpdateRequestDTO.getName());
-        roomType.setPricePerNight(roomTypeUpdateRequestDTO.getPricePerNight());
-        roomType.setSize(roomTypeUpdateRequestDTO.getSize());
-        roomType.setMaxCapacity(roomTypeUpdateRequestDTO.getMaxCapacity());
-        roomType.setHasPrivateBathroom(roomTypeUpdateRequestDTO.hasPrivateBathroom());
-        roomType.setHasPrivateKitchen(roomTypeUpdateRequestDTO.hasPrivateKitchen());
-        roomType.setDescription(roomTypeUpdateRequestDTO.getDescription());
-        roomType.setView(roomTypeUpdateRequestDTO.getView());
-
-        roomType.setRoomFacilities(new ArrayList<>(roomTypeUpdateRequestDTO.getRoomFacilities()));
-        roomType.setBathroomFacilities(new ArrayList<>(roomTypeUpdateRequestDTO.getBathroomFacilities()));
-        roomType.setKitchenFacilities(new ArrayList<>(roomTypeUpdateRequestDTO.getKitchenFacilities()));
-        roomType.setRoomRules(new ArrayList<>(roomTypeUpdateRequestDTO.getRoomRules()));
+        // Update RoomType from DTO
+        roomTypeMapper.updateRoomTypeFromDTO(roomType, roomTypeUpdateRequestDTO);
 
         // Save updated RoomType
         return roomTypeRepository.save(roomType);
