@@ -22,7 +22,8 @@ The system is built using a **layered architecture pattern**, ensuring clear sep
 - **PostgreSQL:** Relational database used to store and manage persistent data.
 - **Docker:** Ensures containerized deployment, maintaining consistency across development and production environments.  
 - **Hibernate/JPA:** Simplifies database interaction using Object-Relational Mapping (ORM).  
-- **Lombok:** Reduces boilerplate code for entities and DTOs with annotations like `@Data`.  
+- **Lombok:** Reduces boilerplate code for entities and DTOs with annotations like `@Data`.
+- **MapStruct:** Automates object mapping between DTOs and Entities, reducing boilerplate code.
 
 ## Future Plans  
 - **Frontend Development:** Expand the project into a full-stack solution using a modern frontend framework like React or Angular.  
