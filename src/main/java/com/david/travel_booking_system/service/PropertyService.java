@@ -3,6 +3,7 @@ package com.david.travel_booking_system.service;
 import com.david.travel_booking_system.builder.PropertyBuilder;
 import com.david.travel_booking_system.dto.request.createRequest.PropertyCreateRequestDTO;
 import com.david.travel_booking_system.dto.request.updateRequest.PropertyUpdateRequestDTO;
+import com.david.travel_booking_system.mapper.PropertyMapper;
 import com.david.travel_booking_system.model.Property;
 import com.david.travel_booking_system.repository.PropertyRepository;
 import com.david.travel_booking_system.util.Coordinates;
@@ -18,34 +19,21 @@ import java.util.List;
 public class PropertyService {
     private final PropertyRepository propertyRepository;
     private final BookingService bookingService;
+    private final PropertyMapper propertyMapper;
 
     @Autowired
-    public PropertyService(PropertyRepository propertyRepository, BookingService bookingService) {
+    public PropertyService(PropertyRepository propertyRepository, BookingService bookingService, PropertyMapper propertyMapper) {
         this.propertyRepository = propertyRepository;
         this.bookingService = bookingService;
+        this.propertyMapper = propertyMapper;
     }
 
     /* Basic CRUD -------------------------------------------------------------------------------------------------- */
 
     @Transactional
     public Property createProperty(PropertyCreateRequestDTO propertyCreateRequestDTO) {
-        // Prepare attributes from DTO
-        Coordinates coordinates = new Coordinates(propertyCreateRequestDTO.getLatitude(), propertyCreateRequestDTO.getLongitude());
-
-        // Build Property object from DTO
-        Property property = new PropertyBuilder()
-                .propertyType(propertyCreateRequestDTO.getPropertyType())
-                .name(propertyCreateRequestDTO.getName())
-                .city(propertyCreateRequestDTO.getCity())
-                .address(propertyCreateRequestDTO.getAddress())
-                .isUnderMaintenance(propertyCreateRequestDTO.isUnderMaintenance())
-                .coordinates(coordinates)
-                .description(propertyCreateRequestDTO.getDescription())
-                .stars(propertyCreateRequestDTO.getStars())
-                .amenities(propertyCreateRequestDTO.getAmenities())
-                .nearbyServices(propertyCreateRequestDTO.getNearbyServices())
-                .houseRules(propertyCreateRequestDTO.getHouseRules())
-                .build();
+        // Create Property from DTO
+        Property property = propertyMapper.createPropertyFromDTO(propertyCreateRequestDTO);
 
         // Save Property
         return propertyRepository.save(property);
@@ -72,29 +60,12 @@ public class PropertyService {
             throw new IllegalStateException("Cannot update a property with booked rooms");
         }
 
-        // Update fields
-        property.setPropertyType(propertyUpdateRequestDTO.getPropertyType());
-        property.setName(propertyUpdateRequestDTO.getName());
-        property.setCity(propertyUpdateRequestDTO.getCity());
-        property.setAddress(propertyUpdateRequestDTO.getAddress());
-        property.setActive(propertyUpdateRequestDTO.isActive());
-        property.setUnderMaintenance(propertyUpdateRequestDTO.isUnderMaintenance());
-
-        Coordinates coordinates = new Coordinates(propertyUpdateRequestDTO.getLatitude(), propertyUpdateRequestDTO.getLongitude());
-        property.setCoordinates(coordinates);
-
-        property.setDescription(propertyUpdateRequestDTO.getDescription());
-        property.setStars(propertyUpdateRequestDTO.getStars());
-        property.setUserRating(propertyUpdateRequestDTO.getUserRating());
-
-        property.setAmenities(new ArrayList<>(propertyUpdateRequestDTO.getAmenities()));
-        property.setNearbyServices(new ArrayList<>(propertyUpdateRequestDTO.getNearbyServices()));
-        property.setHouseRules(new ArrayList<>(propertyUpdateRequestDTO.getHouseRules()));
+        // Update property from DTO
+        propertyMapper.updatePropertyFromDTO(property, propertyUpdateRequestDTO);
 
         // Save updated property
         return propertyRepository.save(property);
     }
-
 
     @Transactional
     public void deleteProperty(Integer id) {

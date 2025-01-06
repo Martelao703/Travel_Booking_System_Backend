@@ -7,9 +7,12 @@ import com.david.travel_booking_system.dto.request.createRequest.PropertyCreateR
 import com.david.travel_booking_system.dto.request.updateRequest.PropertyUpdateRequestDTO;
 import com.david.travel_booking_system.model.Property;
 import com.david.travel_booking_system.util.Coordinates;
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Mapper(componentModel = "spring", uses = {RoomTypeMapper.class})
@@ -34,19 +37,26 @@ public interface PropertyMapper {
 
     /* from DTO to Entity -------------------------------------------------------------------------------------------*/
 
-    // Map from CreateRequestDTO to Entity
+    // Create Property from PropertyCreateRequestDTO
     @Mapping(target = "coordinates", expression = "java(mapCoordinates(dto.getLatitude(), dto.getLongitude()))")
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "active", ignore = true)
     @Mapping(target = "userRating", ignore = true)
     @Mapping(target = "roomTypes", ignore = true)
-    Property fromCreateRequestDTO(PropertyCreateRequestDTO dto);
+    Property createPropertyFromDTO(PropertyCreateRequestDTO dto);
 
-    // Map from UpdateRequestDTO to Entity
-    @Mapping(target = "coordinates", expression = "java(mapCoordinates(dto.getLatitude(), dto.getLongitude()))")
+    // Update Property from PropertyUpdateRequestDTO
+    @Mapping(target = "coordinates", expression = "java(mapCoordinates(inputDTO.getLatitude(), inputDTO.getLongitude()))")
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "roomTypes", ignore = true)
-    Property fromUpdateRequestDTO(PropertyUpdateRequestDTO dto);
+    void updatePropertyFromDTO(@MappingTarget Property property, PropertyUpdateRequestDTO inputDTO);
+
+    /* Helper methods -----------------------------------------------------------------------------------------------*/
+
+    @AfterMapping
+    default void initializeFields(@MappingTarget Property property) {
+        property.setRoomTypes(new ArrayList<>());
+    }
 
     default Coordinates mapCoordinates(Double latitude, Double longitude) {
         return new Coordinates(latitude, longitude);

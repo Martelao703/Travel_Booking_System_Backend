@@ -1,8 +1,8 @@
 package com.david.travel_booking_system.service;
 
-import com.david.travel_booking_system.builder.UserBuilder;
 import com.david.travel_booking_system.dto.request.createRequest.UserCreateRequestDTO;
 import com.david.travel_booking_system.dto.request.updateRequest.UserUpdateRequestDTO;
+import com.david.travel_booking_system.mapper.UserMapper;
 import com.david.travel_booking_system.model.User;
 import com.david.travel_booking_system.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -17,11 +17,13 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final BookingService bookingService;
+    private final UserMapper userMapper;
 
     @Autowired
-    public UserService(UserRepository userRepository, BookingService bookingService) {
+    public UserService(UserRepository userRepository, BookingService bookingService, UserMapper userMapper) {
         this.userRepository = userRepository;
         this.bookingService = bookingService;
+        this.userMapper = userMapper;
     }
 
     /* Basic CRUD -------------------------------------------------------------------------------------------------- */
@@ -42,15 +44,8 @@ public class UserService {
             }
         }
 
-        // Build User object from DTO
-        User user = new UserBuilder()
-                .firstName(userCreateRequestDTO.getFirstName())
-                .lastName(userCreateRequestDTO.getLastName())
-                .email(userCreateRequestDTO.getEmail())
-                .phoneNumber(userCreateRequestDTO.getPhoneNumber())
-                .address(userCreateRequestDTO.getAddress())
-                .dateOfBirth(userCreateRequestDTO.getDateOfBirth())
-                .build();
+        // Create User from DTO
+        User user = userMapper.createUserFromDTO(userCreateRequestDTO);
 
         // Save User
         return userRepository.save(user);
@@ -71,14 +66,8 @@ public class UserService {
     public User updateUser(Integer id, UserUpdateRequestDTO userUpdateRequestDTO) {
         User user = getUserById(id);
 
-        // Update User object from DTO
-        user.setActive(userUpdateRequestDTO.isActive());
-        user.setFirstName(userUpdateRequestDTO.getFirstName());
-        user.setLastName(userUpdateRequestDTO.getLastName());
-        user.setEmail(userUpdateRequestDTO.getEmail());
-        user.setPhoneNumber(userUpdateRequestDTO.getPhoneNumber());
-        user.setAddress(userUpdateRequestDTO.getAddress());
-        user.setDateOfBirth(userUpdateRequestDTO.getDateOfBirth());
+        // Update User from DTO
+        userMapper.updateUserFromDTO(user, userUpdateRequestDTO);
 
         // Save User
         return userRepository.save(user);

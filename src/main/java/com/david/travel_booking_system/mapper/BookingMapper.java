@@ -4,8 +4,10 @@ import com.david.travel_booking_system.dto.basic.BookingBasicDTO;
 import com.david.travel_booking_system.dto.request.createRequest.BookingCreateRequestDTO;
 import com.david.travel_booking_system.dto.request.updateRequest.BookingUpdateRequestDTO;
 import com.david.travel_booking_system.model.Booking;
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
@@ -13,7 +15,7 @@ import java.util.List;
 public interface BookingMapper {
     /* from Entity to DTO -------------------------------------------------------------------------------------------*/
 
-    // Mapping to BasicDTO
+    // Map to BasicDTO
     @Mapping(target = "userId", source = "user.id")
     @Mapping(target = "roomId", source = "room.id")
     BookingBasicDTO toBasicDTO(Booking booking);
@@ -21,18 +23,18 @@ public interface BookingMapper {
 
     /* from DTO to Entity -------------------------------------------------------------------------------------------*/
 
-    // Mapping from CreateRequestDTO to Entity
+    // Create Booking from BookingCreateRequestDTO
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "user.id", source = "userId")
     @Mapping(target = "room.id", source = "roomId")
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "paid", ignore = true)
     @Mapping(target = "totalPrice", ignore = true)
-    Booking fromCreateRequestDTO(BookingCreateRequestDTO dto);
+    Booking createBookingFromDTO(BookingCreateRequestDTO dto);
 
-    // Mapping from UpdateRequestDTO to Entity
+    // Update Booking from BookingUpdateRequestDTO
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "room", ignore = true)
-    Booking fromUpdateRequestDTO(BookingUpdateRequestDTO dto);
+    void updateBookingFromDTO(@MappingTarget Booking booking, BookingUpdateRequestDTO inputDTO);
 }
