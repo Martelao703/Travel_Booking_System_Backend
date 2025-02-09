@@ -1,7 +1,7 @@
 package com.david.travel_booking_system.dto.full;
 
 import com.david.travel_booking_system.dto.basic.RoomTypeBasicDTO;
-import com.david.travel_booking_system.enums.BedType;
+import com.david.travel_booking_system.enumsAndSets.BedType;
 import lombok.Data;
 
 import java.util.List;

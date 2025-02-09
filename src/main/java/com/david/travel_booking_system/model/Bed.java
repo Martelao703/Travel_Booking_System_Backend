@@ -1,6 +1,6 @@
 package com.david.travel_booking_system.model;
 
-import com.david.travel_booking_system.enums.BedType;
+import com.david.travel_booking_system.enumsAndSets.BedType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;

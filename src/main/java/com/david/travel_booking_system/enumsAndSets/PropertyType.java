@@ -1,4 +1,4 @@
-package com.david.travel_booking_system.enums;
+package com.david.travel_booking_system.enumsAndSets;
 
 public enum PropertyType {
     Hotel,

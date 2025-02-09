@@ -4,6 +4,7 @@ import com.david.travel_booking_system.dto.basic.PropertyBasicDTO;
 import com.david.travel_booking_system.dto.detail.PropertyDetailDTO;
 import com.david.travel_booking_system.dto.request.createRequest.PropertyCreateRequestDTO;
 import com.david.travel_booking_system.dto.full.PropertyFullDTO;
+import com.david.travel_booking_system.dto.request.patchRequest.PropertyPatchRequestDTO;
 import com.david.travel_booking_system.dto.request.updateRequest.PropertyUpdateRequestDTO;
 import com.david.travel_booking_system.mapper.PropertyMapper;
 import com.david.travel_booking_system.service.PropertyService;
@@ -61,6 +62,17 @@ public class PropertyController {
                 propertyService.updateProperty(id, propertyUpdateRequestDTO)
         );
         return ResponseEntity.ok(updatedPropertyDTO); // Return 200 OK
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<PropertyDetailDTO> patchProperty(
+            @PathVariable Integer id,
+            @RequestBody @Valid PropertyPatchRequestDTO propertyPatchRequestDTO
+    ) {
+        PropertyDetailDTO patchedPropertyDTO = propertyMapper.toDetailDTO(
+                propertyService.patchProperty(id, propertyPatchRequestDTO)
+        );
+        return ResponseEntity.ok(patchedPropertyDTO); // Return 200 OK
     }
 
     @DeleteMapping("/{id}")

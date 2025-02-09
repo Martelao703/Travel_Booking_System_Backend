@@ -1,6 +1,6 @@
 package com.david.travel_booking_system.model;
 
-import com.david.travel_booking_system.enums.PropertyType;
+import com.david.travel_booking_system.enumsAndSets.PropertyType;
 import com.david.travel_booking_system.util.Coordinates;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;

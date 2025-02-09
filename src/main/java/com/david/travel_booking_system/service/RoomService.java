@@ -1,18 +1,20 @@
 package com.david.travel_booking_system.service;
 
 import com.david.travel_booking_system.dto.request.createRequest.RoomCreateRequestDTO;
+import com.david.travel_booking_system.dto.request.patchRequest.RoomPatchRequestDTO;
 import com.david.travel_booking_system.dto.request.updateRequest.RoomUpdateRequestDTO;
+import com.david.travel_booking_system.enumsAndSets.entityPatchRequestFieldRules.RoomPatchFieldRules;
 import com.david.travel_booking_system.mapper.RoomMapper;
 import com.david.travel_booking_system.model.Room;
 import com.david.travel_booking_system.model.RoomType;
 import com.david.travel_booking_system.repository.RoomRepository;
+import com.david.travel_booking_system.util.EntityPatcher;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class RoomService {
@@ -43,15 +45,7 @@ public class RoomService {
         // Add the new Room to its RoomType's rooms list
         roomType.getRooms().add(room);
 
-        // Save Room
         return roomRepository.save(room);
-    }
-
-    @Transactional
-    public List<Room> createRooms(List<RoomCreateRequestDTO> roomCreateRequestDTOs) {
-        return roomCreateRequestDTOs.stream()
-                .map(this::createRoom)
-                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -69,8 +63,45 @@ public class RoomService {
     public Room updateRoom(Integer id, RoomUpdateRequestDTO roomUpdateRequestDTO) {
         Room room = getRoomById(id);
 
+        // Check if room has bookings
+        boolean hasBookings = bookingService.existsBookingsForRoom(id);
+        if (hasBookings) {
+            throw new IllegalStateException("Cannot update a room with bookings");
+        }
+
         // Update Room from DTO
         roomMapper.updateRoomFromDTO(room, roomUpdateRequestDTO);
+
+        return roomRepository.save(room);
+    }
+
+    @Transactional
+    public Room patchRoom(Integer id, RoomPatchRequestDTO roomPatchRequestDTO) {
+        Room room = getRoomById(id);
+
+        // Booking conditions
+        boolean hasBookings = false;
+        boolean hasOngoingBookings = false;
+        boolean hasAnyFieldRules = !RoomPatchFieldRules.CRITICAL_FIELDS.isEmpty()
+                || !RoomPatchFieldRules.CONDITIONALLY_PATCHABLE_FIELDS.isEmpty();
+
+        // Query for bookings only if necessary
+        if (hasAnyFieldRules) {
+            hasBookings = bookingService.existsBookingsForRoom(id);
+            if (hasBookings && !RoomPatchFieldRules.CONDITIONALLY_PATCHABLE_FIELDS.isEmpty()) {
+                hasOngoingBookings = bookingService.existsOngoingBookingsForRoom(id);
+            }
+        }
+
+        // Validate and patch room
+        EntityPatcher.validateAndPatchEntity(
+                room,
+                roomPatchRequestDTO,
+                RoomPatchFieldRules.CRITICAL_FIELDS,
+                RoomPatchFieldRules.CONDITIONALLY_PATCHABLE_FIELDS,
+                hasBookings,
+                hasOngoingBookings
+        );
 
         return roomRepository.save(room);
     }
@@ -85,9 +116,10 @@ public class RoomService {
             throw new IllegalStateException("Cannot delete a room with bookings");
         }
 
-        // Delete Room
         roomRepository.delete(room);
     }
+
+    /* Add to / Remove from lists ---------------------------------------------------------------------------------- */
 
     /* Helper methods ---------------------------------------------------------------------------------------------- */
 }

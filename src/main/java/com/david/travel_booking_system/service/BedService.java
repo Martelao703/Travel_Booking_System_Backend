@@ -1,16 +1,18 @@
 package com.david.travel_booking_system.service;
 
 import com.david.travel_booking_system.dto.request.BedRequestDTO;
+import com.david.travel_booking_system.dto.request.patchRequest.BedPatchRequestDTO;
+import com.david.travel_booking_system.enumsAndSets.entityPatchRequestFieldRules.BedPatchFieldRules;
 import com.david.travel_booking_system.mapper.BedMapper;
 import com.david.travel_booking_system.model.Bed;
 import com.david.travel_booking_system.repository.BedRepository;
+import com.david.travel_booking_system.util.EntityPatcher;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class BedService {
@@ -32,15 +34,7 @@ public class BedService {
         // Create Bed from DTO
         Bed bed = bedMapper.createBedFromDTO(bedRequestDTO);
 
-        // Save Bed
         return bedRepository.save(bed);
-    }
-
-    @Transactional
-    public List<Bed> createBeds(List<BedRequestDTO> bedRequestDTOS) {
-        return bedRequestDTOS.stream()
-                .map(this::createBed)
-                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -58,10 +52,46 @@ public class BedService {
     public Bed updateBed(Integer id, BedRequestDTO bedRequestDTO) {
         Bed bed = getBedById(id);
 
+        // Check if bed is associated with any room types with booked rooms
+        boolean hasBookings = bookingService.existsBookingsForBed(id);
+        if (hasBookings) {
+            throw new IllegalStateException("Cannot update a bed associated with booked rooms");
+        }
+
         // Update Bed from DTO
         bedMapper.updateBedFromDTO(bed, bedRequestDTO);
 
-        // Save Bed
+        return bedRepository.save(bed);
+    }
+
+    @Transactional
+    public Bed patchBed(Integer id, BedPatchRequestDTO bedPatchRequestDTO) {
+        Bed bed = getBedById(id);
+
+        // Booking conditions
+        boolean hasBookings = false;
+        boolean hasOngoingBookings = false;
+        boolean hasAnyFieldRules = !BedPatchFieldRules.CRITICAL_FIELDS.isEmpty()
+                || !BedPatchFieldRules.CONDITIONALLY_PATCHABLE_FIELDS.isEmpty();
+
+        // Query for bookings only if necessary
+        if (hasAnyFieldRules) {
+            hasBookings = bookingService.existsBookingsForBed(id);
+            if (hasBookings && !BedPatchFieldRules.CONDITIONALLY_PATCHABLE_FIELDS.isEmpty()) {
+                hasOngoingBookings = bookingService.existsOngoingBookingsForBed(id);
+            }
+        }
+
+        // Validate and patch Bed
+        EntityPatcher.validateAndPatchEntity(
+                bed,
+                bedPatchRequestDTO,
+                BedPatchFieldRules.CRITICAL_FIELDS,
+                BedPatchFieldRules.CONDITIONALLY_PATCHABLE_FIELDS,
+                hasBookings,
+                hasOngoingBookings
+        );
+
         return bedRepository.save(bed);
     }
 
@@ -75,7 +105,6 @@ public class BedService {
             throw new IllegalStateException("Cannot delete a bed associated with booked rooms");
         }
 
-        // Delete Bed
         bedRepository.delete(bed);
     }
 }

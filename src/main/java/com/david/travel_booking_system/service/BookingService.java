@@ -1,13 +1,15 @@
 package com.david.travel_booking_system.service;
 
 import com.david.travel_booking_system.dto.request.createRequest.BookingCreateRequestDTO;
+import com.david.travel_booking_system.dto.request.patchRequest.BookingPatchRequestDTO;
 import com.david.travel_booking_system.dto.request.updateRequest.BookingUpdateRequestDTO;
-import com.david.travel_booking_system.enums.BookingStatus;
+import com.david.travel_booking_system.enumsAndSets.BookingStatus;
 import com.david.travel_booking_system.mapper.BookingMapper;
 import com.david.travel_booking_system.model.Booking;
 import com.david.travel_booking_system.model.Room;
 import com.david.travel_booking_system.model.User;
 import com.david.travel_booking_system.repository.BookingRepository;
+import com.david.travel_booking_system.util.EntityPatcher;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,7 +35,6 @@ public class BookingService {
         this.bookingMapper = bookingMapper;
     }
 
-
     /* Basic CRUD -------------------------------------------------------------------------------------------------- */
 
     @Transactional
@@ -42,30 +43,7 @@ public class BookingService {
         User user = userService.getUserById(bookingCreateRequestDTO.getUserId());
         Room room = roomService.getRoomById(bookingCreateRequestDTO.getRoomId());
 
-        // Check if property is active
-        if (!room.getRoomType().getProperty().isActive()) {
-            throw new IllegalArgumentException("Property is not active");
-        }
-
-        // Check if room is active
-        if (!room.isActive()) {
-            throw new IllegalArgumentException("Room is not active");
-        }
-
-        // Check if number of guests exceeds max capacity of room type
-        if (bookingCreateRequestDTO.getNumberOfGuests() > room.getRoomType().getMaxCapacity()) {
-            throw new IllegalArgumentException("Number of guests exceeds max capacity of room type");
-        }
-
-        // Check for overlapping bookings
-        boolean isOverlapping = bookingRepository.existsByRoom_IdAndCheckInDateBeforeAndCheckOutDateAfter(
-                room.getId(),
-                bookingCreateRequestDTO.getCheckOutDate(),
-                bookingCreateRequestDTO.getCheckInDate()
-        );
-        if (isOverlapping) {
-            throw new IllegalArgumentException("Room is already booked for the selected dates");
-        }
+        validateCreateRequestDTO(bookingCreateRequestDTO, room);
 
         // Create Booking from DTO
         Booking booking = bookingMapper.createBookingFromDTO(bookingCreateRequestDTO);
@@ -80,7 +58,6 @@ public class BookingService {
         user.getBookings().add(booking);
         room.getBookings().add(booking);
 
-        // Save Booking
         return bookingRepository.save(booking);
     }
 
@@ -99,8 +76,30 @@ public class BookingService {
     public Booking updateBooking(Integer id, BookingUpdateRequestDTO bookingUpdateRequestDTO) {
         Booking booking = getBookingById(id);
 
+        // Validate number of guests
+        if (bookingUpdateRequestDTO.getNumberOfGuests() > booking.getRoom().getRoomType().getMaxCapacity()) {
+            throw new IllegalArgumentException("Number of guests exceeds max capacity of room type");
+        }
+
         // Update Booking from DTO
         bookingMapper.updateBookingFromDTO(booking, bookingUpdateRequestDTO);
+
+        return bookingRepository.save(booking);
+    }
+
+    @Transactional
+    public Booking patchBooking(Integer id, BookingPatchRequestDTO bookingPatchRequestDTO) {
+        Booking booking = getBookingById(id);
+
+        // Validate number of guests
+        if (bookingPatchRequestDTO.getNumberOfGuests().isExplicitlySet()) {
+            if (bookingPatchRequestDTO.getNumberOfGuests().getValue() > booking.getRoom().getRoomType().getMaxCapacity()) {
+                throw new IllegalArgumentException("Number of guests exceeds max capacity of room type");
+            }
+        }
+
+        // Patch Booking
+        EntityPatcher.patchEntity(booking, bookingPatchRequestDTO);
 
         return bookingRepository.save(booking);
     }
@@ -114,7 +113,6 @@ public class BookingService {
             throw new IllegalStateException("Cannot delete booking with status ' " + booking.getStatus() + " ' ");
         }
 
-        // Delete Booking
         bookingRepository.deleteById(id);
     }
 
@@ -122,29 +120,75 @@ public class BookingService {
 
     /* Helper methods ---------------------------------------------------------------------------------------------- */
 
+    private void validateCreateRequestDTO(BookingCreateRequestDTO bookingCreateRequestDTO, Room room) {
+        // Check if property is active
+        if (!room.getRoomType().getProperty().isActive()) {
+            throw new IllegalStateException("Property is not active");
+        }
+
+        // Check if room is active
+        if (!room.isActive()) {
+            throw new IllegalStateException("Room is not active");
+        }
+
+        // Check if number of guests exceeds max capacity of room type
+        if (bookingCreateRequestDTO.getNumberOfGuests() > room.getRoomType().getMaxCapacity()) {
+            throw new IllegalArgumentException("Number of guests exceeds max capacity of room type");
+        }
+
+        // Check for overlapping bookings
+        boolean isOverlapping = bookingRepository.existsByRoom_IdAndCheckInDateBeforeAndCheckOutDateAfter(
+                room.getId(),
+                bookingCreateRequestDTO.getCheckOutDate(),
+                bookingCreateRequestDTO.getCheckInDate()
+        );
+        if (isOverlapping) {
+            throw new IllegalStateException("Room is already booked for the selected dates");
+        }
+    }
+
+    private double calculateTotalPrice(double pricePerNight, LocalDate checkInDate, LocalDate checkOutDate) {
+        long days = ChronoUnit.DAYS.between(checkInDate, checkOutDate);
+        return pricePerNight * days;
+    }
+
     public boolean existsBookingsForProperty(Integer propertyId) {
         return bookingRepository.existsBookingsForProperty(propertyId);
+    }
+
+    public boolean existsOngoingBookingsForProperty(Integer propertyId) {
+        return bookingRepository.existsOngoingBookingsForProperty(propertyId);
     }
 
     public boolean existsBookingsForRoomType(Integer roomTypeId) {
         return bookingRepository.existsBookingsForRoomType(roomTypeId);
     }
 
+    public boolean existsOngoingBookingsForRoomType(Integer roomTypeId) {
+        return bookingRepository.existsOngoingBookingsForRoomType(roomTypeId);
+    }
+
     public boolean existsBookingsForRoom(Integer roomId) {
         return bookingRepository.existsBookingsForRoom(roomId);
+    }
+
+    public boolean existsOngoingBookingsForRoom(Integer roomId) {
+        return bookingRepository.existsOngoingBookingsForRoom(roomId);
     }
 
     public boolean existsBookingsForBed(Integer bedId) {
         return bookingRepository.existsBookingsForBed(bedId);
     }
 
+    public boolean existsOngoingBookingsForBed(Integer bedId) {
+        return bookingRepository.existsOngoingBookingsForBed(bedId);
+    }
+
     public boolean existsBookingsForUser(Integer userId) {
         return bookingRepository.existsBookingsForUser(userId);
     }
 
-    // Calculate total price of booking
-    private double calculateTotalPrice(double pricePerNight, LocalDate checkInDate, LocalDate checkOutDate) {
-        long days = ChronoUnit.DAYS.between(checkInDate, checkOutDate);
-        return pricePerNight * days;
+    public boolean existsOngoingBookingsForUser(Integer userId) {
+        return bookingRepository.existsOngoingBookingsForUser(userId);
     }
 }

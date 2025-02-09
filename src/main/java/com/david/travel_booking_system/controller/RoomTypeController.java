@@ -4,6 +4,7 @@ import com.david.travel_booking_system.dto.basic.RoomTypeBasicDTO;
 import com.david.travel_booking_system.dto.detail.RoomTypeDetailDTO;
 import com.david.travel_booking_system.dto.full.RoomTypeFullDTO;
 import com.david.travel_booking_system.dto.request.createRequest.RoomTypeCreateRequestDTO;
+import com.david.travel_booking_system.dto.request.patchRequest.RoomTypePatchRequestDTO;
 import com.david.travel_booking_system.dto.request.updateRequest.RoomTypeUpdateRequestDTO;
 import com.david.travel_booking_system.mapper.RoomTypeMapper;
 import com.david.travel_booking_system.service.RoomTypeService;
@@ -62,6 +63,17 @@ public class RoomTypeController {
                 roomTypeService.updateRoomType(id, roomTypeUpdateRequestDTO)
         );
         return ResponseEntity.ok(updatedRoomType); // Return 200 OK
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<RoomTypeDetailDTO> patchRoomType(
+            @PathVariable Integer id,
+            @RequestBody @Valid RoomTypePatchRequestDTO roomTypePatchRequestDTO
+    ) {
+        RoomTypeDetailDTO patchedRoomType = roomTypeMapper.toDetailDTO(
+                roomTypeService.patchRoomType(id, roomTypePatchRequestDTO)
+        );
+        return ResponseEntity.ok(patchedRoomType); // Return 200 OK
     }
 
     @DeleteMapping("/{id}")
