@@ -3,6 +3,7 @@ package com.david.travel_booking_system.controller;
 import com.david.travel_booking_system.dto.basic.UserBasicDTO;
 import com.david.travel_booking_system.dto.request.createRequest.UserCreateRequestDTO;
 import com.david.travel_booking_system.dto.full.UserFullDTO;
+import com.david.travel_booking_system.dto.request.patchRequest.UserPatchRequestDTO;
 import com.david.travel_booking_system.dto.request.updateRequest.UserUpdateRequestDTO;
 import com.david.travel_booking_system.mapper.UserMapper;
 import com.david.travel_booking_system.service.UserService;
@@ -56,6 +57,16 @@ public class UserController {
     ) {
         UserBasicDTO updatedUser = userMapper.toBasicDTO(userService.updateUser(id, userUpdateRequestDTO));
         return ResponseEntity.ok(updatedUser); // Return 200 OK
+    }
+
+    /* Returns BasicDTO instead of DetailDTO due to the entity's absence of non-nested collection fields */
+    @PatchMapping("/{id}")
+    public ResponseEntity<UserBasicDTO> patchUser(
+            @PathVariable Integer id,
+            @RequestBody @Valid UserPatchRequestDTO userPatchRequestDTO
+    ) {
+        UserBasicDTO patchedUser = userMapper.toBasicDTO(userService.patchUser(id, userPatchRequestDTO));
+        return ResponseEntity.ok(patchedUser); // Return 200 OK
     }
 
     @DeleteMapping("/{id}")
