@@ -1,6 +1,6 @@
 package com.david.travel_booking_system.dto.detail;
 
-import com.david.travel_booking_system.enums.PropertyType;
+import com.david.travel_booking_system.enumsAndSets.PropertyType;
 import lombok.Data;
 
 import java.util.List;

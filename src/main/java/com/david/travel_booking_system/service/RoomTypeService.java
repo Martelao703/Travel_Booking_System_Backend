@@ -1,18 +1,20 @@
 package com.david.travel_booking_system.service;
 
 import com.david.travel_booking_system.dto.request.createRequest.RoomTypeCreateRequestDTO;
+import com.david.travel_booking_system.dto.request.patchRequest.RoomTypePatchRequestDTO;
 import com.david.travel_booking_system.dto.request.updateRequest.RoomTypeUpdateRequestDTO;
+import com.david.travel_booking_system.enumsAndSets.entityPatchRequestFieldRules.RoomTypePatchFieldRules;
 import com.david.travel_booking_system.mapper.RoomTypeMapper;
 import com.david.travel_booking_system.model.Property;
 import com.david.travel_booking_system.model.RoomType;
 import com.david.travel_booking_system.repository.RoomTypeRepository;
+import com.david.travel_booking_system.util.EntityPatcher;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class RoomTypeService {
@@ -43,15 +45,7 @@ public class RoomTypeService {
         // Add the new RoomType to its Property's roomTypes list
         property.getRoomTypes().add(roomType);
 
-        // Save RoomType
         return roomTypeRepository.save(roomType);
-    }
-
-    @Transactional
-    public List<RoomType> createRoomTypes(List<RoomTypeCreateRequestDTO> roomTypeCreateRequestDTOs) {
-        return roomTypeCreateRequestDTOs.stream()
-                .map(this::createRoomType)
-                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -69,10 +63,46 @@ public class RoomTypeService {
     public RoomType updateRoomType(Integer id, RoomTypeUpdateRequestDTO roomTypeUpdateRequestDTO) {
         RoomType roomType = getRoomTypeById(id);
 
+        // Check if room type has any booked rooms
+        boolean hasBookings = bookingService.existsBookingsForRoomType(id);
+        if (hasBookings) {
+            throw new IllegalStateException("Cannot update a room type with booked rooms");
+        }
+
         // Update RoomType from DTO
         roomTypeMapper.updateRoomTypeFromDTO(roomType, roomTypeUpdateRequestDTO);
 
-        // Save updated RoomType
+        return roomTypeRepository.save(roomType);
+    }
+
+    @Transactional
+    public RoomType patchRoomType(Integer id, RoomTypePatchRequestDTO roomTypePatchRequestDTO) {
+        RoomType roomType = getRoomTypeById(id);
+
+        // Booking conditions
+        boolean hasBookings = false;
+        boolean hasOngoingBookings = false;
+        boolean hasAnyFieldRules = !RoomTypePatchFieldRules.CRITICAL_FIELDS.isEmpty()
+                || !RoomTypePatchFieldRules.CONDITIONALLY_PATCHABLE_FIELDS.isEmpty();
+
+        // Query for bookings only if necessary
+        if (hasAnyFieldRules) {
+            hasBookings = bookingService.existsBookingsForRoomType(id);
+            if (hasBookings && !RoomTypePatchFieldRules.CONDITIONALLY_PATCHABLE_FIELDS.isEmpty()) {
+                hasOngoingBookings = bookingService.existsOngoingBookingsForRoomType(id);
+            }
+        }
+
+        // Validate and patch RoomType
+        EntityPatcher.validateAndPatchEntity(
+                roomType,
+                roomTypePatchRequestDTO,
+                RoomTypePatchFieldRules.CRITICAL_FIELDS,
+                RoomTypePatchFieldRules.CONDITIONALLY_PATCHABLE_FIELDS,
+                hasBookings,
+                hasOngoingBookings
+        );
+
         return roomTypeRepository.save(roomType);
     }
 
@@ -86,9 +116,10 @@ public class RoomTypeService {
             throw new IllegalStateException("Cannot delete a room type with booked rooms");
         }
 
-        // Delete RoomType
         roomTypeRepository.delete(roomType);
     }
 
     /* Add to / Remove from lists ---------------------------------------------------------------------------------- */
+
+    /* Helper methods ---------------------------------------------------------------------------------------------- */
 }

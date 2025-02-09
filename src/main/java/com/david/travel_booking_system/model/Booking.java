@@ -1,6 +1,6 @@
 package com.david.travel_booking_system.model;
 
-import com.david.travel_booking_system.enums.BookingStatus;
+import com.david.travel_booking_system.enumsAndSets.BookingStatus;
 import com.david.travel_booking_system.validation.ValidDateRange;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Future;

@@ -1,18 +1,18 @@
 package com.david.travel_booking_system.service;
 
-import com.david.travel_booking_system.builder.PropertyBuilder;
 import com.david.travel_booking_system.dto.request.createRequest.PropertyCreateRequestDTO;
+import com.david.travel_booking_system.dto.request.patchRequest.PropertyPatchRequestDTO;
 import com.david.travel_booking_system.dto.request.updateRequest.PropertyUpdateRequestDTO;
+import com.david.travel_booking_system.enumsAndSets.entityPatchRequestFieldRules.PropertyPatchFieldRules;
 import com.david.travel_booking_system.mapper.PropertyMapper;
 import com.david.travel_booking_system.model.Property;
 import com.david.travel_booking_system.repository.PropertyRepository;
-import com.david.travel_booking_system.util.Coordinates;
+import com.david.travel_booking_system.util.EntityPatcher;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -35,7 +35,6 @@ public class PropertyService {
         // Create Property from DTO
         Property property = propertyMapper.createPropertyFromDTO(propertyCreateRequestDTO);
 
-        // Save Property
         return propertyRepository.save(property);
     }
 
@@ -63,7 +62,37 @@ public class PropertyService {
         // Update property from DTO
         propertyMapper.updatePropertyFromDTO(property, propertyUpdateRequestDTO);
 
-        // Save updated property
+        return propertyRepository.save(property);
+    }
+
+    @Transactional
+    public Property patchProperty(Integer id, PropertyPatchRequestDTO propertyPatchRequestDTO) {
+        Property property = getPropertyById(id);
+
+        // Booking conditions
+        boolean hasAnyBookings = false;
+        boolean hasOngoingBookings = false;
+        boolean hasAnyFieldRules = !PropertyPatchFieldRules.CRITICAL_FIELDS.isEmpty()
+                || !PropertyPatchFieldRules.CONDITIONALLY_PATCHABLE_FIELDS.isEmpty();
+
+        // Query for bookings only if necessary
+        if (hasAnyFieldRules) {
+            hasAnyBookings = bookingService.existsBookingsForProperty(id);
+            if (hasAnyBookings && !PropertyPatchFieldRules.CONDITIONALLY_PATCHABLE_FIELDS.isEmpty()) {
+                hasOngoingBookings = bookingService.existsOngoingBookingsForProperty(id);
+            }
+        }
+
+        // Validate and patch property
+        EntityPatcher.validateAndPatchEntity(
+                property,
+                propertyPatchRequestDTO,
+                PropertyPatchFieldRules.CRITICAL_FIELDS,
+                PropertyPatchFieldRules.CONDITIONALLY_PATCHABLE_FIELDS,
+                hasAnyBookings,
+                hasOngoingBookings
+        );
+
         return propertyRepository.save(property);
     }
 
@@ -77,9 +106,10 @@ public class PropertyService {
             throw new IllegalStateException("Cannot delete a property with booked rooms");
         }
 
-        // Delete property
         propertyRepository.delete(property);
     }
 
     /* Add to / Remove from lists ---------------------------------------------------------------------------------- */
+
+    /* Helper methods ---------------------------------------------------------------------------------------------- */
 }

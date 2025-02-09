@@ -1,6 +1,6 @@
 package com.david.travel_booking_system.dto.basic;
 
-import com.david.travel_booking_system.enums.BedType;
+import com.david.travel_booking_system.enumsAndSets.BedType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

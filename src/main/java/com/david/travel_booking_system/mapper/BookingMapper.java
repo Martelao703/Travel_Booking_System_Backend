@@ -36,5 +36,9 @@ public interface BookingMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "room", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "paid", ignore = true)
+    @Mapping(target = "checkInDate", ignore = true)
+    @Mapping(target = "checkOutDate", ignore = true)
     void updateBookingFromDTO(@MappingTarget Booking booking, BookingUpdateRequestDTO inputDTO);
 }

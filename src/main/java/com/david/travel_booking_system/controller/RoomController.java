@@ -3,6 +3,7 @@ package com.david.travel_booking_system.controller;
 import com.david.travel_booking_system.dto.basic.RoomBasicDTO;
 import com.david.travel_booking_system.dto.request.createRequest.RoomCreateRequestDTO;
 import com.david.travel_booking_system.dto.full.RoomFullDTO;
+import com.david.travel_booking_system.dto.request.patchRequest.RoomPatchRequestDTO;
 import com.david.travel_booking_system.dto.request.updateRequest.RoomUpdateRequestDTO;
 import com.david.travel_booking_system.mapper.RoomMapper;
 import com.david.travel_booking_system.service.RoomService;
@@ -56,6 +57,16 @@ public class RoomController {
     ) {
         RoomBasicDTO updatedRoom = roomMapper.toBasicDTO(roomService.updateRoom(id, roomUpdateRequestDTO));
         return ResponseEntity.ok(updatedRoom); // Return 200 OK
+    }
+
+    /* Returns BasicDTO instead of DetailDTO due to the entity's absence of non-nested collection fields */
+    @PatchMapping("/{id}")
+    public ResponseEntity<RoomBasicDTO> patchRoom(
+            @PathVariable Integer id,
+            @RequestBody @Valid RoomPatchRequestDTO roomPatchRequestDTO
+    ) {
+        RoomBasicDTO patchedRoom = roomMapper.toBasicDTO(roomService.patchRoom(id, roomPatchRequestDTO));
+        return ResponseEntity.ok(patchedRoom); // Return 200 OK
     }
 
     @DeleteMapping("/{id}")
