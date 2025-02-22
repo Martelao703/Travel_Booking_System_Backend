@@ -4,30 +4,32 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.beans.BeanUtils;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class DateRangeValidator implements ConstraintValidator<ValidDateRange, Object> {
     @Override
     public boolean isValid(Object obj, ConstraintValidatorContext context) {
         try {
-            var checkInDateDescriptor = BeanUtils.getPropertyDescriptor(obj.getClass(), "checkInDate");
-            var checkOutDateDescriptor = BeanUtils.getPropertyDescriptor(obj.getClass(), "checkOutDate");
+            var checkInDateTimeDescriptor =
+                    BeanUtils.getPropertyDescriptor(obj.getClass(), "plannedCheckInDateTime");
+            var checkOutDateTimeDescriptor =
+                    BeanUtils.getPropertyDescriptor(obj.getClass(), "plannedCheckOutDateTime");
 
             // Check if property descriptors exist
-            if (checkInDateDescriptor == null || checkOutDateDescriptor == null) {
+            if (checkInDateTimeDescriptor == null || checkOutDateTimeDescriptor == null) {
                 return false; // Invalid if fields are not present
             }
 
             // Retrieve startDate and endDate values
-            LocalDate startDate = (LocalDate) checkInDateDescriptor.getReadMethod().invoke(obj);
-            LocalDate endDate = (LocalDate) checkOutDateDescriptor.getReadMethod().invoke(obj);
+            LocalDateTime startDateTime = (LocalDateTime) checkInDateTimeDescriptor.getReadMethod().invoke(obj);
+            LocalDateTime endDateTime = (LocalDateTime) checkOutDateTimeDescriptor.getReadMethod().invoke(obj);
 
             // Allow null dates if optional, or validate
-            if (startDate == null || endDate == null) {
+            if (startDateTime == null || endDateTime == null) {
                 return false;
             }
 
-            return startDate.isBefore(endDate);
+            return startDateTime.isBefore(endDateTime);
         } catch (Exception e) {
             return false;
         }

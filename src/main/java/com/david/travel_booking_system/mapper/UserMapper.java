@@ -1,9 +1,9 @@
 package com.david.travel_booking_system.mapper;
 
-import com.david.travel_booking_system.dto.basic.UserBasicDTO;
-import com.david.travel_booking_system.dto.full.UserFullDTO;
-import com.david.travel_booking_system.dto.request.createRequest.UserCreateRequestDTO;
-import com.david.travel_booking_system.dto.request.updateRequest.UserUpdateRequestDTO;
+import com.david.travel_booking_system.dto.response.basic.UserBasicDTO;
+import com.david.travel_booking_system.dto.response.full.UserFullDTO;
+import com.david.travel_booking_system.dto.request.crud.createRequest.UserCreateRequestDTO;
+import com.david.travel_booking_system.dto.request.crud.updateRequest.UserUpdateRequestDTO;
 import com.david.travel_booking_system.model.User;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;

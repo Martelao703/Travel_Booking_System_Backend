@@ -1,8 +1,8 @@
 package com.david.travel_booking_system.service;
 
-import com.david.travel_booking_system.dto.request.createRequest.RoomCreateRequestDTO;
-import com.david.travel_booking_system.dto.request.patchRequest.RoomPatchRequestDTO;
-import com.david.travel_booking_system.dto.request.updateRequest.RoomUpdateRequestDTO;
+import com.david.travel_booking_system.dto.request.crud.createRequest.RoomCreateRequestDTO;
+import com.david.travel_booking_system.dto.request.crud.patchRequest.RoomPatchRequestDTO;
+import com.david.travel_booking_system.dto.request.crud.updateRequest.RoomUpdateRequestDTO;
 import com.david.travel_booking_system.enumsAndSets.entityPatchRequestFieldRules.RoomPatchFieldRules;
 import com.david.travel_booking_system.mapper.RoomMapper;
 import com.david.travel_booking_system.model.Room;
@@ -118,8 +118,6 @@ public class RoomService {
 
         roomRepository.delete(room);
     }
-
-    /* Add to / Remove from lists ---------------------------------------------------------------------------------- */
 
     /* Helper methods ---------------------------------------------------------------------------------------------- */
 }

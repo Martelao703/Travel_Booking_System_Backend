@@ -1,8 +1,8 @@
 package com.david.travel_booking_system.service;
 
-import com.david.travel_booking_system.dto.request.createRequest.UserCreateRequestDTO;
-import com.david.travel_booking_system.dto.request.patchRequest.UserPatchRequestDTO;
-import com.david.travel_booking_system.dto.request.updateRequest.UserUpdateRequestDTO;
+import com.david.travel_booking_system.dto.request.crud.createRequest.UserCreateRequestDTO;
+import com.david.travel_booking_system.dto.request.crud.patchRequest.UserPatchRequestDTO;
+import com.david.travel_booking_system.dto.request.crud.updateRequest.UserUpdateRequestDTO;
 import com.david.travel_booking_system.enumsAndSets.entityPatchRequestFieldRules.UserPatchFieldRules;
 import com.david.travel_booking_system.mapper.UserMapper;
 import com.david.travel_booking_system.model.User;
@@ -144,8 +144,6 @@ public class UserService {
 
         userRepository.deleteById(userId);
     }
-
-    /* Add to / Remove from lists ---------------------------------------------------------------------------------- */
 
     /* Helper methods ---------------------------------------------------------------------------------------------- */
 }

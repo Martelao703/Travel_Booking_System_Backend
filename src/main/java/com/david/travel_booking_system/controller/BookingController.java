@@ -1,9 +1,10 @@
 package com.david.travel_booking_system.controller;
 
-import com.david.travel_booking_system.dto.basic.BookingBasicDTO;
-import com.david.travel_booking_system.dto.request.createRequest.BookingCreateRequestDTO;
-import com.david.travel_booking_system.dto.request.patchRequest.BookingPatchRequestDTO;
-import com.david.travel_booking_system.dto.request.updateRequest.BookingUpdateRequestDTO;
+import com.david.travel_booking_system.dto.response.basic.BookingBasicDTO;
+import com.david.travel_booking_system.dto.request.specialized.BookingDateChangeRequestDTO;
+import com.david.travel_booking_system.dto.request.crud.createRequest.BookingCreateRequestDTO;
+import com.david.travel_booking_system.dto.request.crud.patchRequest.BookingPatchRequestDTO;
+import com.david.travel_booking_system.dto.request.crud.updateRequest.BookingUpdateRequestDTO;
 import com.david.travel_booking_system.mapper.BookingMapper;
 import com.david.travel_booking_system.service.BookingService;
 import jakarta.validation.Valid;
@@ -28,6 +29,8 @@ public class BookingController {
         this.bookingService = bookingService;
         this.bookingMapper = bookingMapper;
     }
+
+    /* Basic CRUD -------------------------------------------------------------------------------------------------- */
 
     /* Returns BasicDTO instead of DetailDTO due to the entity's absence of non-nested collection fields */
     @PostMapping
@@ -75,5 +78,54 @@ public class BookingController {
     public ResponseEntity<Void> deleteBooking(@PathVariable Integer id) {
         bookingService.deleteBooking(id);
         return ResponseEntity.noContent().build(); // Return 204 No Content
+    }
+
+    /* Custom Endpoints -------------------------------------------------------------------------------------------- */
+
+    // Change check-in and/or check-out dates of a booking
+    @PatchMapping("/{id}/dates")
+    public ResponseEntity<BookingBasicDTO> changeBookingDates(
+            @PathVariable Integer id,
+            @RequestBody @Valid BookingDateChangeRequestDTO bookingDateChangeRequestDTO
+    ) {
+        BookingBasicDTO updatedBooking = bookingMapper.toBasicDTO(
+                bookingService.changeBookingDates(id, bookingDateChangeRequestDTO)
+        );
+        return ResponseEntity.ok(updatedBooking);
+    }
+
+    // Confirm payment of a booking
+    @PostMapping("/{id}/confirm-payment")
+    public ResponseEntity<BookingBasicDTO> confirmPayment(@PathVariable Integer id) {
+        BookingBasicDTO updatedBooking = bookingMapper.toBasicDTO(bookingService.confirmPayment(id));
+        return ResponseEntity.ok(updatedBooking);
+    }
+
+    // Check-in a booking
+    @PatchMapping("/{id}/check-in")
+    public ResponseEntity<BookingBasicDTO> checkIn(@PathVariable Integer id) {
+        BookingBasicDTO updatedBooking = bookingMapper.toBasicDTO(bookingService.checkIn(id));
+        return ResponseEntity.ok(updatedBooking);
+    }
+
+    // Check-out a booking
+    @PatchMapping("/{id}/check-out")
+    public ResponseEntity<BookingBasicDTO> checkOut(@PathVariable Integer id) {
+        BookingBasicDTO updatedBooking = bookingMapper.toBasicDTO(bookingService.checkOut(id));
+        return ResponseEntity.ok(updatedBooking);
+    }
+
+    // User cancels a booking
+    @PatchMapping("/{id}/cancel")
+    public ResponseEntity<BookingBasicDTO> cancelBooking(@PathVariable Integer id) {
+        BookingBasicDTO updatedBooking = bookingMapper.toBasicDTO(bookingService.cancelBooking(id));
+        return ResponseEntity.ok(updatedBooking);
+    }
+
+    // Property/Admin rejects a booking
+    @PatchMapping("/{id}/reject")
+    public ResponseEntity<BookingBasicDTO> rejectBooking(@PathVariable Integer id) {
+        BookingBasicDTO updatedBooking = bookingMapper.toBasicDTO(bookingService.rejectBooking(id));
+        return ResponseEntity.ok(updatedBooking);
     }
 }

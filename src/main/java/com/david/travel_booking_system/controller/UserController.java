@@ -1,10 +1,10 @@
 package com.david.travel_booking_system.controller;
 
-import com.david.travel_booking_system.dto.basic.UserBasicDTO;
-import com.david.travel_booking_system.dto.request.createRequest.UserCreateRequestDTO;
-import com.david.travel_booking_system.dto.full.UserFullDTO;
-import com.david.travel_booking_system.dto.request.patchRequest.UserPatchRequestDTO;
-import com.david.travel_booking_system.dto.request.updateRequest.UserUpdateRequestDTO;
+import com.david.travel_booking_system.dto.response.basic.UserBasicDTO;
+import com.david.travel_booking_system.dto.request.crud.createRequest.UserCreateRequestDTO;
+import com.david.travel_booking_system.dto.response.full.UserFullDTO;
+import com.david.travel_booking_system.dto.request.crud.patchRequest.UserPatchRequestDTO;
+import com.david.travel_booking_system.dto.request.crud.updateRequest.UserUpdateRequestDTO;
 import com.david.travel_booking_system.mapper.UserMapper;
 import com.david.travel_booking_system.service.UserService;
 import jakarta.validation.Valid;
@@ -29,6 +29,8 @@ public class UserController {
         this.userService = userService;
         this.userMapper = userMapper;
     }
+
+    /* Basic CRUD -------------------------------------------------------------------------------------------------- */
 
     /* Returns BasicDTO instead of DetailDTO due to the entity's absence of non-nested collection fields */
     @PostMapping

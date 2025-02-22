@@ -1,8 +1,8 @@
 package com.david.travel_booking_system.mapper;
 
-import com.david.travel_booking_system.dto.basic.BedBasicDTO;
-import com.david.travel_booking_system.dto.full.BedFullDTO;
-import com.david.travel_booking_system.dto.request.BedRequestDTO;
+import com.david.travel_booking_system.dto.response.basic.BedBasicDTO;
+import com.david.travel_booking_system.dto.response.full.BedFullDTO;
+import com.david.travel_booking_system.dto.request.general.BedRequestDTO;
 import com.david.travel_booking_system.model.Bed;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;

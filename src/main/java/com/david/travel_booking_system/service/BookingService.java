@@ -1,22 +1,23 @@
 package com.david.travel_booking_system.service;
 
-import com.david.travel_booking_system.dto.request.createRequest.BookingCreateRequestDTO;
-import com.david.travel_booking_system.dto.request.patchRequest.BookingPatchRequestDTO;
-import com.david.travel_booking_system.dto.request.updateRequest.BookingUpdateRequestDTO;
+import com.david.travel_booking_system.dto.request.specialized.BookingDateChangeRequestDTO;
+import com.david.travel_booking_system.dto.request.crud.createRequest.BookingCreateRequestDTO;
+import com.david.travel_booking_system.dto.request.crud.patchRequest.BookingPatchRequestDTO;
+import com.david.travel_booking_system.dto.request.crud.updateRequest.BookingUpdateRequestDTO;
 import com.david.travel_booking_system.enumsAndSets.BookingStatus;
 import com.david.travel_booking_system.mapper.BookingMapper;
 import com.david.travel_booking_system.model.Booking;
 import com.david.travel_booking_system.model.Room;
 import com.david.travel_booking_system.model.User;
 import com.david.travel_booking_system.repository.BookingRepository;
+import com.david.travel_booking_system.util.BookingServiceHelper;
 import com.david.travel_booking_system.util.EntityPatcher;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -25,14 +26,16 @@ public class BookingService {
     private final UserService userService;
     private final RoomService roomService;
     private final BookingMapper bookingMapper;
+    private final BookingServiceHelper bookingServiceHelper;
 
     @Autowired
     public BookingService(BookingRepository bookingRepository, UserService userService, RoomService roomService,
-                          BookingMapper bookingMapper) {
+                          BookingMapper bookingMapper, BookingServiceHelper bookingServiceHelper) {
         this.bookingRepository = bookingRepository;
         this.userService = userService;
         this.roomService = roomService;
         this.bookingMapper = bookingMapper;
+        this.bookingServiceHelper = bookingServiceHelper;
     }
 
     /* Basic CRUD -------------------------------------------------------------------------------------------------- */
@@ -43,15 +46,17 @@ public class BookingService {
         User user = userService.getUserById(bookingCreateRequestDTO.getUserId());
         Room room = roomService.getRoomById(bookingCreateRequestDTO.getRoomId());
 
-        validateCreateRequestDTO(bookingCreateRequestDTO, room);
+        bookingServiceHelper.validateCreateRequestDTO(bookingCreateRequestDTO, room);
 
         // Create Booking from DTO
         Booking booking = bookingMapper.createBookingFromDTO(bookingCreateRequestDTO);
 
         // Calculate total price and set it on the Booking entity
         booking.setTotalPrice(
-                calculateTotalPrice(room.getRoomType().getPricePerNight(), bookingCreateRequestDTO.getCheckInDate(),
-                        bookingCreateRequestDTO.getCheckOutDate())
+                bookingServiceHelper.calculateTotalPrice(
+                        room.getRoomType().getPricePerNight(), bookingCreateRequestDTO.getPlannedCheckInDateTime(),
+                        bookingCreateRequestDTO.getPlannedCheckOutDateTime()
+                )
         );
 
         // Add the new Booking to its User's and Room's bookings list
@@ -116,41 +121,139 @@ public class BookingService {
         bookingRepository.deleteById(id);
     }
 
-    /* Add to / Remove from lists ---------------------------------------------------------------------------------- */
+    /* Service custom endpoint methods ----------------------------------------------------------------------------- */
 
-    /* Helper methods ---------------------------------------------------------------------------------------------- */
+    @Transactional
+    public Booking changeBookingDates(Integer id, BookingDateChangeRequestDTO bookingDateChangeRequestDTO) {
+        Booking booking = getBookingById(id);
 
-    private void validateCreateRequestDTO(BookingCreateRequestDTO bookingCreateRequestDTO, Room room) {
-        // Check if property is active
-        if (!room.getRoomType().getProperty().isActive()) {
-            throw new IllegalStateException("Property is not active");
-        }
+        // Validate date change request
+        bookingServiceHelper.validateBookingDateChange(booking, bookingDateChangeRequestDTO);
 
-        // Check if room is active
-        if (!room.isActive()) {
-            throw new IllegalStateException("Room is not active");
-        }
+        // Apply new dates if explicitly set
+        bookingDateChangeRequestDTO.getPlannedCheckInDateTime().ifExplicitlySet(booking::setPlannedCheckInDateTime);
+        bookingDateChangeRequestDTO.getPlannedCheckOutDateTime().ifExplicitlySet(booking::setPlannedCheckOutDateTime);
 
-        // Check if number of guests exceeds max capacity of room type
-        if (bookingCreateRequestDTO.getNumberOfGuests() > room.getRoomType().getMaxCapacity()) {
-            throw new IllegalArgumentException("Number of guests exceeds max capacity of room type");
-        }
-
-        // Check for overlapping bookings
-        boolean isOverlapping = bookingRepository.existsByRoom_IdAndCheckInDateBeforeAndCheckOutDateAfter(
-                room.getId(),
-                bookingCreateRequestDTO.getCheckOutDate(),
-                bookingCreateRequestDTO.getCheckInDate()
+        // Recalculate total price
+        booking.setTotalPrice(
+                bookingServiceHelper.calculateTotalPrice(
+                        booking.getRoom().getRoomType().getPricePerNight(),
+                        booking.getPlannedCheckInDateTime(),
+                        booking.getPlannedCheckOutDateTime()
+                )
         );
-        if (isOverlapping) {
-            throw new IllegalStateException("Room is already booked for the selected dates");
+
+        return bookingRepository.save(booking);
+    }
+
+    @Transactional
+    public Booking confirmPayment(Integer id) {
+        Booking booking = getBookingById(id);
+
+        // Check if booking is already paid
+        if (booking.isPaid()) {
+            throw new IllegalStateException("Booking is already paid");
+        }
+
+        // Check if booking is still pending
+        if (booking.getStatus() != BookingStatus.PENDING) {
+            throw new IllegalStateException("Payment can only be confirmed for bookings with 'PENDING' status");
+        }
+
+        booking.setPaid(true);
+        booking.setStatus(BookingStatus.CONFIRMED);
+
+        return bookingRepository.save(booking);
+    }
+
+    @Transactional
+    public Booking checkIn(Integer id) {
+        Booking booking = getBookingById(id);
+
+        // Validate check-in request
+        bookingServiceHelper.validateCheckInRequestDTO(booking);
+
+        booking.setStatus(BookingStatus.ONGOING);
+        booking.getRoom().setOccupied(true);
+        booking.setActualCheckInDateTime(LocalDateTime.now());
+
+        return bookingRepository.save(booking);
+    }
+
+    @Transactional
+    public Booking checkOut(Integer id) {
+        Booking booking = getBookingById(id);
+
+        // Check if booking is still ongoing
+        if (booking.getStatus() != BookingStatus.ONGOING) {
+            throw new IllegalStateException("Check-out only allowed for 'ONGOING' bookings.");
+        }
+
+        booking.setStatus(BookingStatus.COMPLETED);
+        booking.getRoom().setOccupied(false);
+        booking.setActualCheckOutDateTime(LocalDateTime.now());
+
+        return bookingRepository.save(booking);
+    }
+
+    // User cancels a booking
+    @Transactional
+    public Booking cancelBooking(Integer id) {
+        Booking booking = getBookingById(id);
+
+        // Check if booking is still in progress
+        if (booking.getStatus() != BookingStatus.PENDING && booking.getStatus() != BookingStatus.CONFIRMED
+                && booking.getStatus() != BookingStatus.ONGOING) {
+            throw new IllegalStateException("Only PENDING, CONFIRMED or ONGOING bookings can be cancelled.");
+        }
+
+        booking.setStatus(BookingStatus.CANCELLED);
+        booking.getRoom().setOccupied(false);
+
+        return bookingRepository.save(booking);
+    }
+
+    // Property/Admin rejects a booking
+    @Transactional
+    public Booking rejectBooking(Integer id) {
+        Booking booking = getBookingById(id);
+
+        if (booking.getStatus() != BookingStatus.PENDING && booking.getStatus() != BookingStatus.CONFIRMED
+                && booking.getStatus() != BookingStatus.ONGOING) {
+            throw new IllegalStateException("Only PENDING, CONFIRMED or ONGOING bookings can be rejected.");
+        }
+
+        /*
+        if (booking.getStatus() == BookingStatus.CONFIRMED || booking.getStatus() == BookingStatus.ONGOING) {
+            TODO - Refund user
+        }
+        */
+
+        booking.setStatus(BookingStatus.REJECTED);
+        booking.getRoom().setOccupied(false);
+
+        return bookingRepository.save(booking);
+    }
+
+    // Automatically mark a booking as expired
+    @Transactional
+    public void markBookingAsExpired(Booking booking) {
+        if (booking.getStatus() == BookingStatus.PENDING) {
+            booking.setStatus(BookingStatus.EXPIRED);
+            bookingRepository.save(booking);
         }
     }
 
-    private double calculateTotalPrice(double pricePerNight, LocalDate checkInDate, LocalDate checkOutDate) {
-        long days = ChronoUnit.DAYS.between(checkInDate, checkOutDate);
-        return pricePerNight * days;
+    // Automatically mark a booking as no-show
+    @Transactional
+    public void markBookingAsNoShow(Booking booking) {
+        if (booking.getStatus() == BookingStatus.CONFIRMED) {
+            booking.setStatus(BookingStatus.NO_SHOW);
+            bookingRepository.save(booking);
+        }
     }
+
+    /* Repo methods ------------------------------------------------------------------------------------------------- */
 
     public boolean existsBookingsForProperty(Integer propertyId) {
         return bookingRepository.existsBookingsForProperty(propertyId);
@@ -191,4 +294,6 @@ public class BookingService {
     public boolean existsOngoingBookingsForUser(Integer userId) {
         return bookingRepository.existsOngoingBookingsForUser(userId);
     }
+
+    /* Helper methods ---------------------------------------------------------------------------------------------- */
 }

@@ -1,11 +1,11 @@
 package com.david.travel_booking_system.controller;
 
-import com.david.travel_booking_system.dto.basic.PropertyBasicDTO;
-import com.david.travel_booking_system.dto.detail.PropertyDetailDTO;
-import com.david.travel_booking_system.dto.request.createRequest.PropertyCreateRequestDTO;
-import com.david.travel_booking_system.dto.full.PropertyFullDTO;
-import com.david.travel_booking_system.dto.request.patchRequest.PropertyPatchRequestDTO;
-import com.david.travel_booking_system.dto.request.updateRequest.PropertyUpdateRequestDTO;
+import com.david.travel_booking_system.dto.response.basic.PropertyBasicDTO;
+import com.david.travel_booking_system.dto.response.detail.PropertyDetailDTO;
+import com.david.travel_booking_system.dto.request.crud.createRequest.PropertyCreateRequestDTO;
+import com.david.travel_booking_system.dto.response.full.PropertyFullDTO;
+import com.david.travel_booking_system.dto.request.crud.patchRequest.PropertyPatchRequestDTO;
+import com.david.travel_booking_system.dto.request.crud.updateRequest.PropertyUpdateRequestDTO;
 import com.david.travel_booking_system.mapper.PropertyMapper;
 import com.david.travel_booking_system.service.PropertyService;
 import jakarta.validation.Valid;
@@ -30,6 +30,8 @@ public class PropertyController {
         this.propertyService = propertyService;
         this.propertyMapper = propertyMapper;
     }
+
+    /* Basic CRUD -------------------------------------------------------------------------------------------------- */
 
     @PostMapping
     public ResponseEntity<PropertyDetailDTO> createProperty(

@@ -1,10 +1,10 @@
 package com.david.travel_booking_system.mapper;
 
-import com.david.travel_booking_system.dto.basic.RoomTypeBasicDTO;
-import com.david.travel_booking_system.dto.detail.RoomTypeDetailDTO;
-import com.david.travel_booking_system.dto.full.RoomTypeFullDTO;
-import com.david.travel_booking_system.dto.request.createRequest.RoomTypeCreateRequestDTO;
-import com.david.travel_booking_system.dto.request.updateRequest.RoomTypeUpdateRequestDTO;
+import com.david.travel_booking_system.dto.response.basic.RoomTypeBasicDTO;
+import com.david.travel_booking_system.dto.response.detail.RoomTypeDetailDTO;
+import com.david.travel_booking_system.dto.response.full.RoomTypeFullDTO;
+import com.david.travel_booking_system.dto.request.crud.createRequest.RoomTypeCreateRequestDTO;
+import com.david.travel_booking_system.dto.request.crud.updateRequest.RoomTypeUpdateRequestDTO;
 import com.david.travel_booking_system.model.RoomType;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;

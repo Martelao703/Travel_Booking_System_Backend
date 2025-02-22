@@ -1,10 +1,10 @@
 package com.david.travel_booking_system.controller;
 
-import com.david.travel_booking_system.dto.basic.RoomBasicDTO;
-import com.david.travel_booking_system.dto.request.createRequest.RoomCreateRequestDTO;
-import com.david.travel_booking_system.dto.full.RoomFullDTO;
-import com.david.travel_booking_system.dto.request.patchRequest.RoomPatchRequestDTO;
-import com.david.travel_booking_system.dto.request.updateRequest.RoomUpdateRequestDTO;
+import com.david.travel_booking_system.dto.response.basic.RoomBasicDTO;
+import com.david.travel_booking_system.dto.request.crud.createRequest.RoomCreateRequestDTO;
+import com.david.travel_booking_system.dto.response.full.RoomFullDTO;
+import com.david.travel_booking_system.dto.request.crud.patchRequest.RoomPatchRequestDTO;
+import com.david.travel_booking_system.dto.request.crud.updateRequest.RoomUpdateRequestDTO;
 import com.david.travel_booking_system.mapper.RoomMapper;
 import com.david.travel_booking_system.service.RoomService;
 import jakarta.validation.Valid;
@@ -29,6 +29,8 @@ public class RoomController {
         this.roomService = roomService;
         this.roomMapper = roomMapper;
     }
+
+    /* Basic CRUD -------------------------------------------------------------------------------------------------- */
 
     /* Returns BasicDTO instead of DetailDTO due to the entity's absence of non-nested collection fields */
     @PostMapping

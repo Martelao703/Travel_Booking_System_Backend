@@ -1,10 +1,10 @@
 package com.david.travel_booking_system.mapper;
 
-import com.david.travel_booking_system.dto.basic.PropertyBasicDTO;
-import com.david.travel_booking_system.dto.detail.PropertyDetailDTO;
-import com.david.travel_booking_system.dto.full.PropertyFullDTO;
-import com.david.travel_booking_system.dto.request.createRequest.PropertyCreateRequestDTO;
-import com.david.travel_booking_system.dto.request.updateRequest.PropertyUpdateRequestDTO;
+import com.david.travel_booking_system.dto.response.basic.PropertyBasicDTO;
+import com.david.travel_booking_system.dto.response.detail.PropertyDetailDTO;
+import com.david.travel_booking_system.dto.response.full.PropertyFullDTO;
+import com.david.travel_booking_system.dto.request.crud.createRequest.PropertyCreateRequestDTO;
+import com.david.travel_booking_system.dto.request.crud.updateRequest.PropertyUpdateRequestDTO;
 import com.david.travel_booking_system.model.Property;
 import com.david.travel_booking_system.util.Coordinates;
 import org.mapstruct.AfterMapping;
