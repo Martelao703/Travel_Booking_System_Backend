@@ -1,11 +1,11 @@
 package com.david.travel_booking_system.controller;
 
-import com.david.travel_booking_system.dto.basic.RoomTypeBasicDTO;
-import com.david.travel_booking_system.dto.detail.RoomTypeDetailDTO;
-import com.david.travel_booking_system.dto.full.RoomTypeFullDTO;
-import com.david.travel_booking_system.dto.request.createRequest.RoomTypeCreateRequestDTO;
-import com.david.travel_booking_system.dto.request.patchRequest.RoomTypePatchRequestDTO;
-import com.david.travel_booking_system.dto.request.updateRequest.RoomTypeUpdateRequestDTO;
+import com.david.travel_booking_system.dto.response.basic.RoomTypeBasicDTO;
+import com.david.travel_booking_system.dto.response.detail.RoomTypeDetailDTO;
+import com.david.travel_booking_system.dto.response.full.RoomTypeFullDTO;
+import com.david.travel_booking_system.dto.request.crud.createRequest.RoomTypeCreateRequestDTO;
+import com.david.travel_booking_system.dto.request.crud.patchRequest.RoomTypePatchRequestDTO;
+import com.david.travel_booking_system.dto.request.crud.updateRequest.RoomTypeUpdateRequestDTO;
 import com.david.travel_booking_system.mapper.RoomTypeMapper;
 import com.david.travel_booking_system.service.RoomTypeService;
 import jakarta.validation.Valid;
@@ -30,6 +30,8 @@ public class RoomTypeController {
         this.roomTypeService = roomTypeService;
         this.roomTypeMapper = roomTypeMapper;
     }
+
+    /* Basic CRUD -------------------------------------------------------------------------------------------------- */
 
     /* Receives a general RequestDTO instead of a specific CreateRequestDTO due to the entity not needing specific request DTOs*/
     @PostMapping

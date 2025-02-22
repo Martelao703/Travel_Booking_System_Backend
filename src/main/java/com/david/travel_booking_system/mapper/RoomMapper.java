@@ -1,9 +1,9 @@
 package com.david.travel_booking_system.mapper;
 
-import com.david.travel_booking_system.dto.basic.RoomBasicDTO;
-import com.david.travel_booking_system.dto.full.RoomFullDTO;
-import com.david.travel_booking_system.dto.request.createRequest.RoomCreateRequestDTO;
-import com.david.travel_booking_system.dto.request.updateRequest.RoomUpdateRequestDTO;
+import com.david.travel_booking_system.dto.response.basic.RoomBasicDTO;
+import com.david.travel_booking_system.dto.response.full.RoomFullDTO;
+import com.david.travel_booking_system.dto.request.crud.createRequest.RoomCreateRequestDTO;
+import com.david.travel_booking_system.dto.request.crud.updateRequest.RoomUpdateRequestDTO;
 import com.david.travel_booking_system.model.Room;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
@@ -33,12 +33,14 @@ public interface RoomMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "roomType.id", source = "roomTypeId")
     @Mapping(target = "active", ignore = true)
+    @Mapping(target = "occupied", ignore = true)
     @Mapping(target = "bookings", ignore = true)
     Room createRoomFromDTO(RoomCreateRequestDTO dto);
 
     // Create Room from RoomUpdateRequestDTO
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "roomType", ignore = true)
+    @Mapping(target = "occupied", ignore = true)
     @Mapping(target = "bookings", ignore = true)
     void updateRoomFromDTO(@MappingTarget Room room, RoomUpdateRequestDTO inputDTO);
 

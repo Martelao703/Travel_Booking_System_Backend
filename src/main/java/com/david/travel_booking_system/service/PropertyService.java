@@ -1,8 +1,8 @@
 package com.david.travel_booking_system.service;
 
-import com.david.travel_booking_system.dto.request.createRequest.PropertyCreateRequestDTO;
-import com.david.travel_booking_system.dto.request.patchRequest.PropertyPatchRequestDTO;
-import com.david.travel_booking_system.dto.request.updateRequest.PropertyUpdateRequestDTO;
+import com.david.travel_booking_system.dto.request.crud.createRequest.PropertyCreateRequestDTO;
+import com.david.travel_booking_system.dto.request.crud.patchRequest.PropertyPatchRequestDTO;
+import com.david.travel_booking_system.dto.request.crud.updateRequest.PropertyUpdateRequestDTO;
 import com.david.travel_booking_system.enumsAndSets.entityPatchRequestFieldRules.PropertyPatchFieldRules;
 import com.david.travel_booking_system.mapper.PropertyMapper;
 import com.david.travel_booking_system.model.Property;
@@ -108,8 +108,6 @@ public class PropertyService {
 
         propertyRepository.delete(property);
     }
-
-    /* Add to / Remove from lists ---------------------------------------------------------------------------------- */
 
     /* Helper methods ---------------------------------------------------------------------------------------------- */
 }

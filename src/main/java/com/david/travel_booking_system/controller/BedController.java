@@ -1,9 +1,9 @@
 package com.david.travel_booking_system.controller;
 
-import com.david.travel_booking_system.dto.basic.BedBasicDTO;
-import com.david.travel_booking_system.dto.full.BedFullDTO;
-import com.david.travel_booking_system.dto.request.BedRequestDTO;
-import com.david.travel_booking_system.dto.request.patchRequest.BedPatchRequestDTO;
+import com.david.travel_booking_system.dto.response.basic.BedBasicDTO;
+import com.david.travel_booking_system.dto.response.full.BedFullDTO;
+import com.david.travel_booking_system.dto.request.general.BedRequestDTO;
+import com.david.travel_booking_system.dto.request.crud.patchRequest.BedPatchRequestDTO;
 import com.david.travel_booking_system.mapper.BedMapper;
 import com.david.travel_booking_system.service.BedService;
 import jakarta.validation.Valid;
@@ -28,6 +28,8 @@ public class BedController {
         this.bedService = bedService;
         this.bedMapper = bedMapper;
     }
+
+    /* Basic CRUD -------------------------------------------------------------------------------------------------- */
 
     /* Returns BasicDTO instead of DetailDTO due to the entity's absence of non-nested collection fields */
     @PostMapping

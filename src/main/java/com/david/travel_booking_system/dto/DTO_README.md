@@ -24,28 +24,52 @@ entities may return different DTOs based on the complexity of the entity.
 
 ## Request Objects
 
-The project organizes request DTOs into one of the following two categories:
+The project organizes request DTOs into one of the following three categories:
 
 1. **General `RequestDTO`**:
     - Used when the same fields are required for both `create` and `update` operations of an entity.
     - Contain all fields needed to create or update an entity.
     - Entities that use this DTO do not have specific `CreateRequestDTO` or `UpdateRequestDTO`.
 
-2. **Specific RequestDTOs**:
+2. **CRUD RequestDTOs**:
     - **`CreateRequestDTO`**:
         - Used for endpoints that handle the creation of new entities.
         - Contain all fields needed to create a new entity.
     - **`UpdateRequestDTO`**:
         - Used for endpoints that handle updates to existing entities.
         - Contain only the fields that can be updated.
+    - **`PatchRequestDTO`**:
+        - Used for endpoints that handle partial updates to existing entities.
+        - Contain only the fields that can be updated, wrapped in a custom `OptionalFieldWrapper` object, to distinguish
+        between explicitly set and unset fields in the incoming payload.
 
-### Entities and Corresponding Request DTOs
+3. **Specialized RequestDTOs**:
+    - Used for custom endpoints that require a specific set of fields.
+    - Contain only the fields needed for the specific endpoint.
+    - **`BookingDateChangeRequestDTO`**:
+        - Used for the `PATCH /booking/{id}/dates` endpoint.
+        - Contains the new `checkInDate` and `checkOutDate` fields, wrapped in a custom `OptionalFieldWrapper` object, 
+        to distinguish between explicitly set and unset fields in the incoming payload.
 
-| Entity       | Request DTOs   |
-|--------------|----------------|
-| **User**     | Create, Update |
-| **Booking**  | Create, Update |
-| **Property** | Create, Update |
-| **RoomType** | General        |
-| **Room**     | Create, Update |
-| **Bed**      | General        |
+### Entities and Corresponding General and CRUD Request DTOs
+
+| Entity       | Request DTOs          |
+|--------------|-----------------------|
+| **User**     | Create, Update, Patch |
+| **Booking**  | Create, Update, Patch |
+| **Property** | Create, Update, Patch |
+| **RoomType** | Create, Update, Patch |
+| **Room**     | Create, Update        |
+| **Bed**      | General, Patch        |
+
+### Entities and Corresponding Specialized Request DTOs
+
+| Entity       | Request DTOs            |
+|--------------|-------------------------|
+| **User**     | ----------------------- |
+| **Booking**  | DateChange              |
+| **Property** | ----------------------- |
+| **RoomType** | ----------------------- |
+| **Room**     | ----------------------- |
+| **Bed**      | ----------------------- |
+

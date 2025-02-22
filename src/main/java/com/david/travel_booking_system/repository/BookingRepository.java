@@ -1,5 +1,6 @@
 package com.david.travel_booking_system.repository;
 
+import com.david.travel_booking_system.enumsAndSets.BookingStatus;
 import com.david.travel_booking_system.model.Booking;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -7,10 +8,51 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Integer> {
-    boolean existsByRoom_IdAndCheckInDateBeforeAndCheckOutDateAfter(Integer roomId, LocalDate checkOutDate, LocalDate checkInDate);
+    // Find bookings that are pending and past expiry threshold
+    @Query("SELECT b " +
+            "FROM Booking b " +
+            "WHERE b.status = :status " +
+            "AND b.createdAt < :expiryThreshold")
+    List<Booking> findExpiredBookings(
+            @Param("status") BookingStatus status, @Param("expiryThreshold") LocalDateTime expiryThreshold
+    );
+
+    // Find bookings that are confirmed and past check-in time without check-in
+    @Query("SELECT b " +
+            "FROM Booking b " +
+            "WHERE b.status = :status " +
+            "AND b.plannedCheckInDateTime < :time " +
+            "AND b.actualCheckInDateTime IS NULL")
+    List<Booking> findConfirmedBookingsPastCheckInTimeWithoutCheckIn(
+            @Param("status") BookingStatus status, @Param("time") LocalDateTime time
+    );
+
+    // Check if booking dates overlap with other booking dates
+    @Query("SELECT CASE WHEN COUNT(b) > 0 THEN TRUE ELSE FALSE END " +
+            "FROM Booking b " +
+            "WHERE b.room.id = :roomId " +
+            "AND b.plannedCheckInDateTime < :checkOut " +
+            "AND b.plannedCheckOutDateTime > :checkIn")
+    boolean areDatesOverlappingOtherBookings(
+            @Param("roomId") Integer roomId, @Param("checkOut") LocalDateTime checkOut, @Param("checkIn") LocalDateTime checkIn
+    );
+
+    // Check if booking dates overlap with other booking dates, excluding a booking
+    @Query("SELECT CASE WHEN COUNT(b) > 0 THEN TRUE ELSE FALSE END " +
+            "FROM Booking b " +
+            "WHERE b.room.id = :roomId " +
+            "AND b.plannedCheckInDateTime < :checkOut " +
+            "AND b.plannedCheckOutDateTime > :checkIn " +
+            "AND b.id <> :bookingId " +
+            "AND b.status IN :validStatuses")
+    boolean areDatesOverlappingOtherBookingIdCheck(
+            @Param("roomId") Integer roomId, @Param("checkOut") LocalDateTime checkOut, @Param("checkIn") LocalDateTime checkIn,
+            @Param("bookingId") Integer bookingId, @Param("validStatuses") List<BookingStatus> validStatuses);
 
     // Check if any room in a property has bookings
     @Query("SELECT CASE WHEN COUNT(b) > 0 THEN TRUE ELSE FALSE END " +

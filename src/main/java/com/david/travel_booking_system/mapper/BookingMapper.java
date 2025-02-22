@@ -1,10 +1,9 @@
 package com.david.travel_booking_system.mapper;
 
-import com.david.travel_booking_system.dto.basic.BookingBasicDTO;
-import com.david.travel_booking_system.dto.request.createRequest.BookingCreateRequestDTO;
-import com.david.travel_booking_system.dto.request.updateRequest.BookingUpdateRequestDTO;
+import com.david.travel_booking_system.dto.response.basic.BookingBasicDTO;
+import com.david.travel_booking_system.dto.request.crud.createRequest.BookingCreateRequestDTO;
+import com.david.travel_booking_system.dto.request.crud.updateRequest.BookingUpdateRequestDTO;
 import com.david.travel_booking_system.model.Booking;
-import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -30,6 +29,9 @@ public interface BookingMapper {
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "paid", ignore = true)
     @Mapping(target = "totalPrice", ignore = true)
+    @Mapping(target = "actualCheckInDateTime", ignore = true)
+    @Mapping(target = "actualCheckOutDateTime", ignore = true)
+    @Mapping(target = "createAt", ignore = true)
     Booking createBookingFromDTO(BookingCreateRequestDTO dto);
 
     // Update Booking from BookingUpdateRequestDTO
@@ -38,7 +40,10 @@ public interface BookingMapper {
     @Mapping(target = "room", ignore = true)
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "paid", ignore = true)
-    @Mapping(target = "checkInDate", ignore = true)
-    @Mapping(target = "checkOutDate", ignore = true)
+    @Mapping(target = "plannedCheckInDateTime", ignore = true)
+    @Mapping(target = "plannedCheckOutDateTime", ignore = true)
+    @Mapping(target = "actualCheckInDateTime", ignore = true)
+    @Mapping(target = "actualCheckOutDateTime", ignore = true)
+    @Mapping(target = "createAt", ignore = true)
     void updateBookingFromDTO(@MappingTarget Booking booking, BookingUpdateRequestDTO inputDTO);
 }

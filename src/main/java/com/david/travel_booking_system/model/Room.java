@@ -30,7 +30,7 @@ public class Room {
 
     @Column(nullable = false)
     @NotNull(message = "Availability status cannot be null")
-    private boolean available;
+    private boolean occupied = false;
 
     @Column(nullable = false)
     @NotNull(message = "Cleanliness status cannot be null")
@@ -45,10 +45,9 @@ public class Room {
 
     public Room() {}
 
-    public Room(RoomType roomType, Integer floorNumber, boolean available, boolean cleaned, boolean underMaintenance) {
+    public Room(RoomType roomType, Integer floorNumber, boolean cleaned, boolean underMaintenance) {
         this.roomType = roomType;
         this.floorNumber = floorNumber;
-        this.available = available;
         this.cleaned = cleaned;
         this.underMaintenance = underMaintenance;
         this.bookings = new ArrayList<>();

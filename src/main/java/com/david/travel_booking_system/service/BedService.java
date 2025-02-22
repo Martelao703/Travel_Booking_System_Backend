@@ -1,7 +1,7 @@
 package com.david.travel_booking_system.service;
 
-import com.david.travel_booking_system.dto.request.BedRequestDTO;
-import com.david.travel_booking_system.dto.request.patchRequest.BedPatchRequestDTO;
+import com.david.travel_booking_system.dto.request.general.BedRequestDTO;
+import com.david.travel_booking_system.dto.request.crud.patchRequest.BedPatchRequestDTO;
 import com.david.travel_booking_system.enumsAndSets.entityPatchRequestFieldRules.BedPatchFieldRules;
 import com.david.travel_booking_system.mapper.BedMapper;
 import com.david.travel_booking_system.model.Bed;
@@ -107,4 +107,6 @@ public class BedService {
 
         bedRepository.delete(bed);
     }
+
+    /* Helper methods ---------------------------------------------------------------------------------------------- */
 }

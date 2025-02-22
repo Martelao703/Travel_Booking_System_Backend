@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -17,14 +17,16 @@ public class Booking {
     @Id
     @SequenceGenerator(name = "booking_id_sequence", sequenceName = "booking_id_sequence", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "booking_id_sequence")
+    @Column(nullable = false, updatable = false)
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false, updatable = false)
+    @NotNull(message = "User cannot be null")
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "room_id", nullable = false)
+    @JoinColumn(name = "room_id", nullable = false, updatable = false)
     @NotNull(message = "Room cannot be null")
     private Room room;
 
@@ -37,15 +39,18 @@ public class Booking {
     @NotNull(message = "Paid status cannot be null")
     private boolean paid = false;
 
-    @Column(nullable = false, columnDefinition = "DATE CHECK (check_in_date > CURRENT_DATE)")
-    @NotNull(message = "Check-in date cannot be null")
-    @Future(message = "Check-in date must be in the future")
-    private LocalDate checkInDate;
+    @Column(nullable = false, columnDefinition = "DATE CHECK (planned_check_in_date_time > CURRENT_DATE)")
+    @NotNull(message = "Planned Check-in date-time cannot be null")
+    @Future(message = "Planned Check-in date-time must be in the future")
+    private LocalDateTime plannedCheckInDateTime;
 
-    @Column(nullable = false, columnDefinition = "DATE CHECK (check_in_date > CURRENT_DATE)")
-    @NotNull(message = "Check-out date cannot be null")
-    @Future(message = "Check-out date must be in the future")
-    private LocalDate checkOutDate;
+    @Column(nullable = false, columnDefinition = "DATE CHECK (planned_check_out_date_time > CURRENT_DATE)")
+    @NotNull(message = "Planned Check-out date-time cannot be null")
+    @Future(message = "Planned Check-out date-time must be in the future")
+    private LocalDateTime plannedCheckOutDateTime;
+
+    private LocalDateTime actualCheckInDateTime;
+    private LocalDateTime actualCheckOutDateTime;
 
     @Column(nullable = false, columnDefinition = "INT CHECK (number_of_guests >= 1)")
     @NotNull(message = "Number of guests cannot be null")
@@ -57,15 +62,23 @@ public class Booking {
     @Min(value = 0, message = "Total price must be greater than 0")
     private double totalPrice;
 
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
     public Booking() {
     }
 
-    public Booking(User user, Room room, LocalDate checkInDate, LocalDate checkOutDate, int numberOfGuests,
+    public Booking(User user, Room room, LocalDateTime plannedCheckInDateTime, LocalDateTime plannedCheckOutDateTime, int numberOfGuests,
                    double totalPrice) {
         this.user = user;
         this.room = room;
-        this.checkInDate = checkInDate;
-        this.checkOutDate = checkOutDate;
+        this.plannedCheckInDateTime = plannedCheckInDateTime;
+        this.plannedCheckOutDateTime = plannedCheckOutDateTime;
         this.numberOfGuests = numberOfGuests;
         this.totalPrice = totalPrice;
     }

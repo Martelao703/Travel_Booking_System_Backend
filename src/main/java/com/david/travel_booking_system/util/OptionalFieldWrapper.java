@@ -3,6 +3,8 @@ package com.david.travel_booking_system.util;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 
+import java.util.function.Consumer;
+
 /**
  * Wrapper class for optional fields in request DTOs to differentiate between explicitly set and unset fields in the
  * incoming payload
@@ -27,5 +29,12 @@ public class OptionalFieldWrapper<T> {
     // Factory method used to initialize the field in an unset state
     public static <T> OptionalFieldWrapper<T> unset() {
         return new OptionalFieldWrapper<>();
+    }
+
+    // Execute a lambda if explicitly set
+    public void ifExplicitlySet(Consumer<T> action) {
+        if (explicitlySet) {
+            action.accept(value);
+        }
     }
 }
