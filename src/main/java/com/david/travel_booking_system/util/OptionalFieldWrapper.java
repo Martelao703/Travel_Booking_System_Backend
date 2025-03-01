@@ -1,6 +1,7 @@
 package com.david.travel_booking_system.util;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Getter;
 
 import java.util.function.Consumer;
@@ -10,6 +11,7 @@ import java.util.function.Consumer;
  * incoming payload
  * @param <T> Type of the field value
  */
+@JsonDeserialize(using = OptionalFieldWrapperDeserializer.class)
 @Getter
 public class OptionalFieldWrapper<T> {
     private final T value;

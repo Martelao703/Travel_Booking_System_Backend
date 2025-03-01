@@ -31,7 +31,7 @@ public interface BookingMapper {
     @Mapping(target = "totalPrice", ignore = true)
     @Mapping(target = "actualCheckInDateTime", ignore = true)
     @Mapping(target = "actualCheckOutDateTime", ignore = true)
-    @Mapping(target = "createAt", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
     Booking createBookingFromDTO(BookingCreateRequestDTO dto);
 
     // Update Booking from BookingUpdateRequestDTO
@@ -44,6 +44,6 @@ public interface BookingMapper {
     @Mapping(target = "plannedCheckOutDateTime", ignore = true)
     @Mapping(target = "actualCheckInDateTime", ignore = true)
     @Mapping(target = "actualCheckOutDateTime", ignore = true)
-    @Mapping(target = "createAt", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
     void updateBookingFromDTO(@MappingTarget Booking booking, BookingUpdateRequestDTO inputDTO);
 }

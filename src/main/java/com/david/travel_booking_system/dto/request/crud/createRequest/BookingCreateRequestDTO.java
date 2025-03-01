@@ -1,6 +1,6 @@
 package com.david.travel_booking_system.dto.request.crud.createRequest;
 
-import com.david.travel_booking_system.validation.ValidDateRange;
+import com.david.travel_booking_system.validation.annotation.ValidDateRange;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;

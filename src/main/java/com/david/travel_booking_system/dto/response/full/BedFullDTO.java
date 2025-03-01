@@ -1,6 +1,5 @@
 package com.david.travel_booking_system.dto.response.full;
 
-import com.david.travel_booking_system.dto.response.basic.RoomTypeBasicDTO;
 import com.david.travel_booking_system.enumsAndSets.BedType;
 import lombok.Data;
 
@@ -13,7 +12,7 @@ public class BedFullDTO {
     private Double length;
     private Double width;
 
-    private List<RoomTypeBasicDTO> roomTypes;
+    private List<Integer> roomTypeIds;
 
     public BedFullDTO(Integer id, BedType bedType, Double length, Double width) {
         this.id = id;

@@ -1,5 +1,6 @@
-package com.david.travel_booking_system.validation;
+package com.david.travel_booking_system.validation.annotation;
 
+import com.david.travel_booking_system.validation.validator.NotNullIfExplicitlySetValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 

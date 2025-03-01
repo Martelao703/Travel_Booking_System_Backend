@@ -2,12 +2,9 @@ package com.david.travel_booking_system.dto.request.crud.patchRequest;
 
 import com.david.travel_booking_system.enumsAndSets.PropertyType;
 import com.david.travel_booking_system.util.OptionalFieldWrapper;
-import com.david.travel_booking_system.validation.NotNullIfExplicitlySet;
+import com.david.travel_booking_system.validation.annotation.*;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.util.List;
@@ -18,7 +15,7 @@ public class PropertyPatchRequestDTO {
     private OptionalFieldWrapper<PropertyType> propertyType = OptionalFieldWrapper.unset();
 
     @NotNullIfExplicitlySet
-    @Size(max = 50, message = "Name cannot exceed 50 characters")
+    @WrappedSize(max = 50, message = "Name cannot exceed 50 characters")
     private OptionalFieldWrapper<String> name = OptionalFieldWrapper.unset();
 
     @NotNullIfExplicitlySet
@@ -39,15 +36,15 @@ public class PropertyPatchRequestDTO {
     @NotNullIfExplicitlySet
     private OptionalFieldWrapper<Double> longitude = OptionalFieldWrapper.unset();
 
-    @Size(max = 1000, message = "Description cannot exceed 1000 characters")
+    @WrappedSize(max = 1000, message = "Description cannot exceed 1000 characters")
     private OptionalFieldWrapper<String> description = OptionalFieldWrapper.unset();
 
-    @Min(value = 0, message = "Number of stars cannot be less than 0")
-    @Max(value = 5, message = "Number of stars cannot exceed 5")
+    @WrappedMin(value = 0, message = "Number of stars cannot be less than 0")
+    @WrappedMax(value = 5, message = "Number of stars cannot exceed 5")
     private OptionalFieldWrapper<Integer> stars = OptionalFieldWrapper.unset();
 
-    @Min(value = 0, message = "User rating cannot be less than 0")
-    @Max(value = 5, message = "User rating cannot exceed 5")
+    @WrappedMin(value = 0, message = "User rating cannot be less than 0")
+    @WrappedMax(value = 5, message = "User rating cannot exceed 5")
     private OptionalFieldWrapper<Double> userRating = OptionalFieldWrapper.unset();
 
     @JsonSetter(nulls = Nulls.AS_EMPTY)

@@ -18,13 +18,13 @@ import java.util.List;
 @Service
 public class UserService {
     private final UserRepository userRepository;
-    private final BookingService bookingService;
+    private final BookingValidationService bookingValidationService;
     private final UserMapper userMapper;
 
     @Autowired
-    public UserService(UserRepository userRepository, BookingService bookingService, UserMapper userMapper) {
+    public UserService(UserRepository userRepository, BookingValidationService bookingValidationService, UserMapper userMapper) {
         this.userRepository = userRepository;
-        this.bookingService = bookingService;
+        this.bookingValidationService = bookingValidationService;
         this.userMapper = userMapper;
     }
 
@@ -65,7 +65,7 @@ public class UserService {
         User user = getUserById(id);
 
         // Check if user has any bookings in progress
-        boolean hasBookings = bookingService.existsBookingsForUser(user.getId());
+        boolean hasBookings = bookingValidationService.existsBookingsForUser(user.getId());
         if (hasBookings) {
             throw new IllegalStateException("Cannot update user with bookings in progress");
         }
@@ -100,9 +100,9 @@ public class UserService {
 
         // Query for bookings only if necessary
         if (hasAnyFieldRules) {
-            hasBookings = bookingService.existsBookingsForUser(id);
+            hasBookings = bookingValidationService.existsBookingsForUser(id);
             if (hasBookings && !UserPatchFieldRules.CONDITIONALLY_PATCHABLE_FIELDS.isEmpty()) {
-                hasOngoingBookings = bookingService.existsOngoingBookingsForUser(id);
+                hasOngoingBookings = bookingValidationService.existsOngoingBookingsForUser(id);
             }
         }
 
@@ -137,7 +137,7 @@ public class UserService {
         User user = getUserById(userId);
 
         // Check if user has any bookings in progress
-        boolean hasBookings = bookingService.existsBookingsForUser(user.getId());
+        boolean hasBookings = bookingValidationService.existsBookingsForUser(user.getId());
         if (hasBookings) {
             throw new IllegalStateException("Cannot delete user with bookings in progress");
         }

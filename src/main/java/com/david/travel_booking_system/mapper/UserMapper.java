@@ -41,7 +41,7 @@ public interface UserMapper {
     /* Helper methods -----------------------------------------------------------------------------------------------*/
 
     @AfterMapping
-    default void initializeFields(@MappingTarget User user) {
+    default void afterCreateMapping(@MappingTarget User user, UserCreateRequestDTO dto) {
         user.setBookings(new ArrayList<>());
     }
 }

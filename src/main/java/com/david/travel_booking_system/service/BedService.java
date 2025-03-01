@@ -17,13 +17,13 @@ import java.util.List;
 @Service
 public class BedService {
     private final BedRepository bedRepository;
-    private final BookingService bookingService;
+    private final BookingValidationService bookingValidationService;
     private final BedMapper bedMapper;
 
     @Autowired
-    public BedService(BedRepository bedRepository, BookingService bookingService, BedMapper bedMapper) {
+    public BedService(BedRepository bedRepository, BookingValidationService bookingValidationService, BedMapper bedMapper) {
         this.bedRepository = bedRepository;
-        this.bookingService = bookingService;
+        this.bookingValidationService = bookingValidationService;
         this.bedMapper = bedMapper;
     }
 
@@ -53,7 +53,7 @@ public class BedService {
         Bed bed = getBedById(id);
 
         // Check if bed is associated with any room types with booked rooms
-        boolean hasBookings = bookingService.existsBookingsForBed(id);
+        boolean hasBookings = bookingValidationService.existsBookingsForBed(id);
         if (hasBookings) {
             throw new IllegalStateException("Cannot update a bed associated with booked rooms");
         }
@@ -76,9 +76,9 @@ public class BedService {
 
         // Query for bookings only if necessary
         if (hasAnyFieldRules) {
-            hasBookings = bookingService.existsBookingsForBed(id);
+            hasBookings = bookingValidationService.existsBookingsForBed(id);
             if (hasBookings && !BedPatchFieldRules.CONDITIONALLY_PATCHABLE_FIELDS.isEmpty()) {
-                hasOngoingBookings = bookingService.existsOngoingBookingsForBed(id);
+                hasOngoingBookings = bookingValidationService.existsOngoingBookingsForBed(id);
             }
         }
 
@@ -100,7 +100,7 @@ public class BedService {
         Bed bed = getBedById(id);
 
         // Check if bed is associated with any room types with booked rooms
-        boolean hasBookings = bookingService.existsBookingsForBed(id);
+        boolean hasBookings = bookingValidationService.existsBookingsForBed(id);
         if (hasBookings) {
             throw new IllegalStateException("Cannot delete a bed associated with booked rooms");
         }

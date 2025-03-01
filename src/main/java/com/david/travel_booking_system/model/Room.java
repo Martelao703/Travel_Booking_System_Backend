@@ -20,11 +20,11 @@ public class Room {
     @NotNull(message = "Room type cannot be null")
     private RoomType roomType;
 
-    @Column(nullable = false)
+    @Column(name = "floor_number", nullable = false)
     @NotNull(message = "Floor number cannot be null")
     private Integer floorNumber;
 
-    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
+    @Column(nullable = false)
     @NotNull(message = "Active status cannot be null")
     private boolean active = true;
 
@@ -36,7 +36,7 @@ public class Room {
     @NotNull(message = "Cleanliness status cannot be null")
     private boolean cleaned;
 
-    @Column(nullable = false)
+    @Column(name = "under_maintenance", nullable = false)
     @NotNull(message = "Maintenance status cannot be null")
     private boolean underMaintenance;
 

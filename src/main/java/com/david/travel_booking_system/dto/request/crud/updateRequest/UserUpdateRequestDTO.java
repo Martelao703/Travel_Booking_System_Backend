@@ -1,9 +1,6 @@
 package com.david.travel_booking_system.dto.request.crud.updateRequest;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -13,15 +10,15 @@ public class UserUpdateRequestDTO {
     @NotNull(message = "Active status cannot be null")
     private boolean active = true;
 
-    @NotNull(message = "First name cannot be null")
+    @NotBlank(message = "First name cannot be blank")
     @Size(max = 50, message = "First name cannot exceed 50 characters")
     private String firstName;
 
-    @NotNull(message = "Last name cannot be null")
+    @NotBlank(message = "Last name cannot be blank")
     @Size(max = 50, message = "Last name cannot exceed 50 characters")
     private String lastName;
 
-    @NotNull(message = "Email cannot be null")
+    @NotBlank(message = "Email cannot be blank")
     @Email(message = "Invalid email format")
     private String email;
 

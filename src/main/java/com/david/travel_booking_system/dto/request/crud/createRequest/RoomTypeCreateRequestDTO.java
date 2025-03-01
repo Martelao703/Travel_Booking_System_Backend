@@ -2,9 +2,7 @@ package com.david.travel_booking_system.dto.request.crud.createRequest;
 
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
@@ -16,16 +14,16 @@ public class RoomTypeCreateRequestDTO {
     @NotNull(message = "Property ID cannot be null")
     private Integer propertyId;
 
-    @NotNull(message = "Name cannot be null")
+    @NotBlank(message = "Name cannot be blank")
     @Size(max = 50, message = "Name cannot exceed 50 characters")
     private String name;
 
     @NotNull(message = "Price per night cannot be null")
-    @Min(value = 0, message = "Price per night cannot be less than 0")
+    @DecimalMin(value = "0.0", message = "Price per night cannot be less than 0")
     private double pricePerNight;
 
     @NotNull(message = "Size cannot be null")
-    @Min(value = 0, message = "Size cannot be less than 0")
+    @DecimalMin(value = "0.0", message = "Size cannot be less than 0")
     private double size;
 
     @NotNull(message = "Max capacity cannot be null")

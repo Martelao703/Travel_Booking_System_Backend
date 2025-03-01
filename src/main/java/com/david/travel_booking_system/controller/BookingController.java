@@ -19,7 +19,7 @@ import java.util.List;
  */
 
 @RestController
-@RequestMapping("/api/booking")
+@RequestMapping("/api/bookings")
 public class BookingController {
     private final BookingService bookingService;
     private final BookingMapper bookingMapper;
@@ -95,7 +95,7 @@ public class BookingController {
     }
 
     // Confirm payment of a booking
-    @PostMapping("/{id}/confirm-payment")
+    @PatchMapping("/{id}/confirm-payment")
     public ResponseEntity<BookingBasicDTO> confirmPayment(@PathVariable Integer id) {
         BookingBasicDTO updatedBooking = bookingMapper.toBasicDTO(bookingService.confirmPayment(id));
         return ResponseEntity.ok(updatedBooking);

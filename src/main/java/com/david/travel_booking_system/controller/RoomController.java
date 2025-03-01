@@ -19,7 +19,7 @@ import java.util.List;
  */
 
 @RestController
-@RequestMapping("/api/room")
+@RequestMapping("/api/rooms")
 public class RoomController {
     private final RoomService roomService;
     private final RoomMapper roomMapper;

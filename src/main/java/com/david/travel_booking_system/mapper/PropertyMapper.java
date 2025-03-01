@@ -54,7 +54,7 @@ public interface PropertyMapper {
     /* Helper methods -----------------------------------------------------------------------------------------------*/
 
     @AfterMapping
-    default void initializeFields(@MappingTarget Property property) {
+    default void afterCreateMapping(@MappingTarget Property property, PropertyCreateRequestDTO dto) {
         property.setRoomTypes(new ArrayList<>());
     }
 

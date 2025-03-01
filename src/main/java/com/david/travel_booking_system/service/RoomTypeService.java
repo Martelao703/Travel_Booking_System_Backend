@@ -20,15 +20,15 @@ import java.util.List;
 public class RoomTypeService {
     private final RoomTypeRepository roomTypeRepository;
     private final PropertyService propertyService;
-    private final BookingService bookingService;
+    private final BookingValidationService bookingValidationService;
     private final RoomTypeMapper roomTypeMapper;
 
     @Autowired
     public RoomTypeService(RoomTypeRepository roomTypeRepository, PropertyService propertyService,
-                           BookingService bookingService, RoomTypeMapper roomTypeMapper) {
+                           BookingValidationService bookingValidationService, RoomTypeMapper roomTypeMapper) {
         this.roomTypeRepository = roomTypeRepository;
         this.propertyService = propertyService;
-        this.bookingService = bookingService;
+        this.bookingValidationService = bookingValidationService;
         this.roomTypeMapper = roomTypeMapper;
     }
 
@@ -64,7 +64,7 @@ public class RoomTypeService {
         RoomType roomType = getRoomTypeById(id);
 
         // Check if room type has any booked rooms
-        boolean hasBookings = bookingService.existsBookingsForRoomType(id);
+        boolean hasBookings = bookingValidationService.existsBookingsForRoomType(id);
         if (hasBookings) {
             throw new IllegalStateException("Cannot update a room type with booked rooms");
         }
@@ -87,9 +87,9 @@ public class RoomTypeService {
 
         // Query for bookings only if necessary
         if (hasAnyFieldRules) {
-            hasBookings = bookingService.existsBookingsForRoomType(id);
+            hasBookings = bookingValidationService.existsBookingsForRoomType(id);
             if (hasBookings && !RoomTypePatchFieldRules.CONDITIONALLY_PATCHABLE_FIELDS.isEmpty()) {
-                hasOngoingBookings = bookingService.existsOngoingBookingsForRoomType(id);
+                hasOngoingBookings = bookingValidationService.existsOngoingBookingsForRoomType(id);
             }
         }
 
@@ -111,7 +111,7 @@ public class RoomTypeService {
         RoomType roomType = getRoomTypeById(id);
 
         // Check if room type has any booked rooms
-        boolean hasBookings = bookingService.existsBookingsForRoomType(id);
+        boolean hasBookings = bookingValidationService.existsBookingsForRoomType(id);
         if (hasBookings) {
             throw new IllegalStateException("Cannot delete a room type with booked rooms");
         }

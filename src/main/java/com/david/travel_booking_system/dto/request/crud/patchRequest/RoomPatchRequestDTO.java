@@ -1,7 +1,7 @@
 package com.david.travel_booking_system.dto.request.crud.patchRequest;
 
 import com.david.travel_booking_system.util.OptionalFieldWrapper;
-import com.david.travel_booking_system.validation.NotNullIfExplicitlySet;
+import com.david.travel_booking_system.validation.annotation.NotNullIfExplicitlySet;
 import lombok.Data;
 
 @Data
