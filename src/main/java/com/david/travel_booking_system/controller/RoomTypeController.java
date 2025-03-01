@@ -20,7 +20,7 @@ import java.util.List;
  */
 
 @RestController
-@RequestMapping("/api/room-type")
+@RequestMapping("/api/room-types")
 public class RoomTypeController {
     private final RoomTypeService roomTypeService;
     private final RoomTypeMapper roomTypeMapper;

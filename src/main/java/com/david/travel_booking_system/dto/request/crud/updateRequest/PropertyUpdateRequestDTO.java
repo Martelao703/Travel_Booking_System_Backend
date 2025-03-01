@@ -3,10 +3,7 @@ package com.david.travel_booking_system.dto.request.crud.updateRequest;
 import com.david.travel_booking_system.enumsAndSets.PropertyType;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.util.List;
@@ -16,14 +13,14 @@ public class PropertyUpdateRequestDTO {
     @NotNull(message = "Property type cannot be null")
     private PropertyType propertyType;
 
-    @NotNull(message = "Name cannot be null")
+    @NotBlank(message = "Name cannot be blank")
     @Size(max = 50, message = "Name cannot exceed 50 characters")
     private String name;
 
-    @NotNull(message = "City cannot be null")
+    @NotBlank(message = "City cannot be blank")
     private String city;
 
-    @NotNull(message = "Address cannot be null")
+    @NotBlank(message = "Address cannot be blank")
     private String address;
 
     @NotNull(message = "Active status cannot be null")
@@ -45,8 +42,8 @@ public class PropertyUpdateRequestDTO {
     @Max(value = 5, message = "Number of stars cannot exceed 5")
     private Integer stars;
 
-    @Min(value = 0, message = "User rating cannot be less than 0")
-    @Max(value = 5, message = "User rating cannot exceed 5")
+    @DecimalMin(value = "0.0", message = "User rating cannot be less than 0")
+    @DecimalMax(value = "5.0", message = "User rating cannot exceed 5")
     private Double userRating;
 
     @JsonSetter(nulls = Nulls.AS_EMPTY)

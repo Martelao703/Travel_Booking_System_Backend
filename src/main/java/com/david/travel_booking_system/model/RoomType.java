@@ -1,9 +1,7 @@
 package com.david.travel_booking_system.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
@@ -24,31 +22,31 @@ public class RoomType {
     private Property property;
 
     @Column(nullable = false, length = 50)
-    @NotNull(message = "Name cannot be null")
+    @NotBlank(message = "Name cannot be blank")
     @Size(max = 50, message = "Name cannot exceed 50 characters")
     private String name;
 
-    @Column(nullable = false, columnDefinition = "DOUBLE CHECK (pricePerNight >= 0)")
+    @Column(name = "price_per_night", nullable = false)
     @NotNull(message = "Price per night cannot be null")
-    @Min(value = 0, message = "Price per night cannot be less than 0")
+    @DecimalMin(value = "0.0", message = "Price per night cannot be less than 0")
     private double pricePerNight;
 
-    @Column(nullable = false, columnDefinition = "DOUBLE CHECK (size >= 0)")
+    @Column(nullable = false)
     @NotNull(message = "Size cannot be null")
-    @Min(value = 0, message = "Size cannot be less than 0")
+    @DecimalMin(value = "0.0", message = "Size cannot be less than 0")
     private double size;
 
-    @Column(nullable = false, columnDefinition = "INT CHECK (maxCapacity >= 0)")
+    @Column(name = "max_capacity", nullable = false)
     @NotNull(message = "Max capacity cannot be null")
     @Min(value = 0, message = "Max capacity cannot be less than 0")
     private int maxCapacity;
 
-    @Column(nullable = false)
+    @Column(name = "has_private_bathroom", nullable = false)
     @NotNull(message = "Private bathroom availability cannot be null")
     @Getter(AccessLevel.NONE)
     private boolean hasPrivateBathroom;
 
-    @Column(nullable = false)
+    @Column(name = "has_private_kitches", nullable = false)
     @NotNull(message = "Private kitchen availability cannot be null")
     @Getter(AccessLevel.NONE)
     private boolean hasPrivateKitchen;
@@ -62,15 +60,19 @@ public class RoomType {
     private String view;
 
     @ElementCollection
+    @Column(name = "room_facilities")
     private List<String> roomFacilities;
 
     @ElementCollection
+    @Column(name = "bathroom_facilities")
     private List<String> bathroomFacilities;
 
     @ElementCollection
+    @Column(name = "kitchen_facilities")
     private List<String> kitchenFacilities;
 
     @ElementCollection
+    @Column(name = "room_rules")
     private List<String> roomRules;
 
     @OneToMany(mappedBy = "roomType", cascade = CascadeType.ALL, orphanRemoval = true)

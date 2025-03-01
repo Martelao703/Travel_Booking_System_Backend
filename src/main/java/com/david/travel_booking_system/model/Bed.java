@@ -2,6 +2,7 @@ package com.david.travel_booking_system.model;
 
 import com.david.travel_booking_system.enumsAndSets.BedType;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -18,19 +19,18 @@ public class Bed {
     private Integer id;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "bed_type", nullable = false)
     @NotNull(message = "Bed type cannot be null")
     private BedType bedType;
 
-    @Column(columnDefinition = "DOUBLE CHECK (length >= 0)")
-    @Min(value = 0, message = "Length cannot be less than 0")
+    @DecimalMin(value = "0.0", message = "Length cannot be less than 0")
     private Double length;
 
-    @Column(columnDefinition = "DOUBLE CHECK (width >= 0)")
-    @Min(value = 0, message = "Width cannot be less than 0")
+    @DecimalMin(value = "0.0", message = "Width cannot be less than 0")
     private Double width;
 
     @ManyToMany(mappedBy = "beds")
+    @Column(name = "room_types")
     private List<RoomType> roomTypes;
 
     public Bed() {}

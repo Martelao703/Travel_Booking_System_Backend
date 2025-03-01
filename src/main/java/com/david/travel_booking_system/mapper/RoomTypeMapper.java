@@ -62,7 +62,7 @@ public interface RoomTypeMapper {
     /* Helper methods -----------------------------------------------------------------------------------------------*/
 
     @AfterMapping
-    default void initializeFields(@MappingTarget RoomType roomType) {
+    default void afterCreateMapping(@MappingTarget RoomType roomType, RoomTypeCreateRequestDTO dto) {
         roomType.setRooms(new ArrayList<>());
         roomType.setBeds(new ArrayList<>());
     }

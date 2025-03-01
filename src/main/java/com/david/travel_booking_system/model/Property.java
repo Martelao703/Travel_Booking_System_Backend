@@ -17,28 +17,28 @@ public class Property {
     private Integer id;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, name = "property_type")
     @NotNull(message = "Property type cannot be null")
     private PropertyType propertyType;
 
     @Column(nullable = false, length = 50)
-    @NotNull(message = "Name cannot be null")
+    @NotBlank(message = "Name cannot be blank")
     @Size(max = 50, message = "Name cannot exceed 50 characters")
     private String name;
 
     @Column(nullable = false)
-    @NotNull(message = "City cannot be null")
+    @NotBlank(message = "City cannot be blank")
     private String city;
 
     @Column(nullable = false)
-    @NotNull(message = "Address cannot be null")
+    @NotBlank(message = "Address cannot be blank")
     private String address;
 
-    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
+    @Column(nullable = false)
     @NotNull(message = "Active status cannot be null")
     private boolean active = true;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "under_maintenance")
     @NotNull(message = "Maintenance status cannot be null")
     private boolean underMaintenance;
 
@@ -51,26 +51,28 @@ public class Property {
     @Size(max = 1000, message = "Description cannot exceed 1000 characters")
     private String description;
 
-    @Column(columnDefinition = "INT CHECK (stars >= 0 AND stars <= 5)")
     @Min(value = 0, message = "Number of stars cannot be less than 0")
     @Max(value = 5, message = "Number of stars cannot exceed 5")
     private Integer stars;
 
-    @Column(columnDefinition = "DOUBLE DEFAULT NULL CHECK (userRating >= 0 AND userRating <= 5)")
-    @Min(value = 0, message = "User rating cannot be less than 0")
-    @Max(value = 5, message = "User rating cannot exceed 5")
+    @Column(name = "user_rating")
+    @DecimalMin(value = "0.0", message = "User rating cannot be less than 0")
+    @DecimalMax(value = "5.0", message = "User rating cannot exceed 5")
     private Double userRating = null;
 
     @ElementCollection
     private List<String> amenities;
 
     @ElementCollection
+    @Column(name = "nearby_services")
     private List<String> nearbyServices;
 
     @ElementCollection
+    @Column(name = "house_rules")
     private List<String> houseRules;
 
     @OneToMany(mappedBy = "property", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Column(name = "room_types")
     private List<RoomType> roomTypes;
 
     public Property() {}

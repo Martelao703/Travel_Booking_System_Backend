@@ -20,15 +20,15 @@ import java.util.List;
 public class RoomService {
     private final RoomRepository roomRepository;
     private final RoomTypeService roomTypeService;
-    private final BookingService bookingService;
+    private final BookingValidationService bookingValidationService;
     private final RoomMapper roomMapper;
 
     @Autowired
-    public RoomService(RoomRepository roomRepository, RoomTypeService roomTypeService, BookingService bookingService,
-                       RoomMapper roomMapper) {
+    public RoomService(RoomRepository roomRepository, RoomTypeService roomTypeService,
+                       BookingValidationService bookingValidationService, RoomMapper roomMapper) {
         this.roomRepository = roomRepository;
         this.roomTypeService = roomTypeService;
-        this.bookingService = bookingService;
+        this.bookingValidationService = bookingValidationService;
         this.roomMapper = roomMapper;
     }
 
@@ -64,7 +64,7 @@ public class RoomService {
         Room room = getRoomById(id);
 
         // Check if room has bookings
-        boolean hasBookings = bookingService.existsBookingsForRoom(id);
+        boolean hasBookings = bookingValidationService.existsBookingsForRoom(id);
         if (hasBookings) {
             throw new IllegalStateException("Cannot update a room with bookings");
         }
@@ -87,9 +87,9 @@ public class RoomService {
 
         // Query for bookings only if necessary
         if (hasAnyFieldRules) {
-            hasBookings = bookingService.existsBookingsForRoom(id);
+            hasBookings = bookingValidationService.existsBookingsForRoom(id);
             if (hasBookings && !RoomPatchFieldRules.CONDITIONALLY_PATCHABLE_FIELDS.isEmpty()) {
-                hasOngoingBookings = bookingService.existsOngoingBookingsForRoom(id);
+                hasOngoingBookings = bookingValidationService.existsOngoingBookingsForRoom(id);
             }
         }
 
@@ -111,7 +111,7 @@ public class RoomService {
         Room room = getRoomById(id);
 
         // Check if room has bookings
-        boolean hasBookings = bookingService.existsBookingsForRoom(id);
+        boolean hasBookings = bookingValidationService.existsBookingsForRoom(id);
         if (hasBookings) {
             throw new IllegalStateException("Cannot delete a room with bookings");
         }

@@ -1,8 +1,9 @@
 package com.david.travel_booking_system.model;
 
 import com.david.travel_booking_system.enumsAndSets.BookingStatus;
-import com.david.travel_booking_system.validation.ValidDateRange;
+import com.david.travel_booking_system.validation.annotation.ValidDateRange;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -31,20 +32,20 @@ public class Booking {
     private Room room;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'PENDING'")
+    @Column(nullable = false)
     @NotNull(message = "Booking status cannot be null")
     private BookingStatus status = BookingStatus.PENDING;
 
-    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(nullable = false)
     @NotNull(message = "Paid status cannot be null")
     private boolean paid = false;
 
-    @Column(nullable = false, columnDefinition = "DATE CHECK (planned_check_in_date_time > CURRENT_DATE)")
+    @Column(name = "planned_check_in_date_time", nullable = false)
     @NotNull(message = "Planned Check-in date-time cannot be null")
     @Future(message = "Planned Check-in date-time must be in the future")
     private LocalDateTime plannedCheckInDateTime;
 
-    @Column(nullable = false, columnDefinition = "DATE CHECK (planned_check_out_date_time > CURRENT_DATE)")
+    @Column(name = "planned_check_out_date_time", nullable = false)
     @NotNull(message = "Planned Check-out date-time cannot be null")
     @Future(message = "Planned Check-out date-time must be in the future")
     private LocalDateTime plannedCheckOutDateTime;
@@ -52,17 +53,17 @@ public class Booking {
     private LocalDateTime actualCheckInDateTime;
     private LocalDateTime actualCheckOutDateTime;
 
-    @Column(nullable = false, columnDefinition = "INT CHECK (number_of_guests >= 1)")
+    @Column(name = "number_of_guests", nullable = false)
     @NotNull(message = "Number of guests cannot be null")
     @Min(value = 1, message = "Number of guests must be at least 1")
     private int numberOfGuests;
 
-    @Column(nullable = false, columnDefinition = "DOUBLE CHECK (total_price >= 0)")
+    @Column(name = "total_price", nullable = false)
     @NotNull(message = "Total price cannot be null")
-    @Min(value = 0, message = "Total price must be greater than 0")
+    @DecimalMin(value = "0.0", message = "Total price must be greater than 0")
     private double totalPrice;
 
-    @Column(nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @PrePersist

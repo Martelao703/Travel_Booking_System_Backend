@@ -20,7 +20,7 @@ import java.util.List;
  */
 
 @RestController
-@RequestMapping("/api/property")
+@RequestMapping("/api/properties")
 public class PropertyController {
     private final PropertyService propertyService;
     private final PropertyMapper propertyMapper;

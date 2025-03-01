@@ -18,7 +18,7 @@ import java.util.List;
  */
 
 @RestController
-@RequestMapping("/api/bed")
+@RequestMapping("/api/beds")
 public class BedController {
     private final BedService bedService;
     private final BedMapper bedMapper;

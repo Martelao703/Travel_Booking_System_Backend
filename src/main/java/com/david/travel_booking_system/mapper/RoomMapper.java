@@ -47,7 +47,7 @@ public interface RoomMapper {
     /* Helper methods -----------------------------------------------------------------------------------------------*/
 
     @AfterMapping
-    default void initializeFields(@MappingTarget Room room) {
+    default void afterCreateMapping(@MappingTarget Room room, RoomCreateRequestDTO dto) {
         room.setBookings(new ArrayList<>());
     }
 }

@@ -18,13 +18,14 @@ import java.util.List;
 @Service
 public class PropertyService {
     private final PropertyRepository propertyRepository;
-    private final BookingService bookingService;
+    private final BookingValidationService bookingValidationService;
     private final PropertyMapper propertyMapper;
 
     @Autowired
-    public PropertyService(PropertyRepository propertyRepository, BookingService bookingService, PropertyMapper propertyMapper) {
+    public PropertyService(PropertyRepository propertyRepository, BookingValidationService bookingValidationService,
+                           PropertyMapper propertyMapper) {
         this.propertyRepository = propertyRepository;
-        this.bookingService = bookingService;
+        this.bookingValidationService = bookingValidationService;
         this.propertyMapper = propertyMapper;
     }
 
@@ -54,7 +55,7 @@ public class PropertyService {
         Property property = getPropertyById(id);
 
         // Check if property has any booked rooms
-        boolean hasBookings = bookingService.existsBookingsForProperty(id);
+        boolean hasBookings = bookingValidationService.existsBookingsForProperty(id);
         if (hasBookings) {
             throw new IllegalStateException("Cannot update a property with booked rooms");
         }
@@ -77,9 +78,9 @@ public class PropertyService {
 
         // Query for bookings only if necessary
         if (hasAnyFieldRules) {
-            hasAnyBookings = bookingService.existsBookingsForProperty(id);
+            hasAnyBookings = bookingValidationService.existsBookingsForProperty(id);
             if (hasAnyBookings && !PropertyPatchFieldRules.CONDITIONALLY_PATCHABLE_FIELDS.isEmpty()) {
-                hasOngoingBookings = bookingService.existsOngoingBookingsForProperty(id);
+                hasOngoingBookings = bookingValidationService.existsOngoingBookingsForProperty(id);
             }
         }
 
@@ -101,7 +102,7 @@ public class PropertyService {
         Property property = getPropertyById(id);
 
         // Check if property has any booked rooms
-        boolean hasBookings = bookingService.existsBookingsForProperty(id);
+        boolean hasBookings = bookingValidationService.existsBookingsForProperty(id);
         if (hasBookings) {
             throw new IllegalStateException("Cannot delete a property with booked rooms");
         }
