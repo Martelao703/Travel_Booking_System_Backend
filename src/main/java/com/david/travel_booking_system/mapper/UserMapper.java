@@ -30,11 +30,13 @@ public interface UserMapper {
     // Create User from UserCreateRequestDTO
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "active", ignore = true)
+    @Mapping(target = "deleted", ignore = true)
     @Mapping(target = "bookings", ignore = true)
     User createUserFromDTO(UserCreateRequestDTO dto);
 
     // Update User from UserUpdateRequestDTO
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "deleted", ignore = true)
     @Mapping(target = "bookings", ignore = true)
     void updateUserFromDTO(@MappingTarget User user, UserUpdateRequestDTO inputDTO);
 

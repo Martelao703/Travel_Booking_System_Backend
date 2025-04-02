@@ -46,6 +46,7 @@ public interface RoomTypeMapper {
     @Mapping(target = "property.id", source = "propertyId")
     @Mapping(target = "hasPrivateBathroom", expression = "java(dto.hasPrivateBathroom())")
     @Mapping(target = "hasPrivateKitchen", expression = "java(dto.hasPrivateKitchen())")
+    @Mapping(target = "deleted", ignore = true)
     @Mapping(target = "rooms", ignore = true)
     @Mapping(target = "beds", ignore = true)
     RoomType createRoomTypeFromDTO(RoomTypeCreateRequestDTO dto);
@@ -55,6 +56,7 @@ public interface RoomTypeMapper {
     @Mapping(target = "property", ignore = true)
     @Mapping(target = "hasPrivateBathroom", expression = "java(inputDTO.hasPrivateBathroom())")
     @Mapping(target = "hasPrivateKitchen", expression = "java(inputDTO.hasPrivateKitchen())")
+    @Mapping(target = "deleted", ignore = true)
     @Mapping(target = "rooms", ignore = true)
     @Mapping(target = "beds", ignore = true)
     void updateRoomTypeFromDTO(@MappingTarget RoomType roomType, RoomTypeUpdateRequestDTO inputDTO);

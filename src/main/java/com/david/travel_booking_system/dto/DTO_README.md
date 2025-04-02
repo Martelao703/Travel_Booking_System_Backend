@@ -24,14 +24,9 @@ entities may return different DTOs based on the complexity of the entity.
 
 ## Request Objects
 
-The project organizes request DTOs into one of the following three categories:
+The project organizes request DTOs into one of the following two categories:
 
-1. **General `RequestDTO`**:
-    - Used when the same fields are required for both `create` and `update` operations of an entity.
-    - Contain all fields needed to create or update an entity.
-    - Entities that use this DTO do not have specific `CreateRequestDTO` or `UpdateRequestDTO`.
-
-2. **CRUD RequestDTOs**:
+1. **CRUD RequestDTOs**:
     - **`CreateRequestDTO`**:
         - Used for endpoints that handle the creation of new entities.
         - Contain all fields needed to create a new entity.
@@ -43,7 +38,7 @@ The project organizes request DTOs into one of the following three categories:
         - Contain only the fields that can be updated, wrapped in a custom `OptionalFieldWrapper` object, to distinguish
         between explicitly set and unset fields in the incoming payload.
 
-3. **Specialized RequestDTOs**:
+2. **Specialized RequestDTOs**:
     - Used for custom endpoints that require a specific set of fields.
     - Contain only the fields needed for the specific endpoint.
     - **`BookingDateChangeRequestDTO`**:
@@ -59,8 +54,8 @@ The project organizes request DTOs into one of the following three categories:
 | **Booking**  | Create, Update, Patch |
 | **Property** | Create, Update, Patch |
 | **RoomType** | Create, Update, Patch |
-| **Room**     | Create, Update        |
-| **Bed**      | General, Patch        |
+| **Room**     | Create, Update, Patch |
+| **Bed**      | Create, Update, Patch |
 
 ### Entities and Corresponding Specialized Request DTOs
 

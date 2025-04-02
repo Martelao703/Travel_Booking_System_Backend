@@ -16,6 +16,6 @@ public class BedPatchRequestDTO {
     @WrappedMin(value = 0, message = "Length cannot be less than 0")
     private OptionalFieldWrapper<Double> length = OptionalFieldWrapper.unset();
 
-    @WrappedMax(value = 0, message = "Width cannot be less than 0")
+    @WrappedMin(value = 0, message = "Width cannot be less than 0")
     private OptionalFieldWrapper<Double> width = OptionalFieldWrapper.unset();
 }

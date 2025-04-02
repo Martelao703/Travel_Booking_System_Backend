@@ -1,6 +1,7 @@
 package com.david.travel_booking_system.controller;
 
 import com.david.travel_booking_system.dto.response.basic.PropertyBasicDTO;
+import com.david.travel_booking_system.dto.response.basic.RoomTypeBasicDTO;
 import com.david.travel_booking_system.dto.response.detail.PropertyDetailDTO;
 import com.david.travel_booking_system.dto.request.crud.createRequest.PropertyCreateRequestDTO;
 import com.david.travel_booking_system.dto.response.full.PropertyFullDTO;
@@ -45,13 +46,13 @@ public class PropertyController {
 
     @GetMapping
     public ResponseEntity<List<PropertyBasicDTO>> getProperties() {
-        List<PropertyBasicDTO> properties = propertyMapper.toBasicDTOs(propertyService.getProperties());
+        List<PropertyBasicDTO> properties = propertyMapper.toBasicDTOs(propertyService.getProperties(false));
         return ResponseEntity.ok(properties); // Return 200 OK
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<PropertyFullDTO> getProperty(@PathVariable Integer id) {
-        PropertyFullDTO property = propertyMapper.toFullDTO(propertyService.getPropertyById(id));
+        PropertyFullDTO property = propertyMapper.toFullDTO(propertyService.getPropertyById(id, false));
         return ResponseEntity.ok(property); // Return 200 OK
     }
 
@@ -78,8 +79,16 @@ public class PropertyController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProperty(@PathVariable Integer id) {
-        propertyService.deleteProperty(id);
+    public ResponseEntity<Void> softDeleteProperty(@PathVariable Integer id) {
+        propertyService.softDeleteProperty(id);
         return ResponseEntity.noContent().build(); // Return 204 No Content
     }
+
+    @DeleteMapping("/{id}/hard")
+    public ResponseEntity<Void> hardDeleteProperty(@PathVariable Integer id) {
+        propertyService.hardDeleteProperty(id);
+        return ResponseEntity.noContent().build(); // Return 204 No Content
+    }
+
+    /* Custom Endpoints -------------------------------------------------------------------------------------------- */
 }

@@ -41,13 +41,13 @@ public class RoomController {
 
     @GetMapping
     public ResponseEntity<List<RoomBasicDTO>> getRooms() {
-        List<RoomBasicDTO> rooms = roomMapper.toBasicDTOs(roomService.getRooms());
+        List<RoomBasicDTO> rooms = roomMapper.toBasicDTOs(roomService.getRooms(false));
         return ResponseEntity.ok(rooms); // Return 200 OK
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<RoomFullDTO> getRoom(@PathVariable Integer id) {
-        RoomFullDTO room = roomMapper.toFullDTO(roomService.getRoomById(id));
+        RoomFullDTO room = roomMapper.toFullDTO(roomService.getRoomById(id, false));
         return ResponseEntity.ok(room); // Return 200 OK
     }
 
@@ -73,7 +73,31 @@ public class RoomController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteRoom(@PathVariable Integer id) {
-        roomService.deleteRoom(id);
+        roomService.softDeleteRoom(id);
         return ResponseEntity.noContent().build(); // Return 204 No Content
+    }
+
+    @DeleteMapping("/{id}/hard")
+    public ResponseEntity<Void> hardDeleteRoom(@PathVariable Integer id) {
+        roomService.hardDeleteRoom(id);
+        return ResponseEntity.noContent().build(); // Return 204 No Content
+    }
+
+    /* Custom Endpoints -------------------------------------------------------------------------------------------- */
+
+    @GetMapping("/roomType/{roomTypeId}")
+    public ResponseEntity<List<RoomBasicDTO>> getRoomsByRoomTypeId(@PathVariable Integer roomTypeId) {
+        List<RoomBasicDTO> rooms = roomMapper.toBasicDTOs(
+                roomService.getRoomsByRoomTypeId(roomTypeId, false)
+        );
+        return ResponseEntity.ok(rooms); // Return 200 OK
+    }
+
+    @GetMapping("/property/{propertyId}")
+    public ResponseEntity<List<RoomBasicDTO>> getRoomsByPropertyId(@PathVariable Integer propertyId) {
+        List<RoomBasicDTO> rooms = roomMapper.toBasicDTOs(
+                roomService.getRoomsByPropertyId(propertyId, false)
+        );
+        return ResponseEntity.ok(rooms); // Return 200 OK
     }
 }

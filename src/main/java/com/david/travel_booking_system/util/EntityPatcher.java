@@ -83,17 +83,24 @@ public class EntityPatcher {
         try {
             Field entityField = entity.getClass().getDeclaredField(fieldName);
             entityField.setAccessible(true);
+            Class<?> fieldType = entityField.getType();
 
-            if (newValue != null && !entityField.getType().isAssignableFrom(newValue.getClass())) {
-                throw new IllegalArgumentException(
-                        "Type mismatch for field '" + fieldName + "'. Expected: " +
-                                entityField.getType().getSimpleName() + ", but got: " +
-                                newValue.getClass().getSimpleName()
-                );
+            if (newValue != null) {
+                // Handle primitive type conversion
+                if (fieldType == double.class && newValue instanceof Double
+                        || fieldType == int.class && newValue instanceof Integer
+                        || fieldType == long.class && newValue instanceof Long
+                        || fieldType == boolean.class && newValue instanceof Boolean
+                        || fieldType.isAssignableFrom(newValue.getClass())) {
+                    entityField.set(entity, newValue);
+                } else {
+                    throw new IllegalArgumentException(
+                            "Type mismatch for field '" + fieldName + "'. Expected: " +
+                                    fieldType.getSimpleName() + ", but got: " +
+                                    newValue.getClass().getSimpleName()
+                    );
+                }
             }
-
-            entityField.set(entity, newValue);
-
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new IllegalStateException("Error updating field dynamically", e);
         }

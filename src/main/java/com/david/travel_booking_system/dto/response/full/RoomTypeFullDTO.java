@@ -2,6 +2,8 @@ package com.david.travel_booking_system.dto.response.full;
 
 import com.david.travel_booking_system.dto.response.basic.BedBasicDTO;
 import com.david.travel_booking_system.dto.response.basic.RoomBasicDTO;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
@@ -9,6 +11,12 @@ import lombok.Getter;
 import java.util.List;
 
 @Data
+@JsonPropertyOrder({
+        "id", "propertyId", "name", "pricePerNight", "size", "maxCapacity",
+        "hasPrivateBathroom", "hasPrivateKitchen", "description", "view", "deleted",
+        "roomFacilities", "bathroomFacilities", "kitchenFacilities", "roomRules",
+        "rooms", "beds"
+})
 public class RoomTypeFullDTO {
     private Integer id;
     private Integer propertyId;
@@ -16,11 +24,14 @@ public class RoomTypeFullDTO {
     private double pricePerNight;
     private double size;
     private int maxCapacity;
+    private boolean deleted;
 
     @Getter(AccessLevel.NONE)
+    @JsonProperty("hasPrivateBathroom")
     private boolean hasPrivateBathroom;
 
     @Getter(AccessLevel.NONE)
+    @JsonProperty("hasPrivateKitchen")
     private boolean hasPrivateKitchen;
 
     private String description;
@@ -35,7 +46,8 @@ public class RoomTypeFullDTO {
     private List<BedBasicDTO> beds;
 
     public RoomTypeFullDTO(Integer id, Integer propertyId, String name, double pricePerNight, double size, int maxCapacity,
-                           boolean hasPrivateBathroom, boolean hasPrivateKitchen, String description, String view) {
+                           boolean hasPrivateBathroom, boolean hasPrivateKitchen, String description, String view,
+                           boolean deleted) {
         this.id = id;
         this.propertyId = propertyId;
         this.name = name;
@@ -46,6 +58,7 @@ public class RoomTypeFullDTO {
         this.hasPrivateKitchen = hasPrivateKitchen;
         this.description = description;
         this.view = view;
+        this.deleted = deleted;
     }
 
     public boolean hasPrivateBathroom() {

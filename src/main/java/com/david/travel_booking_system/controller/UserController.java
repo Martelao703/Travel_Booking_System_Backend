@@ -41,13 +41,13 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<List<UserBasicDTO>> getUsers() {
-        List<UserBasicDTO> users = userMapper.toBasicDTOs(userService.getUsers());
+        List<UserBasicDTO> users = userMapper.toBasicDTOs(userService.getUsers(false));
         return ResponseEntity.ok(users); // Return 200 OK
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserFullDTO> getUser(@PathVariable Integer id) {
-        UserFullDTO user = userMapper.toFullDTO(userService.getUserById(id));
+        UserFullDTO user = userMapper.toFullDTO(userService.getUserById(id, false));
         return ResponseEntity.ok(user); // Return 200 OK
     }
 
@@ -73,7 +73,17 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
-        userService.deleteUser(id);
+        userService.softDeleteUser(id);
         return ResponseEntity.noContent().build(); // Return 204 No Content
     }
+
+    @DeleteMapping("/{id}/hard")
+    public ResponseEntity<Void> hardDeleteUser(@PathVariable Integer id) {
+        userService.hardDeleteUser(id);
+        return ResponseEntity.noContent().build(); // Return 204 No Content
+    }
+
+    /* Custom endpoints -------------------------------------------------------------------------------------------- */
+
+
 }

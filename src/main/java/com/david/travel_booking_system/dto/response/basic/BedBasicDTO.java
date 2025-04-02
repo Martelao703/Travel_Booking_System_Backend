@@ -8,6 +8,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class BedBasicDTO {
     private Integer id;
+    private Integer roomTypeId;
     private BedType bedType;
     private Double length;
     private Double width;

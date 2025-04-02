@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import org.hibernate.annotations.SQLDelete;
 
 import java.time.LocalDateTime;
 
@@ -66,10 +67,9 @@ public class Booking {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-    }
+    @Column(nullable = false)
+    @NotNull(message = "Deleted status cannot be null")
+    private boolean deleted = false;
 
     public Booking() {
     }
@@ -82,5 +82,10 @@ public class Booking {
         this.plannedCheckOutDateTime = plannedCheckOutDateTime;
         this.numberOfGuests = numberOfGuests;
         this.totalPrice = totalPrice;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
     }
 }

@@ -46,13 +46,13 @@ public class RoomTypeController {
 
     @GetMapping
     public ResponseEntity<List<RoomTypeBasicDTO>> getRoomTypes() {
-        List<RoomTypeBasicDTO> roomTypes = roomTypeMapper.toBasicDTOs(roomTypeService.getRoomTypes());
+        List<RoomTypeBasicDTO> roomTypes = roomTypeMapper.toBasicDTOs(roomTypeService.getRoomTypes(false));
         return ResponseEntity.ok(roomTypes); // Return 200 OK
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<RoomTypeFullDTO> getRoomType(@PathVariable Integer id) {
-        RoomTypeFullDTO roomType = roomTypeMapper.toFullDTO(roomTypeService.getRoomTypeById(id));
+        RoomTypeFullDTO roomType = roomTypeMapper.toFullDTO(roomTypeService.getRoomTypeById(id, false));
         return ResponseEntity.ok(roomType); // Return 200 OK
     }
 
@@ -80,7 +80,23 @@ public class RoomTypeController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteRoomType(@PathVariable Integer id) {
-        roomTypeService.deleteRoomType(id);
+        roomTypeService.softDeleteRoomType(id);
         return ResponseEntity.noContent().build(); // Return 204 No Content
+    }
+
+    @DeleteMapping("/{id}/hard")
+    public ResponseEntity<Void> hardDeleteRoomType(@PathVariable Integer id) {
+        roomTypeService.hardDeleteRoomType(id);
+        return ResponseEntity.noContent().build(); // Return 204 No Content
+    }
+
+    /* Custom Endpoints -------------------------------------------------------------------------------------------- */
+
+    @GetMapping("/property/{propertyId}")
+    public ResponseEntity<List<RoomTypeBasicDTO>> getRoomTypesByPropertyId(@PathVariable Integer propertyId) {
+        List<RoomTypeBasicDTO> roomTypes = roomTypeMapper.toBasicDTOs(
+                roomTypeService.getRoomTypesByPropertyId(propertyId, false)
+        );
+        return ResponseEntity.ok(roomTypes);
     }
 }

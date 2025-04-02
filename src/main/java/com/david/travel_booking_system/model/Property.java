@@ -2,14 +2,19 @@ package com.david.travel_booking_system.model;
 
 import com.david.travel_booking_system.enumsAndSets.PropertyType;
 import com.david.travel_booking_system.util.Coordinates;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import lombok.ToString;
+import org.hibernate.annotations.*;
 
 import java.util.List;
 
 @Entity
 @Data
+@ToString(exclude = "roomTypes") // Prevent recursion
 public class Property {
     @Id
     @SequenceGenerator(name = "property_id_sequence", sequenceName = "property_id_sequence", allocationSize = 1)
@@ -60,6 +65,10 @@ public class Property {
     @DecimalMax(value = "5.0", message = "User rating cannot exceed 5")
     private Double userRating = null;
 
+    @Column(nullable = false)
+    @NotNull(message = "Deleted status cannot be null")
+    private boolean deleted = false;
+
     @ElementCollection
     private List<String> amenities;
 
@@ -72,6 +81,7 @@ public class Property {
     private List<String> houseRules;
 
     @OneToMany(mappedBy = "property", cascade = CascadeType.ALL, orphanRemoval = true)
+    //@JsonManagedReference
     @Column(name = "room_types")
     private List<RoomType> roomTypes;
 

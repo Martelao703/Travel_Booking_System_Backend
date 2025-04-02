@@ -20,6 +20,7 @@ public class PropertyFullDTO {
     private String description;
     private Integer stars;
     private Double userRating;
+    private boolean deleted;
 
     private List<String> amenities;
     private List<String> nearbyServices;
@@ -29,7 +30,7 @@ public class PropertyFullDTO {
 
     public PropertyFullDTO(Integer id, PropertyType propertyType, String name, String city, String address,
                            boolean active, boolean underMaintenance, Double latitude, Double longitude,
-                           String description, Integer stars, Double userRating) {
+                           String description, Integer stars, Double userRating, boolean deleted) {
         this.id = id;
         this.propertyType = propertyType;
         this.name = name;
@@ -42,5 +43,6 @@ public class PropertyFullDTO {
         this.description = description;
         this.stars = stars;
         this.userRating = userRating;
+        this.deleted = deleted;
     }
 }
