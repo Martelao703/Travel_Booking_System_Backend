@@ -32,6 +32,7 @@ public interface BookingMapper {
     @Mapping(target = "actualCheckInDateTime", ignore = true)
     @Mapping(target = "actualCheckOutDateTime", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "deleted", ignore = true)
     Booking createBookingFromDTO(BookingCreateRequestDTO dto);
 
     // Update Booking from BookingUpdateRequestDTO
@@ -45,5 +46,6 @@ public interface BookingMapper {
     @Mapping(target = "actualCheckInDateTime", ignore = true)
     @Mapping(target = "actualCheckOutDateTime", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "deleted", ignore = true)
     void updateBookingFromDTO(@MappingTarget Booking booking, BookingUpdateRequestDTO inputDTO);
 }

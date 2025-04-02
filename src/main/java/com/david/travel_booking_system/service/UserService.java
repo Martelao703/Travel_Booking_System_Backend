@@ -3,28 +3,38 @@ package com.david.travel_booking_system.service;
 import com.david.travel_booking_system.dto.request.crud.createRequest.UserCreateRequestDTO;
 import com.david.travel_booking_system.dto.request.crud.patchRequest.UserPatchRequestDTO;
 import com.david.travel_booking_system.dto.request.crud.updateRequest.UserUpdateRequestDTO;
+import com.david.travel_booking_system.enumsAndSets.BookingStatus;
 import com.david.travel_booking_system.enumsAndSets.entityPatchRequestFieldRules.UserPatchFieldRules;
 import com.david.travel_booking_system.mapper.UserMapper;
+import com.david.travel_booking_system.model.Booking;
 import com.david.travel_booking_system.model.User;
+import com.david.travel_booking_system.repository.BookingRepository;
 import com.david.travel_booking_system.repository.UserRepository;
+import com.david.travel_booking_system.specification.BaseSpecifications;
+import com.david.travel_booking_system.specification.BookingSpecifications;
 import com.david.travel_booking_system.util.EntityPatcher;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class UserService {
+    // Repositories
     private final UserRepository userRepository;
-    private final BookingValidationService bookingValidationService;
+    private final BookingRepository bookingRepository;
+
+    // Mappers
     private final UserMapper userMapper;
 
     @Autowired
-    public UserService(UserRepository userRepository, BookingValidationService bookingValidationService, UserMapper userMapper) {
+    public UserService(UserRepository userRepository, BookingRepository bookingRepository, UserMapper userMapper) {
         this.userRepository = userRepository;
-        this.bookingValidationService = bookingValidationService;
+        this.bookingRepository = bookingRepository;
         this.userMapper = userMapper;
     }
 
@@ -50,23 +60,31 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public List<User> getUsers() {
-        return userRepository.findAll();
+    public List<User> getUsers(boolean includeDeleted) {
+        Specification<User> spec = includeDeleted
+                ? Specification.where(null)  // No spec
+                : BaseSpecifications.excludeDeleted(User.class); // Non-deleted filter
+
+        return userRepository.findAll(spec);
     }
 
     @Transactional(readOnly = true)
-    public User getUserById(Integer userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User with id " + userId + " not found"));
+    public User getUserById(Integer id, boolean includeDeleted) {
+        Specification<User> spec = includeDeleted
+                ? BaseSpecifications.filterById(User.class, id) // ID filter
+                : BaseSpecifications.filterById(User.class, id)
+                .and(BaseSpecifications.excludeDeleted(User.class)); // ID and non-deleted filter
+
+        return userRepository.findOne(spec)
+                .orElseThrow(() -> new EntityNotFoundException("User with ID " + id + " not found"));
     }
 
     @Transactional
     public User updateUser(Integer id, UserUpdateRequestDTO userUpdateRequestDTO) {
-        User user = getUserById(id);
+        User user = getUserById(id, false);
 
         // Check if user has any bookings in progress
-        boolean hasBookings = bookingValidationService.existsBookingsForUser(user.getId());
-        if (hasBookings) {
+        if (hasActiveBookings(id)) {
             throw new IllegalStateException("Cannot update user with bookings in progress");
         }
 
@@ -90,7 +108,7 @@ public class UserService {
 
     @Transactional
     public User patchUser(Integer id, UserPatchRequestDTO userPatchRequestDTO) {
-        User user = getUserById(id);
+        User user = getUserById(id, false);
 
         // Booking conditions
         boolean hasBookings = false;
@@ -100,9 +118,9 @@ public class UserService {
 
         // Query for bookings only if necessary
         if (hasAnyFieldRules) {
-            hasBookings = bookingValidationService.existsBookingsForUser(id);
+            hasBookings = hasActiveBookings(id);
             if (hasBookings && !UserPatchFieldRules.CONDITIONALLY_PATCHABLE_FIELDS.isEmpty()) {
-                hasOngoingBookings = bookingValidationService.existsOngoingBookingsForUser(id);
+                hasOngoingBookings = hasOngoingBookings(id);
             }
         }
 
@@ -133,17 +151,56 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteUser(Integer userId) {
-        User user = getUserById(userId);
+    public void softDeleteUser(Integer id) {
+        User user = getUserById(id, false);
 
-        // Check if user has any bookings in progress
-        boolean hasBookings = bookingValidationService.existsBookingsForUser(user.getId());
-        if (hasBookings) {
-            throw new IllegalStateException("Cannot delete user with bookings in progress");
+        // Check if user has any active bookings
+        if (hasActiveBookings(id)) {
+            throw new IllegalStateException("Cannot delete user with active bookings");
         }
 
-        userRepository.deleteById(userId);
+        // Soft delete user
+        user.setActive(false);
+        user.setDeleted(true);
+        userRepository.save(user);
     }
 
+    @Transactional
+    public void hardDeleteUser(Integer id) {
+        User user = getUserById(id, true);
+
+        // Check if user is not soft-deleted
+        if (!user.isDeleted()) {
+            // Check if user has any active bookings
+            if (hasActiveBookings(id)) {
+                throw new IllegalStateException("Cannot delete user with active bookings");
+            }
+        }
+
+        // Hard delete user
+        userRepository.delete(user);
+    }
+
+    /* Service custom endpoint methods ----------------------------------------------------------------------------- */
+
+
+
     /* Helper methods ---------------------------------------------------------------------------------------------- */
+
+    private boolean hasActiveBookings(Integer id) {
+        // Filter bookings by user ID and relevant statuses
+        Specification<Booking> bookingSpec = BookingSpecifications.filterByUserId(id)
+                .and(BookingSpecifications.filterByStatuses(List.of(
+                        BookingStatus.PENDING, BookingStatus.CONFIRMED, BookingStatus.ONGOING
+                )));
+        return bookingRepository.exists(bookingSpec);
+    }
+
+    private boolean hasOngoingBookings(Integer id) {
+        // Filter bookings by user ID and ONGOING status
+        Specification<Booking> bookingSpec = BookingSpecifications.filterByUserId(id)
+                .and(BookingSpecifications.filterByStatus(BookingStatus.ONGOING));
+
+        return bookingRepository.exists(bookingSpec);
+    }
 }

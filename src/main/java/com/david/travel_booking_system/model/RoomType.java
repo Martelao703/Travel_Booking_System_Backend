@@ -1,15 +1,21 @@
 package com.david.travel_booking_system.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
 import jakarta.validation.constraints.*;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
+import lombok.ToString;
+import org.hibernate.annotations.*;
 
 import java.util.List;
 
 @Entity
 @Data
+@ToString(exclude = {"property", "rooms", "beds"}) // Prevent recursion
 public class RoomType {
     @Id
     @SequenceGenerator(name = "roomType_id_sequence", sequenceName = "roomType_id_sequence", allocationSize = 1)
@@ -17,6 +23,7 @@ public class RoomType {
     private Integer id;
 
     @ManyToOne
+    //@JsonBackReference
     @JoinColumn(name = "property_id", nullable = false)
     @NotNull(message = "Property cannot be null")
     private Property property;
@@ -59,6 +66,10 @@ public class RoomType {
     @Size(max = 50, message = "View cannot exceed 50 characters")
     private String view;
 
+    @Column(nullable = false)
+    @NotNull(message = "Deleted status cannot be null")
+    private boolean deleted = false;
+
     @ElementCollection
     @Column(name = "room_facilities")
     private List<String> roomFacilities;
@@ -78,12 +89,7 @@ public class RoomType {
     @OneToMany(mappedBy = "roomType", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Room> rooms;
 
-    @ManyToMany
-    @JoinTable(
-            name = "room_type_bed",
-            joinColumns = @JoinColumn(name = "room_type_id"),
-            inverseJoinColumns = @JoinColumn(name = "bed_id")
-    )
+    @OneToMany(mappedBy = "roomType", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Bed> beds;
 
     public RoomType() {}
@@ -94,5 +100,10 @@ public class RoomType {
 
     public boolean hasPrivateKitchen() {
         return hasPrivateKitchen;
+    }
+
+    @PreRemove
+    private void removeBedAssociations() {
+        this.beds.clear();
     }
 }

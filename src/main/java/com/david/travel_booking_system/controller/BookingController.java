@@ -43,14 +43,14 @@ public class BookingController {
 
     @GetMapping
     public ResponseEntity<List<BookingBasicDTO>> getBookings() {
-        List<BookingBasicDTO> bookings = bookingMapper.toBasicDTOs(bookingService.getBookings());
+        List<BookingBasicDTO> bookings = bookingMapper.toBasicDTOs(bookingService.getBookings(false));
         return ResponseEntity.ok(bookings); // Return 200 OK
     }
 
     /* Returns BasicDTO instead of FullDTO due to the entity's absence of collection fields */
     @GetMapping("/{id}")
     public ResponseEntity<BookingBasicDTO> getBooking(@PathVariable Integer id) {
-        BookingBasicDTO booking = bookingMapper.toBasicDTO(bookingService.getBookingById(id));
+        BookingBasicDTO booking = bookingMapper.toBasicDTO(bookingService.getBookingById(id, false));
         return ResponseEntity.ok(booking); // Return 200 OK
     }
 
@@ -76,11 +76,44 @@ public class BookingController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBooking(@PathVariable Integer id) {
-        bookingService.deleteBooking(id);
+        bookingService.softDeleteBooking(id);
+        return ResponseEntity.noContent().build(); // Return 204 No Content
+    }
+
+    @DeleteMapping("/{id}/hard")
+    public ResponseEntity<Void> hardDeleteBooking(@PathVariable Integer id) {
+        bookingService.hardDeleteBooking(id);
         return ResponseEntity.noContent().build(); // Return 204 No Content
     }
 
     /* Custom Endpoints -------------------------------------------------------------------------------------------- */
+
+    // Get all bookings of a room
+    @GetMapping("/room/{roomId}")
+    public ResponseEntity<List<BookingBasicDTO>> getBookingsByRoomId(@PathVariable Integer roomId) {
+        List<BookingBasicDTO> bookings = bookingMapper.toBasicDTOs(
+                bookingService.getBookingsByRoomId(roomId, false)
+        );
+        return ResponseEntity.ok(bookings); // Return 200 OK
+    }
+
+    // Get all bookings of a property
+    @GetMapping("/property/{propertyId}")
+    public ResponseEntity<List<BookingBasicDTO>> getBookingsByPropertyId(@PathVariable Integer propertyId) {
+        List<BookingBasicDTO> bookings = bookingMapper.toBasicDTOs(
+                bookingService.getBookingsByPropertyId(propertyId, false)
+        );
+        return ResponseEntity.ok(bookings); // Return 200 OK
+    }
+
+    // Get all bookings of a user
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<BookingBasicDTO>> getBookingsByUserId(@PathVariable Integer userId) {
+        List<BookingBasicDTO> bookings = bookingMapper.toBasicDTOs(
+                bookingService.getBookingsByUserId(userId, false)
+        );
+        return ResponseEntity.ok(bookings); // Return 200 OK
+    }
 
     // Change check-in and/or check-out dates of a booking
     @PatchMapping("/{id}/dates")
@@ -94,21 +127,18 @@ public class BookingController {
         return ResponseEntity.ok(updatedBooking);
     }
 
-    // Confirm payment of a booking
     @PatchMapping("/{id}/confirm-payment")
     public ResponseEntity<BookingBasicDTO> confirmPayment(@PathVariable Integer id) {
         BookingBasicDTO updatedBooking = bookingMapper.toBasicDTO(bookingService.confirmPayment(id));
         return ResponseEntity.ok(updatedBooking);
     }
 
-    // Check-in a booking
     @PatchMapping("/{id}/check-in")
     public ResponseEntity<BookingBasicDTO> checkIn(@PathVariable Integer id) {
         BookingBasicDTO updatedBooking = bookingMapper.toBasicDTO(bookingService.checkIn(id));
         return ResponseEntity.ok(updatedBooking);
     }
 
-    // Check-out a booking
     @PatchMapping("/{id}/check-out")
     public ResponseEntity<BookingBasicDTO> checkOut(@PathVariable Integer id) {
         BookingBasicDTO updatedBooking = bookingMapper.toBasicDTO(bookingService.checkOut(id));

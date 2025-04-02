@@ -3,13 +3,17 @@ package com.david.travel_booking_system.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import lombok.ToString;
+import org.hibernate.annotations.SQLDelete;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Data
+@ToString(exclude = {"roomType", "bookings"}) // Prevent recursion
 public class Room {
+
     @Id
     @SequenceGenerator(name = "room_id_sequence", sequenceName = "room_id_sequence", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "room_id_sequence")
@@ -26,7 +30,7 @@ public class Room {
 
     @Column(nullable = false)
     @NotNull(message = "Active status cannot be null")
-    private boolean active = true;
+    private boolean active;
 
     @Column(nullable = false)
     @NotNull(message = "Availability status cannot be null")
@@ -40,7 +44,11 @@ public class Room {
     @NotNull(message = "Maintenance status cannot be null")
     private boolean underMaintenance;
 
-    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
+    @Column(nullable = false)
+    @NotNull(message = "Deleted status cannot be null")
+    private boolean deleted = false;
+
+    @OneToMany(mappedBy = "room")
     private List<Booking> bookings;
 
     public Room() {}

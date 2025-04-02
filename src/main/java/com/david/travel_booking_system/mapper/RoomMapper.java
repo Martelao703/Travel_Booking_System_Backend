@@ -34,6 +34,7 @@ public interface RoomMapper {
     @Mapping(target = "roomType.id", source = "roomTypeId")
     @Mapping(target = "active", ignore = true)
     @Mapping(target = "occupied", ignore = true)
+    @Mapping(target = "deleted", ignore = true)
     @Mapping(target = "bookings", ignore = true)
     Room createRoomFromDTO(RoomCreateRequestDTO dto);
 
@@ -41,6 +42,7 @@ public interface RoomMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "roomType", ignore = true)
     @Mapping(target = "occupied", ignore = true)
+    @Mapping(target = "deleted", ignore = true)
     @Mapping(target = "bookings", ignore = true)
     void updateRoomFromDTO(@MappingTarget Room room, RoomUpdateRequestDTO inputDTO);
 

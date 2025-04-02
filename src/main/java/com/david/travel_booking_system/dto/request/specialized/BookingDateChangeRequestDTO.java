@@ -10,7 +10,6 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-@ValidDateRange
 public class BookingDateChangeRequestDTO {
     @NotNullIfExplicitlySet
     @WrappedFuture(message = "Planned Check-in date-time must be in the future")

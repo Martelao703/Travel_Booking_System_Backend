@@ -1,5 +1,7 @@
 package com.david.travel_booking_system.dto.response.detail;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
@@ -7,6 +9,11 @@ import lombok.Getter;
 import java.util.List;
 
 @Data
+@JsonPropertyOrder({
+        "id", "propertyId", "name", "pricePerNight", "size", "maxCapacity",
+        "hasPrivateBathroom", "hasPrivateKitchen", "description", "view",
+        "roomFacilities", "bathroomFacilities", "kitchenFacilities", "roomRules"
+})
 public class RoomTypeDetailDTO {
     private Integer id;
     private Integer propertyId;
@@ -16,9 +23,11 @@ public class RoomTypeDetailDTO {
     private int maxCapacity;
 
     @Getter(AccessLevel.NONE)
+    @JsonProperty("hasPrivateBathroom")
     private boolean hasPrivateBathroom;
 
     @Getter(AccessLevel.NONE)
+    @JsonProperty("hasPrivateKitchen")
     private boolean hasPrivateKitchen;
 
     private String description;

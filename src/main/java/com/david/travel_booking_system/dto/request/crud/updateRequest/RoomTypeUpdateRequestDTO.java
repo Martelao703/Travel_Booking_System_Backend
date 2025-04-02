@@ -1,5 +1,6 @@
 package com.david.travel_booking_system.dto.request.crud.updateRequest;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import jakarta.validation.constraints.*;
@@ -29,10 +30,12 @@ public class RoomTypeUpdateRequestDTO {
 
     @NotNull(message = "hasPrivateBathroom cannot be null")
     @Getter(AccessLevel.NONE)
+    @JsonProperty("hasPrivateBathroom")
     private boolean hasPrivateBathroom;
 
     @NotNull(message = "hasPrivateKitchen cannot be null")
     @Getter(AccessLevel.NONE)
+    @JsonProperty("hasPrivateKitchen")
     private boolean hasPrivateKitchen;
 
     @Size(max = 1000, message = "Description cannot exceed 1000 characters")

@@ -5,8 +5,11 @@ import com.david.travel_booking_system.dto.request.specialized.BookingDateChange
 import com.david.travel_booking_system.enumsAndSets.BookingStatus;
 import com.david.travel_booking_system.model.Booking;
 import com.david.travel_booking_system.model.Room;
+import com.david.travel_booking_system.model.User;
 import com.david.travel_booking_system.repository.BookingRepository;
+import com.david.travel_booking_system.specification.BookingSpecifications;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -30,13 +33,11 @@ public class BookingServiceHelper {
         return pricePerNight * days;
     }
 
-    public void validateCreateRequestDTO(BookingCreateRequestDTO bookingCreateRequestDTO, Room room) {
-        // Check if property is active
-        if (!room.getRoomType().getProperty().isActive()) {
-            throw new IllegalStateException("Property is not active");
+    public void validateCreateRequestDTO(BookingCreateRequestDTO bookingCreateRequestDTO, Room room, User user) {
+        // Check active status of user and room
+        if (!user.isActive()) {
+            throw new IllegalStateException("User is not active");
         }
-
-        // Check if room is active
         if (!room.isActive()) {
             throw new IllegalStateException("Room is not active");
         }
@@ -50,7 +51,8 @@ public class BookingServiceHelper {
         boolean isOverlapping = bookingRepository.areDatesOverlappingOtherBookings(
                 room.getId(),
                 bookingCreateRequestDTO.getPlannedCheckOutDateTime(),
-                bookingCreateRequestDTO.getPlannedCheckInDateTime()
+                bookingCreateRequestDTO.getPlannedCheckInDateTime(),
+                List.of(BookingStatus.PENDING, BookingStatus.CONFIRMED, BookingStatus.ONGOING)
         );
         if (isOverlapping) {
             throw new IllegalStateException("Room is already booked for the selected dates");
@@ -78,6 +80,11 @@ public class BookingServiceHelper {
         LocalDateTime newCheckOut = requestDTO.getPlannedCheckOutDateTime().isExplicitlySet()
                 ? requestDTO.getPlannedCheckOutDateTime().getValue()
                 : booking.getPlannedCheckOutDateTime();
+
+        // Check if new date range is valid
+        if (newCheckIn.isAfter(newCheckOut)) {
+            throw new IllegalArgumentException("Check-out date must be after check-in date");
+        }
 
         // Check for overlapping bookings
         boolean isOverlapping = bookingRepository.areDatesOverlappingOtherBookingIdCheck(

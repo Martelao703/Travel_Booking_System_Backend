@@ -1,8 +1,9 @@
 package com.david.travel_booking_system.controller;
 
+import com.david.travel_booking_system.dto.request.crud.updateRequest.BedUpdateRequestDTO;
 import com.david.travel_booking_system.dto.response.basic.BedBasicDTO;
 import com.david.travel_booking_system.dto.response.full.BedFullDTO;
-import com.david.travel_booking_system.dto.request.general.BedRequestDTO;
+import com.david.travel_booking_system.dto.request.crud.createRequest.BedCreateRequestDTO;
 import com.david.travel_booking_system.dto.request.crud.patchRequest.BedPatchRequestDTO;
 import com.david.travel_booking_system.mapper.BedMapper;
 import com.david.travel_booking_system.service.BedService;
@@ -33,20 +34,20 @@ public class BedController {
 
     /* Returns BasicDTO instead of DetailDTO due to the entity's absence of non-nested collection fields */
     @PostMapping
-    public ResponseEntity<BedBasicDTO> createBed(@RequestBody @Valid BedRequestDTO bedRequestDTO) {
-        BedBasicDTO createdBed = bedMapper.toBasicDTO(bedService.createBed(bedRequestDTO));
+    public ResponseEntity<BedBasicDTO> createBed(@RequestBody @Valid BedCreateRequestDTO bedCreateRequestDTO) {
+        BedBasicDTO createdBed = bedMapper.toBasicDTO(bedService.createBed(bedCreateRequestDTO));
         return ResponseEntity.status(201).body(createdBed); // Return 201 Created
     }
 
     @GetMapping
     public ResponseEntity<List<BedBasicDTO>> getBeds() {
-        List<BedBasicDTO> beds = bedMapper.toBasicDTOs(bedService.getBeds());
+        List<BedBasicDTO> beds = bedMapper.toBasicDTOs(bedService.getBeds(false));
         return ResponseEntity.ok(beds); // Return 200 OK
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<BedFullDTO> getBed(@PathVariable Integer id) {
-        BedFullDTO bed = bedMapper.toFullDTO(bedService.getBedById(id));
+        BedFullDTO bed = bedMapper.toFullDTO(bedService.getBedById(id, false));
         return ResponseEntity.ok(bed); // Return 200 OK
     }
 
@@ -54,9 +55,9 @@ public class BedController {
     @PutMapping("/{id}")
     public ResponseEntity<BedBasicDTO> updateBed(
             @PathVariable Integer id,
-            @RequestBody @Valid BedRequestDTO bedRequestDTO
+            @RequestBody @Valid BedUpdateRequestDTO bedUpdateRequestDTO
     ) {
-        BedBasicDTO updatedBed = bedMapper.toBasicDTO(bedService.updateBed(id, bedRequestDTO));
+        BedBasicDTO updatedBed = bedMapper.toBasicDTO(bedService.updateBed(id, bedUpdateRequestDTO));
         return ResponseEntity.ok(updatedBed); // Return 200 OK
     }
 
@@ -72,7 +73,31 @@ public class BedController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBed(@PathVariable Integer id) {
-        bedService.deleteBed(id);
+        bedService.softDeleteBed(id);
         return ResponseEntity.noContent().build(); // Return 204 No Content
+    }
+
+    @DeleteMapping("/{id}/hard")
+    public ResponseEntity<Void> hardDeleteBed(@PathVariable Integer id) {
+        bedService.hardDeleteBed(id);
+        return ResponseEntity.noContent().build(); // Return 204 No Content
+    }
+
+    /* Custom Endpoints -------------------------------------------------------------------------------------------- */
+
+    @GetMapping("/roomType/{roomTypeId}")
+    public ResponseEntity<List<BedBasicDTO>> getBedsByRoomTypeId(@PathVariable Integer roomTypeId) {
+        List<BedBasicDTO> beds = bedMapper.toBasicDTOs(
+                bedService.getBedsByRoomTypeId(roomTypeId, false)
+        );
+        return ResponseEntity.ok(beds); // Return 200 OK
+    }
+
+    @GetMapping("/property/{propertyId}")
+    public ResponseEntity<List<BedBasicDTO>> getBedsByPropertyId(@PathVariable Integer propertyId) {
+        List<BedBasicDTO> beds = bedMapper.toBasicDTOs(
+                bedService.getBedsByPropertyId(propertyId, false)
+        );
+        return ResponseEntity.ok(beds); // Return 200 OK
     }
 }

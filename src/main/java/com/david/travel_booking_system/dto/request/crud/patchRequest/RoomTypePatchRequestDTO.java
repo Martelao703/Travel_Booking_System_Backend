@@ -4,6 +4,7 @@ import com.david.travel_booking_system.util.OptionalFieldWrapper;
 import com.david.travel_booking_system.validation.annotation.NotNullIfExplicitlySet;
 import com.david.travel_booking_system.validation.annotation.WrappedMin;
 import com.david.travel_booking_system.validation.annotation.WrappedSize;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import jakarta.validation.constraints.Min;
@@ -34,10 +35,12 @@ public class RoomTypePatchRequestDTO {
 
     @NotNullIfExplicitlySet
     @Getter(AccessLevel.NONE)
+    @JsonProperty("hasPrivateBathroom")
     private OptionalFieldWrapper<Boolean> hasPrivateBathroom = OptionalFieldWrapper.unset();
 
     @NotNullIfExplicitlySet
     @Getter(AccessLevel.NONE)
+    @JsonProperty("hasPrivateKitchen")
     private OptionalFieldWrapper<Boolean> hasPrivateKitchen = OptionalFieldWrapper.unset();
 
     @WrappedSize(max = 1000, message = "Description cannot exceed 1000 characters")

@@ -42,12 +42,14 @@ public interface PropertyMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "active", ignore = true)
     @Mapping(target = "userRating", ignore = true)
+    @Mapping(target = "deleted", ignore = true)
     @Mapping(target = "roomTypes", ignore = true)
     Property createPropertyFromDTO(PropertyCreateRequestDTO dto);
 
     // Update Property from PropertyUpdateRequestDTO
     @Mapping(target = "coordinates", expression = "java(mapCoordinates(inputDTO.getLatitude(), inputDTO.getLongitude()))")
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "deleted", ignore = true)
     @Mapping(target = "roomTypes", ignore = true)
     void updatePropertyFromDTO(@MappingTarget Property property, PropertyUpdateRequestDTO inputDTO);
 

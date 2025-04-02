@@ -45,7 +45,11 @@ public class User {
     @Past(message = "Date of birth must be in the past")
     private LocalDate dateOfBirth;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @Column(nullable = false)
+    @NotNull(message = "Deleted status cannot be null")
+    private boolean deleted = false;
+
+    @OneToMany(mappedBy = "user")
     private List<Booking> bookings;
 
     public User() {
