@@ -15,12 +15,12 @@ public interface RoomTypeRepository extends JpaRepository<RoomType, Integer>, Jp
     /* CRUD and Basic methods -------------------------------------------------------------------------------------- */
 
     @Modifying
-    @Query(" UPDATE RoomType rt SET rt.deleted = true WHERE rt.id = :id ")
-    void softDeleteById(Integer id);
-
-    @Modifying
     @Query("UPDATE RoomType rt SET rt.deleted = true WHERE rt.property.id = :propertyId AND rt.deleted = false ")
     void softDeleteByPropertyId(@Param("propertyId") Integer propertyId);
+
+    @Modifying
+    @Query("UPDATE RoomType rt SET rt.deleted = false WHERE rt.property.id = :propertyId AND rt.deleted = false")
+    void restoreByPropertyId(Integer propertyId);
 
     /* Custom methods ---------------------------------------------------------------------------------------------- */
 }

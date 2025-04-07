@@ -7,9 +7,7 @@ import com.david.travel_booking_system.model.Booking;
 import com.david.travel_booking_system.model.Room;
 import com.david.travel_booking_system.model.User;
 import com.david.travel_booking_system.repository.BookingRepository;
-import com.david.travel_booking_system.specification.BookingSpecifications;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;

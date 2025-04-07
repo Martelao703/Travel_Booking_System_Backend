@@ -2,6 +2,7 @@ package com.david.travel_booking_system.dto.request.crud.patchRequest;
 
 import com.david.travel_booking_system.enumsAndSets.BedType;
 import com.david.travel_booking_system.util.OptionalFieldWrapper;
+import com.david.travel_booking_system.validation.annotation.AtLeastOneFieldSet;
 import com.david.travel_booking_system.validation.annotation.NotNullIfExplicitlySet;
 import com.david.travel_booking_system.validation.annotation.WrappedMax;
 import com.david.travel_booking_system.validation.annotation.WrappedMin;
@@ -9,6 +10,7 @@ import jakarta.validation.constraints.Min;
 import lombok.Data;
 
 @Data
+@AtLeastOneFieldSet
 public class BedPatchRequestDTO {
     @NotNullIfExplicitlySet
     private OptionalFieldWrapper<BedType> bedType = OptionalFieldWrapper.unset();

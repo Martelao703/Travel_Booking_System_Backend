@@ -30,7 +30,7 @@ public class BookingController {
         this.bookingMapper = bookingMapper;
     }
 
-    /* Basic CRUD -------------------------------------------------------------------------------------------------- */
+    /* CRUD and Basic Endpoints ------------------------------------------------------------------------------------ */
 
     /* Returns BasicDTO instead of DetailDTO due to the entity's absence of non-nested collection fields */
     @PostMapping
@@ -86,34 +86,13 @@ public class BookingController {
         return ResponseEntity.noContent().build(); // Return 204 No Content
     }
 
+    @PatchMapping("/{id}/restore")
+    public ResponseEntity<Void> restoreBooking(@PathVariable Integer id) {
+        bookingService.restoreBooking(id);
+        return ResponseEntity.noContent().build(); // Return 204 No Content
+    }
+
     /* Custom Endpoints -------------------------------------------------------------------------------------------- */
-
-    // Get all bookings of a room
-    @GetMapping("/room/{roomId}")
-    public ResponseEntity<List<BookingBasicDTO>> getBookingsByRoomId(@PathVariable Integer roomId) {
-        List<BookingBasicDTO> bookings = bookingMapper.toBasicDTOs(
-                bookingService.getBookingsByRoomId(roomId, false)
-        );
-        return ResponseEntity.ok(bookings); // Return 200 OK
-    }
-
-    // Get all bookings of a property
-    @GetMapping("/property/{propertyId}")
-    public ResponseEntity<List<BookingBasicDTO>> getBookingsByPropertyId(@PathVariable Integer propertyId) {
-        List<BookingBasicDTO> bookings = bookingMapper.toBasicDTOs(
-                bookingService.getBookingsByPropertyId(propertyId, false)
-        );
-        return ResponseEntity.ok(bookings); // Return 200 OK
-    }
-
-    // Get all bookings of a user
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<BookingBasicDTO>> getBookingsByUserId(@PathVariable Integer userId) {
-        List<BookingBasicDTO> bookings = bookingMapper.toBasicDTOs(
-                bookingService.getBookingsByUserId(userId, false)
-        );
-        return ResponseEntity.ok(bookings); // Return 200 OK
-    }
 
     // Change check-in and/or check-out dates of a booking
     @PatchMapping("/{id}/dates")

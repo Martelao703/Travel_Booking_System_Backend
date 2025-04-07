@@ -30,7 +30,7 @@ public class BedController {
         this.bedMapper = bedMapper;
     }
 
-    /* Basic CRUD -------------------------------------------------------------------------------------------------- */
+    /* CRUD and Basic Endpoints ------------------------------------------------------------------------------------ */
 
     /* Returns BasicDTO instead of DetailDTO due to the entity's absence of non-nested collection fields */
     @PostMapping
@@ -83,21 +83,12 @@ public class BedController {
         return ResponseEntity.noContent().build(); // Return 204 No Content
     }
 
+    @PatchMapping("/{id}/restore")
+    public ResponseEntity<Void> restoreBed(@PathVariable Integer id) {
+        bedService.restoreBed(id);
+        return ResponseEntity.noContent().build(); // Return 204 No Content
+    }
+
     /* Custom Endpoints -------------------------------------------------------------------------------------------- */
 
-    @GetMapping("/roomType/{roomTypeId}")
-    public ResponseEntity<List<BedBasicDTO>> getBedsByRoomTypeId(@PathVariable Integer roomTypeId) {
-        List<BedBasicDTO> beds = bedMapper.toBasicDTOs(
-                bedService.getBedsByRoomTypeId(roomTypeId, false)
-        );
-        return ResponseEntity.ok(beds); // Return 200 OK
-    }
-
-    @GetMapping("/property/{propertyId}")
-    public ResponseEntity<List<BedBasicDTO>> getBedsByPropertyId(@PathVariable Integer propertyId) {
-        List<BedBasicDTO> beds = bedMapper.toBasicDTOs(
-                bedService.getBedsByPropertyId(propertyId, false)
-        );
-        return ResponseEntity.ok(beds); // Return 200 OK
-    }
 }

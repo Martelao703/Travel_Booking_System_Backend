@@ -106,6 +106,22 @@ public class EntityPatcher {
         }
     }
 
+    // Helper method to check if any field in the DTO is explicitly set
+    public static <D> boolean hasAnyExplicitFieldSet(D dto) {
+        for (Field field : dto.getClass().getDeclaredFields()) {
+            field.setAccessible(true);
+            try {
+                Object value = field.get(dto);
+                if (value instanceof OptionalFieldWrapper<?> wrapper && wrapper.isExplicitlySet()) {
+                    return true;
+                }
+            } catch (IllegalAccessException e) {
+                throw new IllegalStateException("Error accessing DTO field", e);
+            }
+        }
+        return false;
+    }
+
     // Functional interface to handle DTO field operations during iteration
     @FunctionalInterface
     private interface FieldHandler {

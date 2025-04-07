@@ -48,7 +48,7 @@ public class BedService {
         this.bedMapper = bedMapper;
     }
 
-    /* Basic CRUD -------------------------------------------------------------------------------------------------- */
+    /* CRUD and Basic Methods -------------------------------------------------------------------------------------- */
 
     @Transactional
     public Bed createBed(BedCreateRequestDTO bedCreateRequestDTO) {
@@ -167,7 +167,21 @@ public class BedService {
         bedRepository.deleteById(id);
     }
 
-    /* Custom methods ---------------------------------------------------------------------------------------------- */
+    @Transactional
+    public void restoreBed(Integer id) {
+        Bed bed = getBedById(id, true);
+
+        // Check if bed is soft-deleted
+        if (!bed.isDeleted()) {
+            throw new IllegalStateException("Bed is not deleted");
+        }
+
+        // Restore the bed
+        bed.setDeleted(false);
+        bedRepository.save(bed);
+    }
+
+    /* Get Lists of Nested Entities */
 
     @Transactional(readOnly = true)
     public List<Bed> getBedsByRoomTypeId(Integer roomTypeId, boolean includeDeleted) {
@@ -207,6 +221,8 @@ public class BedService {
         return bedRepository.findAll(bedSpec);
     }
 
+    /* Custom methods ---------------------------------------------------------------------------------------------- */
+
     /* Helper methods ---------------------------------------------------------------------------------------------- */
 
     private boolean hasActiveBookings(Integer roomTypeId) {
@@ -222,7 +238,6 @@ public class BedService {
         // Filter bookings by bed's room type ID and ONGOING status
         Specification<Booking> bookingSpec = BookingSpecifications.filterByRoomTypeId(roomTypeId)
                 .and(BookingSpecifications.filterByStatus(BookingStatus.ONGOING));
-
         return bookingRepository.exists(bookingSpec);
     }
 }

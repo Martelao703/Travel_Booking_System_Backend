@@ -20,6 +20,8 @@ public interface PropertyMapper {
     /* from Entity to DTO -------------------------------------------------------------------------------------------*/
 
     // Map to BasicDTO
+    @Mapping(target = "latitude", source = "coordinates.latitude")
+    @Mapping(target = "longitude", source = "coordinates.longitude")
     PropertyBasicDTO toBasicDTO(Property property);
     List<PropertyBasicDTO> toBasicDTOs(List<Property> properties);
 

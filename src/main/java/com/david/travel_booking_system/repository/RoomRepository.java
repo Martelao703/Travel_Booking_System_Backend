@@ -17,10 +17,6 @@ public interface RoomRepository extends JpaRepository<Room, Integer>, JpaSpecifi
     /* CRUD and Basic methods -------------------------------------------------------------------------------------- */
 
     @Modifying
-    @Query(" UPDATE Room r SET r.deleted = true WHERE r.id = :id ")
-    void softDeleteById(Integer id);
-
-    @Modifying
     @Query("UPDATE Room r SET r.deleted = true WHERE r.roomType.id = :roomTypeId AND r.deleted = false ")
     void softDeleteByRoomTypeId(Integer roomTypeId);
 
@@ -33,6 +29,40 @@ public interface RoomRepository extends JpaRepository<Room, Integer>, JpaSpecifi
             "                     AND rt.deleted = false) " +
             "AND r.deleted = false")
     void softDeleteByPropertyId(@Param("propertyId") Integer propertyId);
+
+    @Modifying
+    @Query("UPDATE Room r SET r.deleted = false WHERE r.roomType.id = :roomTypeId AND r.deleted = true")
+    void restoreByRoomTypeId(Integer roomTypeId);
+
+    @Modifying
+    @Query("UPDATE Room r " +
+            "SET r.deleted = false " +
+            "WHERE r.roomType IN (SELECT rt " +
+            "                     FROM RoomType rt " +
+            "                     WHERE rt.property.id = :propertyId" +
+            "                     AND rt.deleted = false) " +
+            "AND r.deleted = true")
+    void restoreByPropertyId(@Param("propertyId") Integer propertyId);
+
+    @Modifying
+    @Query("UPDATE Room r " +
+            "SET r.active = true " +
+            "WHERE r.roomType IN (SELECT rt " +
+            "                     FROM RoomType rt " +
+            "                     WHERE rt.property.id = :propertyId" +
+            "                     AND rt.deleted = false) " +
+            "AND r.deleted = true")
+    void activateByPropertyId(Integer propertyId);
+
+    @Modifying
+    @Query("UPDATE Room r " +
+            "SET r.active = false " +
+            "WHERE r.roomType IN (SELECT rt " +
+            "                     FROM RoomType rt " +
+            "                     WHERE rt.property.id = :propertyId" +
+            "                     AND rt.deleted = false) " +
+            "AND r.deleted = false")
+    void deactivateByPropertyId(Integer propertyId);
 
     /* Custom methods ---------------------------------------------------------------------------------------------- */
 }

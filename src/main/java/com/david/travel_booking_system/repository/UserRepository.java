@@ -16,9 +16,6 @@ public interface UserRepository extends JpaRepository<User, Integer>, JpaSpecifi
 
     /* CRUD and Basic methods -------------------------------------------------------------------------------------- */
 
-    Optional<User> findByEmail(String email);
-    Optional<User> findByPhoneNumber(String phoneNumber);
-
     @Modifying
     @Query(" UPDATE User u SET u.deleted = true WHERE u.id = :id ")
     void softDeleteById(Integer id);

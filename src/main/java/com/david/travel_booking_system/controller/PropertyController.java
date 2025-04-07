@@ -1,14 +1,13 @@
 package com.david.travel_booking_system.controller;
 
-import com.david.travel_booking_system.dto.response.basic.PropertyBasicDTO;
-import com.david.travel_booking_system.dto.response.basic.RoomTypeBasicDTO;
+import com.david.travel_booking_system.dto.response.basic.*;
 import com.david.travel_booking_system.dto.response.detail.PropertyDetailDTO;
 import com.david.travel_booking_system.dto.request.crud.createRequest.PropertyCreateRequestDTO;
 import com.david.travel_booking_system.dto.response.full.PropertyFullDTO;
 import com.david.travel_booking_system.dto.request.crud.patchRequest.PropertyPatchRequestDTO;
 import com.david.travel_booking_system.dto.request.crud.updateRequest.PropertyUpdateRequestDTO;
-import com.david.travel_booking_system.mapper.PropertyMapper;
-import com.david.travel_booking_system.service.PropertyService;
+import com.david.travel_booking_system.mapper.*;
+import com.david.travel_booking_system.service.*;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,16 +22,38 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/properties")
 public class PropertyController {
+    // Services
     private final PropertyService propertyService;
+    private final RoomTypeService roomTypeService;
+    private final RoomService roomService;
+    private final BedService bedService;
+    private final BookingService bookingService;
+
+    // Mappers
     private final PropertyMapper propertyMapper;
+    private final RoomTypeMapper roomTypeMapper;
+    private final RoomMapper roomMapper;
+    private final BedMapper bedMapper;
+    private final BookingMapper bookingMapper;
 
     @Autowired
-    public PropertyController(PropertyService propertyService, PropertyMapper propertyMapper) {
+    public PropertyController(PropertyService propertyService, RoomTypeService roomTypeService, RoomService roomService,
+                              BedService bedService, BookingService bookingService, PropertyMapper propertyMapper,
+                              RoomTypeMapper roomTypeMapper, RoomMapper roomMapper, BedMapper bedMapper,
+                              BookingMapper bookingMapper) {
         this.propertyService = propertyService;
+        this.roomTypeService = roomTypeService;
+        this.roomService = roomService;
+        this.bedService = bedService;
+        this.bookingService = bookingService;
         this.propertyMapper = propertyMapper;
+        this.roomTypeMapper = roomTypeMapper;
+        this.roomMapper = roomMapper;
+        this.bedMapper = bedMapper;
+        this.bookingMapper = bookingMapper;
     }
 
-    /* Basic CRUD -------------------------------------------------------------------------------------------------- */
+    /* CRUD and Basic Endpoints ------------------------------------------------------------------------------------ */
 
     @PostMapping
     public ResponseEntity<PropertyDetailDTO> createProperty(
@@ -90,5 +111,53 @@ public class PropertyController {
         return ResponseEntity.noContent().build(); // Return 204 No Content
     }
 
+    @PatchMapping("/{id}/restore")
+    public ResponseEntity<Void> restoreProperty(@PathVariable Integer id) {
+        propertyService.restoreProperty(id);
+        return ResponseEntity.noContent().build(); // 204 No Content
+    }
+
+    @GetMapping("/{id}/roomTypes")
+    public ResponseEntity<List<RoomTypeBasicDTO>> getRoomTypes(@PathVariable Integer id) {
+        List<RoomTypeBasicDTO> roomTypes = roomTypeMapper.toBasicDTOs(
+                roomTypeService.getRoomTypesByPropertyId(id, false)
+        );
+        return ResponseEntity.ok(roomTypes); // Return 200 OK
+    }
+
+    /* Get Lists of Nested Entities */
+
+    @GetMapping("/{id}/rooms")
+    public ResponseEntity<List<RoomBasicDTO>> getRooms(@PathVariable Integer id) {
+        List<RoomBasicDTO> rooms = roomMapper.toBasicDTOs(roomService.getRoomsByPropertyId(id, false));
+        return ResponseEntity.ok(rooms); // Return 200 OK
+    }
+
+    @GetMapping("/{id}/beds")
+    public ResponseEntity<List<BedBasicDTO>> getBeds(@PathVariable Integer id) {
+        List<BedBasicDTO> beds = bedMapper.toBasicDTOs(bedService.getBedsByPropertyId(id, false));
+        return ResponseEntity.ok(beds); // Return 200 OK
+    }
+
+    @GetMapping("/{id}/bookings")
+    public ResponseEntity<List<BookingBasicDTO>> getBookings(@PathVariable Integer id) {
+        List<BookingBasicDTO> bookings = bookingMapper.toBasicDTOs(
+                bookingService.getBookingsByPropertyId(id, false)
+        );
+        return ResponseEntity.ok(bookings); // Return 200 OK
+    }
+
     /* Custom Endpoints -------------------------------------------------------------------------------------------- */
+
+    @PatchMapping("/{id}/activate")
+    public ResponseEntity<Void> activateProperty(@PathVariable Integer id) {
+        propertyService.activateProperty(id);
+        return ResponseEntity.noContent().build(); // Return 204 No Content
+    }
+
+    @PatchMapping("/{id}/deactivate")
+    public ResponseEntity<Void> deactivateProperty(@PathVariable Integer id) {
+        propertyService.deactivateProperty(id);
+        return ResponseEntity.noContent().build(); // Return 204 No Content
+    }
 }

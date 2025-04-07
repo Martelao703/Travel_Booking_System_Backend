@@ -12,6 +12,7 @@ import com.david.travel_booking_system.repository.BookingRepository;
 import com.david.travel_booking_system.repository.UserRepository;
 import com.david.travel_booking_system.specification.BaseSpecifications;
 import com.david.travel_booking_system.specification.BookingSpecifications;
+import com.david.travel_booking_system.specification.UserSpecifications;
 import com.david.travel_booking_system.util.EntityPatcher;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,7 @@ public class UserService {
         this.userMapper = userMapper;
     }
 
-    /* Basic CRUD -------------------------------------------------------------------------------------------------- */
+    /* CRUD and Basic Methods -------------------------------------------------------------------------------------- */
 
     @Transactional
     public User createUser(UserCreateRequestDTO userCreateRequestDTO) {
@@ -46,10 +47,10 @@ public class UserService {
         String email = userCreateRequestDTO.getEmail();
         String phoneNumber = userCreateRequestDTO.getPhoneNumber();
 
-        if (userRepository.findByEmail(email).isPresent()) {
+        if (existsByEmail(email)) {
             throw new IllegalArgumentException("Email is already in use.");
         }
-        if (phoneNumber != null && userRepository.findByPhoneNumber(phoneNumber).isPresent()) {
+        if (phoneNumber != null && existsByPhoneNumber(phoneNumber)) {
             throw new IllegalArgumentException("Phone number is already in use.");
         }
 
@@ -92,11 +93,11 @@ public class UserService {
         String newEmail = userUpdateRequestDTO.getEmail();
         String newPhoneNumber = userUpdateRequestDTO.getPhoneNumber();
 
-        if (!newEmail.equals(user.getEmail()) && userRepository.findByEmail(newEmail).isPresent()) {
+        if (!newEmail.equals(user.getEmail()) && existsByEmail(newEmail)) {
             throw new IllegalArgumentException("Email is already in use.");
         }
         if (newPhoneNumber != null && !newPhoneNumber.equals(user.getPhoneNumber())
-                && userRepository.findByPhoneNumber(newPhoneNumber).isPresent()) {
+                && existsByPhoneNumber(newPhoneNumber)) {
             throw new IllegalArgumentException("Phone number is already in use.");
         }
 
@@ -137,10 +138,10 @@ public class UserService {
         String newEmail = userPatchRequestDTO.getEmail().getValue();
         String newPhoneNumber = userPatchRequestDTO.getPhoneNumber().getValue();
 
-        if (newEmail != null && userRepository.findByEmail(newEmail).isPresent()) {
+        if (newEmail != null && existsByEmail(newEmail)) {
             throw new IllegalArgumentException("Email is already in use.");
         }
-        if (newPhoneNumber != null && userRepository.findByPhoneNumber(newPhoneNumber).isPresent()) {
+        if (newPhoneNumber != null && existsByPhoneNumber(newPhoneNumber)) {
             throw new IllegalArgumentException("Phone number is already in use.");
         }
 
@@ -181,9 +182,54 @@ public class UserService {
         userRepository.delete(user);
     }
 
-    /* Service custom endpoint methods ----------------------------------------------------------------------------- */
+    @Transactional
+    public void restoreUser(Integer id) {
+        User user = getUserById(id, true);
 
+        // Check if user is soft-deleted
+        if (!user.isDeleted()) {
+            throw new IllegalStateException("User is not soft-deleted");
+        }
 
+        // Restore user
+        user.setDeleted(false);
+        userRepository.save(user);
+    }
+
+    /* Custom methods ---------------------------------------------------------------------------------------------- */
+
+    @Transactional
+    public void activateUser(Integer id) {
+        User user = getUserById(id, true);
+
+        // Check if user is not already active
+        if (user.isActive()) {
+            throw new IllegalStateException("User is already active");
+        }
+
+        // Activate user
+        user.setActive(true);
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void deactivateUser(Integer id) {
+        User user = getUserById(id, true);
+
+        // Check if user is not already inactive
+        if (!user.isActive()) {
+            throw new IllegalStateException("User is already inactive");
+        }
+
+        // Check if user has any active bookings
+        if (hasActiveBookings(id)) {
+            throw new IllegalStateException("Cannot deactivate user with active bookings");
+        }
+
+        // Deactivate user
+        user.setActive(false);
+        userRepository.save(user);
+    }
 
     /* Helper methods ---------------------------------------------------------------------------------------------- */
 
@@ -200,7 +246,18 @@ public class UserService {
         // Filter bookings by user ID and ONGOING status
         Specification<Booking> bookingSpec = BookingSpecifications.filterByUserId(id)
                 .and(BookingSpecifications.filterByStatus(BookingStatus.ONGOING));
-
         return bookingRepository.exists(bookingSpec);
+    }
+
+    private boolean existsByEmail(String email) {
+        // Filter users by email
+        Specification<User> userSpec = UserSpecifications.filterByEmail(email);
+        return userRepository.exists(userSpec);
+    }
+
+    private boolean existsByPhoneNumber(String phoneNumber) {
+        // Filter users by phone number
+        Specification<User> userSpec = UserSpecifications.filterByPhoneNumber(phoneNumber);
+        return userRepository.exists(userSpec);
     }
 }

@@ -1,4 +1,4 @@
-package com.david.travel_booking_system;
+package com.david.travel_booking_system.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -45,7 +45,7 @@ public class PropertyService {
         this.propertyMapper = propertyMapper;
     }
 
-    /* Basic CRUD -------------------------------------------------------------------------------------------------- */
+    /* CRUD and Basic Methods -------------------------------------------------------------------------------------- */
 
     @Transactional
     public Property createProperty(PropertyCreateRequestDTO propertyCreateRequestDTO) {
@@ -157,9 +157,62 @@ public class PropertyService {
         propertyRepository.deleteById(id);
     }
 
+    @Transactional
+    public void restoreProperty(Integer id) {
+        Property property = getPropertyById(id, true);
+
+        // Check if property is soft-deleted
+        if (!property.isDeleted()) {
+            throw new IllegalStateException("Property is not deleted");
+        }
+
+        // Restore property and linked entities
+        property.setDeleted(false);
+        roomTypeRepository.restoreByPropertyId(id);
+        roomRepository.restoreByPropertyId(id);
+        bedRepository.restoreByPropertyId(id);
+
+        propertyRepository.save(property);
+    }
+
     /* Custom methods ---------------------------------------------------------------------------------------------- */
 
+    @Transactional
+    public void activateProperty(Integer id) {
+        Property property = getPropertyById(id, true);
 
+        // Check if property is not already active
+        if (property.isActive()) {
+            throw new IllegalStateException("Property is already active");
+        }
+
+        // Set property and linked entities to active
+        property.setActive(true);
+        roomRepository.activateByPropertyId(id);
+
+        propertyRepository.save(property);
+    }
+
+    @Transactional
+    public void deactivateProperty(Integer id) {
+        Property property = getPropertyById(id, true);
+
+        // Check if property is not already deactivated
+        if (!property.isActive()) {
+            throw new IllegalStateException("Property is already deactivated");
+        }
+
+        // Check if property has any rooms with active bookings
+        if (hasActiveBookings(id)) {
+            throw new IllegalStateException("Cannot deactivate a property with active bookings");
+        }
+
+        // Set property and linked entities to inactive
+        roomRepository.deactivateByPropertyId(id);
+        property.setActive(false);
+
+        propertyRepository.save(property);
+    }
 
     /* Helper methods ---------------------------------------------------------------------------------------------- */
 
@@ -176,7 +229,6 @@ public class PropertyService {
         // Filter bookings by property ID and ONGOING status
         Specification<Booking> bookingSpec = BookingSpecifications.filterByPropertyId(id)
                 .and(BookingSpecifications.filterByStatus(BookingStatus.ONGOING));
-
         return bookingRepository.exists(bookingSpec);
     }
 }

@@ -26,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class BookingService {
@@ -54,7 +53,7 @@ public class BookingService {
         this.bookingServiceHelper = bookingServiceHelper;
     }
 
-    /* Basic CRUD -------------------------------------------------------------------------------------------------- */
+    /* CRUD and Basic Methods -------------------------------------------------------------------------------------- */
 
     @Transactional
     public Booking createBooking(BookingCreateRequestDTO bookingCreateRequestDTO) {
@@ -167,7 +166,8 @@ public class BookingService {
         // Check if booking is not soft-deleted
         if (booking.isDeleted()) {
             // Check if booking is still in progress
-            if (booking.getStatus() == BookingStatus.CONFIRMED || booking.getStatus() == BookingStatus.PENDING) {
+            if (booking.getStatus() == BookingStatus.CONFIRMED || booking.getStatus() == BookingStatus.PENDING
+                    || booking.getStatus() == BookingStatus.ONGOING) {
                 throw new IllegalStateException("Cannot delete booking with status ' " + booking.getStatus() + " ' ");
             }
         }
@@ -176,7 +176,21 @@ public class BookingService {
         bookingRepository.deleteById(id);
     }
 
-    /* Custom methods ---------------------------------------------------------------------------------------------- */
+    @Transactional
+    public void restoreBooking(Integer id) {
+        Booking booking = getBookingById(id, true);
+
+        // Check if booking is soft-deleted
+        if (!booking.isDeleted()) {
+            throw new IllegalStateException("Booking is not deleted");
+        }
+
+        // Restore the booking
+        booking.setDeleted(false);
+        bookingRepository.save(booking);
+    }
+
+    /* Get Lists of Nested Entities */
 
     @Transactional(readOnly = true)
     public List<Booking> getBookingsByRoomId(Integer roomId, boolean includeDeleted) {
@@ -234,6 +248,8 @@ public class BookingService {
 
         return bookingRepository.findAll(bookingSpec);
     }
+
+    /* Custom methods ---------------------------------------------------------------------------------------------- */
 
     @Transactional
     public Booking changeBookingDates(Integer id, BookingDateChangeRequestDTO bookingDateChangeRequestDTO) {

@@ -46,7 +46,7 @@ public class RoomService {
         this.roomMapper = roomMapper;
     }
 
-    /* Basic CRUD -------------------------------------------------------------------------------------------------- */
+    /* CRUD and Basic Methods -------------------------------------------------------------------------------------- */
 
     @Transactional
     public Room createRoom(RoomCreateRequestDTO roomCreateRequestDTO) {
@@ -169,7 +169,21 @@ public class RoomService {
         roomRepository.deleteById(id);
     }
 
-    /* Custom methods ---------------------------------------------------------------------------------------------- */
+    @Transactional
+    public void restoreRoom(Integer id) {
+        Room room = getRoomById(id, true);
+
+        // Check if room is soft-deleted
+        if (!room.isDeleted()) {
+            throw new IllegalStateException("Room is not deleted");
+        }
+
+        // Restore room
+        room.setDeleted(false);
+        roomRepository.save(room);
+    }
+
+    /* Get Lists of Nested Entities */
 
     @Transactional(readOnly = true)
     public List<Room> getRoomsByRoomTypeId(Integer roomTypeId, boolean includeDeleted) {
@@ -209,6 +223,41 @@ public class RoomService {
         return roomRepository.findAll(roomSpec);
     }
 
+    /* Custom methods ---------------------------------------------------------------------------------------------- */
+
+    @Transactional
+    public void activateRoom(Integer id) {
+        Room room = getRoomById(id, true);
+
+        // Check if room is not already active
+        if (room.isActive()) {
+            throw new IllegalStateException("Room is already active");
+        }
+
+        // Set room to active
+        room.setActive(true);
+        roomRepository.save(room);
+    }
+
+    @Transactional
+    public void deactivateRoom(Integer id) {
+        Room room = getRoomById(id, true);
+
+        // Check if room is not already deactivated
+        if (!room.isActive()) {
+            throw new IllegalStateException("Room is already deactivated");
+        }
+
+        // Check if room has any active bookings
+        if (hasActiveBookings(id)) {
+            throw new IllegalStateException("Cannot deactivate a room with active bookings");
+        }
+
+        // Set room to inactive
+        room.setActive(false);
+        roomRepository.save(room);
+    }
+
     /* Helper methods ---------------------------------------------------------------------------------------------- */
 
     private boolean hasActiveBookings(Integer id) {
@@ -224,7 +273,6 @@ public class RoomService {
         // Filter bookings by room ID and ONGOING status
         Specification<Booking> bookingSpec = BookingSpecifications.filterByRoomId(id)
                 .and(BookingSpecifications.filterByStatus(BookingStatus.ONGOING));
-
         return bookingRepository.exists(bookingSpec);
     }
 }

@@ -1,11 +1,14 @@
 package com.david.travel_booking_system.controller;
 
+import com.david.travel_booking_system.dto.response.basic.BookingBasicDTO;
 import com.david.travel_booking_system.dto.response.basic.UserBasicDTO;
 import com.david.travel_booking_system.dto.request.crud.createRequest.UserCreateRequestDTO;
 import com.david.travel_booking_system.dto.response.full.UserFullDTO;
 import com.david.travel_booking_system.dto.request.crud.patchRequest.UserPatchRequestDTO;
 import com.david.travel_booking_system.dto.request.crud.updateRequest.UserUpdateRequestDTO;
+import com.david.travel_booking_system.mapper.BookingMapper;
 import com.david.travel_booking_system.mapper.UserMapper;
+import com.david.travel_booking_system.service.BookingService;
 import com.david.travel_booking_system.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,16 +24,24 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
+    // Services
     private final UserService userService;
+    private final BookingService bookingService;
+
+    // Mappers
     private final UserMapper userMapper;
+    private final BookingMapper bookingMapper;
 
     @Autowired
-    public UserController(UserService userService, UserMapper userMapper) {
+    public UserController(UserService userService, BookingService bookingService, UserMapper userMapper,
+                          BookingMapper bookingMapper) {
         this.userService = userService;
+        this.bookingService = bookingService;
         this.userMapper = userMapper;
+        this.bookingMapper = bookingMapper;
     }
 
-    /* Basic CRUD -------------------------------------------------------------------------------------------------- */
+    /* CRUD and Basic Endpoints ------------------------------------------------------------------------------------ */
 
     /* Returns BasicDTO instead of DetailDTO due to the entity's absence of non-nested collection fields */
     @PostMapping
@@ -83,7 +94,33 @@ public class UserController {
         return ResponseEntity.noContent().build(); // Return 204 No Content
     }
 
+    @PatchMapping("/{id}/restore")
+    public ResponseEntity<Void> restoreUser(@PathVariable Integer id) {
+        userService.restoreUser(id);
+        return ResponseEntity.noContent().build(); // Return 204 No Content
+    }
+
+    /* Get Lists of Nested Entities */
+
+    @GetMapping("/{id}/bookings")
+    public ResponseEntity<List<BookingBasicDTO>> getBookings(@PathVariable Integer id) {
+        List<BookingBasicDTO> bookings = bookingMapper.toBasicDTOs(
+                bookingService.getBookingsByUserId(id, false)
+        );
+        return ResponseEntity.ok(bookings); // Return 200 OK
+    }
+
     /* Custom endpoints -------------------------------------------------------------------------------------------- */
 
+    @PatchMapping("/{id}/activate")
+    public ResponseEntity<Void> activateUser(@PathVariable Integer id) {
+        userService.activateUser(id);
+        return ResponseEntity.noContent().build(); // Return 204 No Content
+    }
 
+    @PatchMapping("/{id}/deactivate")
+    public ResponseEntity<Void> deactivateUser(@PathVariable Integer id) {
+        userService.deactivateUser(id);
+        return ResponseEntity.noContent().build(); // Return 204 No Content
+    }
 }

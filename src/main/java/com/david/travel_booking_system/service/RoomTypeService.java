@@ -45,7 +45,7 @@ public class RoomTypeService {
         this.roomRepository = roomRepository;
     }
 
-    /* Basic CRUD -------------------------------------------------------------------------------------------------- */
+    /* CRUD and Basic Methods -------------------------------------------------------------------------------------- */
 
     @Transactional
     public RoomType createRoomType(RoomTypeCreateRequestDTO roomTypeCreateRequestDTO) {
@@ -168,7 +168,24 @@ public class RoomTypeService {
         roomTypeRepository.deleteById(id);
     }
 
-    /* Custom methods ---------------------------------------------------------------------------------------------- */
+    @Transactional
+    public void restoreRoomType(Integer id) {
+        RoomType roomType = getRoomTypeById(id, true);
+
+        // Check if room type is already active
+        if (!roomType.isDeleted()) {
+            throw new IllegalStateException("Room type is already active");
+        }
+
+        // Restore room type and linked entities
+        roomType.setDeleted(false);
+        roomRepository.restoreByRoomTypeId(id);
+        bedRepository.restoreByRoomTypeId(id);
+
+        roomTypeRepository.save(roomType);
+    }
+
+    /* Get Lists of Nested Entities */
 
     @Transactional(readOnly = true)
     public List<RoomType> getRoomTypesByPropertyId(Integer propertyId, boolean includeDeleted) {
@@ -189,6 +206,8 @@ public class RoomTypeService {
         return roomTypeRepository.findAll(roomTypeSpec);
     }
 
+    /* Custom methods ---------------------------------------------------------------------------------------------- */
+
     /* Helper methods ---------------------------------------------------------------------------------------------- */
 
     private boolean hasActiveBookings(Integer id) {
@@ -204,7 +223,6 @@ public class RoomTypeService {
         // Filter bookings by room type ID and ONGOING status
         Specification<Booking> bookingSpec = BookingSpecifications.filterByRoomTypeId(id)
                 .and(BookingSpecifications.filterByStatus(BookingStatus.ONGOING));
-
         return bookingRepository.exists(bookingSpec);
     }
 }

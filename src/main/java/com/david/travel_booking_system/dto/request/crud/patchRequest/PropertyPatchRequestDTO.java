@@ -10,6 +10,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
+@AtLeastOneFieldSet
 public class PropertyPatchRequestDTO {
     @NotNullIfExplicitlySet
     private OptionalFieldWrapper<PropertyType> propertyType = OptionalFieldWrapper.unset();

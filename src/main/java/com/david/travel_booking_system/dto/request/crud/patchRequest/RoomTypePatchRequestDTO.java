@@ -1,6 +1,7 @@
 package com.david.travel_booking_system.dto.request.crud.patchRequest;
 
 import com.david.travel_booking_system.util.OptionalFieldWrapper;
+import com.david.travel_booking_system.validation.annotation.AtLeastOneFieldSet;
 import com.david.travel_booking_system.validation.annotation.NotNullIfExplicitlySet;
 import com.david.travel_booking_system.validation.annotation.WrappedMin;
 import com.david.travel_booking_system.validation.annotation.WrappedSize;
@@ -16,6 +17,7 @@ import lombok.Getter;
 import java.util.List;
 
 @Data
+@AtLeastOneFieldSet
 public class RoomTypePatchRequestDTO {
     @NotNullIfExplicitlySet
     @WrappedSize(max = 50, message = "Name cannot exceed 50 characters")

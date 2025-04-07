@@ -17,10 +17,6 @@ public interface BedRepository extends JpaRepository<Bed, Integer>, JpaSpecifica
     /* CRUD and Basic methods -------------------------------------------------------------------------------------- */
 
     @Modifying
-    @Query(" UPDATE Bed b SET b.deleted = true WHERE b.id = :id ")
-    void softDeleteById(Integer id);
-
-    @Modifying
     @Query("UPDATE Bed b SET b.deleted = true WHERE b.roomType.id = :roomTypeId AND b.deleted = false ")
     void softDeleteByRoomTypeId(Integer roomTypeId);
 
@@ -33,6 +29,20 @@ public interface BedRepository extends JpaRepository<Bed, Integer>, JpaSpecifica
             "                     AND rt.deleted = false) " +
             "AND b.deleted = false")
     void softDeleteByPropertyId(@Param("propertyId") Integer propertyId);
+
+    @Modifying
+    @Query("UPDATE Bed b SET b.deleted = false WHERE b.roomType.id = :roomTypeId AND b.deleted = true")
+    void restoreByRoomTypeId(Integer roomTypeId);
+
+    @Modifying
+    @Query("UPDATE Bed b " +
+            "SET b.deleted = false " +
+            "WHERE b.roomType IN (SELECT rt " +
+            "                     FROM RoomType rt " +
+            "                     WHERE rt.property.id = :propertyId" +
+            "                     AND rt.deleted = false) " +
+            "AND b.deleted = false")
+    void restoreByPropertyId(Integer propertyId);
 
     /* Custom methods ---------------------------------------------------------------------------------------------- */
 }
