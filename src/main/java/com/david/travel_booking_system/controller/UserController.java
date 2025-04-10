@@ -13,6 +13,7 @@ import com.david.travel_booking_system.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -43,13 +44,9 @@ public class UserController {
 
     /* CRUD and Basic Endpoints ------------------------------------------------------------------------------------ */
 
-    /* Returns BasicDTO instead of DetailDTO due to the entity's absence of non-nested collection fields */
-    @PostMapping
-    public ResponseEntity<UserBasicDTO> createUser(@RequestBody @Valid UserCreateRequestDTO userCreateRequestDTO) {
-        UserBasicDTO createdUser = userMapper.toBasicDTO(userService.createUser(userCreateRequestDTO));
-        return ResponseEntity.status(201).body(createdUser); // Return 201 Created
-    }
+    /* Create User endpoint delegated to AuthController endpoint 'register' */
 
+    @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping
     public ResponseEntity<List<UserBasicDTO>> getUsers() {
         List<UserBasicDTO> users = userMapper.toBasicDTOs(userService.getUsers(false));

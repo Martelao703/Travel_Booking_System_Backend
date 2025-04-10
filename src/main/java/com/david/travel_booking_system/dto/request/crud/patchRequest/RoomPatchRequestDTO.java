@@ -12,9 +12,6 @@ public class RoomPatchRequestDTO {
     private OptionalFieldWrapper<Integer> floorNumber = OptionalFieldWrapper.unset();
 
     @NotNullIfExplicitlySet
-    private OptionalFieldWrapper<Boolean> active = OptionalFieldWrapper.unset();
-
-    @NotNullIfExplicitlySet
     private OptionalFieldWrapper<Boolean> cleaned = OptionalFieldWrapper.unset();
 
     @NotNullIfExplicitlySet

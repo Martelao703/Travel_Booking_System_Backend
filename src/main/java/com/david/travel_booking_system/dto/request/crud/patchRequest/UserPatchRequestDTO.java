@@ -2,9 +2,6 @@ package com.david.travel_booking_system.dto.request.crud.patchRequest;
 
 import com.david.travel_booking_system.util.OptionalFieldWrapper;
 import com.david.travel_booking_system.validation.annotation.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -12,9 +9,6 @@ import java.time.LocalDate;
 @Data
 @AtLeastOneFieldSet
 public class UserPatchRequestDTO {
-    @NotNullIfExplicitlySet
-    private OptionalFieldWrapper<Boolean> active = OptionalFieldWrapper.unset();
-
     @NotNullIfExplicitlySet
     @WrappedSize(max = 50, message = "First name cannot exceed 50 characters")
     private OptionalFieldWrapper<String> firstName = OptionalFieldWrapper.unset();

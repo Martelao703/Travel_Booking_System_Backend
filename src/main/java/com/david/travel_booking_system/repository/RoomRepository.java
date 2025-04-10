@@ -17,7 +17,9 @@ public interface RoomRepository extends JpaRepository<Room, Integer>, JpaSpecifi
     /* CRUD and Basic methods -------------------------------------------------------------------------------------- */
 
     @Modifying
-    @Query("UPDATE Room r SET r.deleted = true WHERE r.roomType.id = :roomTypeId AND r.deleted = false ")
+    @Query("UPDATE Room r " +
+            "SET r.deleted = true, r.active = false " +
+            "WHERE r.roomType.id = :roomTypeId AND r.deleted = false ")
     void softDeleteByRoomTypeId(Integer roomTypeId);
 
     @Modifying

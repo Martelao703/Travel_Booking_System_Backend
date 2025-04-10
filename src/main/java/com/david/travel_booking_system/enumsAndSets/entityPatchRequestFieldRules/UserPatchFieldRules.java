@@ -2,6 +2,7 @@ package com.david.travel_booking_system.enumsAndSets.entityPatchRequestFieldRule
 
 import java.util.Set;
 
+// Fields not present are not patchable
 public class UserPatchFieldRules {
     // fields that cannot be modified if entity is associated with active bookings
     public static final Set<String> CRITICAL_FIELDS = Set.of(
@@ -10,6 +11,6 @@ public class UserPatchFieldRules {
 
     // fields that cannot be modified if entity is associated with active ongoing bookings
     public static final Set<String> CONDITIONALLY_PATCHABLE_FIELDS = Set.of(
-            "active"
+            // no conditionally patchable fields
     );
 }

@@ -11,6 +11,7 @@ import com.david.travel_booking_system.service.*;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -55,6 +56,7 @@ public class PropertyController {
 
     /* CRUD and Basic Endpoints ------------------------------------------------------------------------------------ */
 
+    @PreAuthorize("hasAnyRole('ROLE_HOST', 'ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<PropertyDetailDTO> createProperty(
             @RequestBody @Valid PropertyCreateRequestDTO propertyCreateRequestDTO
@@ -65,6 +67,7 @@ public class PropertyController {
         return ResponseEntity.status(201).body(createdProperty); // Return 201 Created
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_HOST')")
     @GetMapping
     public ResponseEntity<List<PropertyBasicDTO>> getProperties() {
         List<PropertyBasicDTO> properties = propertyMapper.toBasicDTOs(propertyService.getProperties(false));
@@ -117,6 +120,8 @@ public class PropertyController {
         return ResponseEntity.noContent().build(); // 204 No Content
     }
 
+    /* Get Lists of Nested Entities */
+
     @GetMapping("/{id}/roomTypes")
     public ResponseEntity<List<RoomTypeBasicDTO>> getRoomTypes(@PathVariable Integer id) {
         List<RoomTypeBasicDTO> roomTypes = roomTypeMapper.toBasicDTOs(
@@ -124,8 +129,6 @@ public class PropertyController {
         );
         return ResponseEntity.ok(roomTypes); // Return 200 OK
     }
-
-    /* Get Lists of Nested Entities */
 
     @GetMapping("/{id}/rooms")
     public ResponseEntity<List<RoomBasicDTO>> getRooms(@PathVariable Integer id) {

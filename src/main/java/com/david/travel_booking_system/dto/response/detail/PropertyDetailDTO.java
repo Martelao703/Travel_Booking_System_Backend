@@ -8,6 +8,7 @@ import java.util.List;
 @Data
 public class PropertyDetailDTO {
     private Integer id;
+    private Integer ownerId;
     private PropertyType propertyType;
     private String name;
     private String city;
@@ -25,10 +26,11 @@ public class PropertyDetailDTO {
     private List<String> nearbyServices;
     private List<String> houseRules;
 
-    public PropertyDetailDTO(Integer id, PropertyType propertyType, String name, String city, String address,
-                             boolean active, boolean underMaintenance, Double latitude, Double longitude,
+    public PropertyDetailDTO(Integer id, Integer ownerId, PropertyType propertyType, String name, String city,
+                             String address, boolean active, boolean underMaintenance, Double latitude, Double longitude,
                              String description, Integer stars, Double userRating, boolean deleted) {
         this.id = id;
+        this.ownerId = ownerId;
         this.propertyType = propertyType;
         this.name = name;
         this.city = city;

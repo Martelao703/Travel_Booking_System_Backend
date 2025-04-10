@@ -217,6 +217,23 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public ResponseEntity<ApiError> handleAccessDeniedException(org.springframework.security.access.AccessDeniedException ex, WebRequest request) {
+        log.warn("Access denied: {}", ex.getMessage());
+
+        Map<String, String> errors = new HashMap<>();
+        errors.put("error", "Access Denied");
+
+        ApiError apiError = new ApiError(
+                HttpStatus.FORBIDDEN,
+                HttpStatus.FORBIDDEN.value(),
+                "Access Denied: " + ex.getMessage(),
+                errors,
+                request.getDescription(false).replace("uri=", "")
+        );
+        return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
+    }
+
     // Handle general exceptions
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGeneralException(Exception ex, WebRequest request) {

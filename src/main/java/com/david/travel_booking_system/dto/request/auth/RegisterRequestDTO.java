@@ -1,14 +1,15 @@
-package com.david.travel_booking_system.dto.request.crud.createRequest;
+package com.david.travel_booking_system.dto.request.auth;
 
-import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.time.LocalDate;
 
 @Data
-@AllArgsConstructor
-public class UserCreateRequestDTO {
+public class RegisterRequestDTO {
     @NotBlank(message = "First name cannot be blank")
     @Size(max = 50, message = "First name cannot exceed 50 characters")
     private String firstName;

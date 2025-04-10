@@ -28,21 +28,22 @@ public class RoomTypeService {
     private final RoomTypeRepository roomTypeRepository;
     private final BookingRepository bookingRepository;
     private final PropertyRepository propertyRepository;
+    private final RoomRepository roomRepository;
+    private final BedRepository bedRepository;
 
     // Mapper
     private final RoomTypeMapper roomTypeMapper;
-    private final BedRepository bedRepository;
-    private final RoomRepository roomRepository;
 
     @Autowired
     public RoomTypeService(RoomTypeRepository roomTypeRepository, BookingRepository bookingRepository,
-                           PropertyRepository propertyRepository, RoomTypeMapper roomTypeMapper, BedRepository bedRepository, RoomRepository roomRepository) {
+                           PropertyRepository propertyRepository, RoomRepository roomRepository,
+                           BedRepository bedRepository, RoomTypeMapper roomTypeMapper) {
         this.roomTypeRepository = roomTypeRepository;
         this.bookingRepository = bookingRepository;
         this.propertyRepository = propertyRepository;
-        this.roomTypeMapper = roomTypeMapper;
-        this.bedRepository = bedRepository;
         this.roomRepository = roomRepository;
+        this.bedRepository = bedRepository;
+        this.roomTypeMapper = roomTypeMapper;
     }
 
     /* CRUD and Basic Methods -------------------------------------------------------------------------------------- */
@@ -56,8 +57,8 @@ public class RoomTypeService {
                 .and(BaseSpecifications.excludeDeleted(Property.class));
 
         // Retrieve the property
-        Property property = propertyRepository.findOne(propertySpec).
-                orElseThrow(() -> new EntityNotFoundException("Property with ID " + propertyId + " not found"));
+        Property property = propertyRepository.findOne(propertySpec)
+                .orElseThrow(() -> new EntityNotFoundException("Property with ID " + propertyId + " not found"));
 
         // Create RoomType from DTO
         RoomType roomType = roomTypeMapper.createRoomTypeFromDTO(roomTypeCreateRequestDTO);

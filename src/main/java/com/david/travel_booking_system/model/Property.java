@@ -21,6 +21,11 @@ public class Property {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "property_id_sequence")
     private Integer id;
 
+    @ManyToOne
+    @JoinColumn(name = "owner_id", nullable = false)
+    @NotNull(message = "Owner cannot be null")
+    private User owner;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, name = "property_type")
     @NotNull(message = "Property type cannot be null")

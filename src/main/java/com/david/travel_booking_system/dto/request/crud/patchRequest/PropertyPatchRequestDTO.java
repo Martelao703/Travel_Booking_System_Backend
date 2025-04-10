@@ -26,9 +26,6 @@ public class PropertyPatchRequestDTO {
     private OptionalFieldWrapper<String> address = OptionalFieldWrapper.unset();
 
     @NotNullIfExplicitlySet
-    private OptionalFieldWrapper<Boolean> active = OptionalFieldWrapper.unset();
-
-    @NotNullIfExplicitlySet
     private OptionalFieldWrapper<Boolean> underMaintenance = OptionalFieldWrapper.unset();
 
     @NotNullIfExplicitlySet

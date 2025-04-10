@@ -41,6 +41,7 @@ public interface RoomMapper {
     // Create Room from RoomUpdateRequestDTO
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "roomType", ignore = true)
+    @Mapping(target = "active", ignore = true)
     @Mapping(target = "occupied", ignore = true)
     @Mapping(target = "deleted", ignore = true)
     @Mapping(target = "bookings", ignore = true)

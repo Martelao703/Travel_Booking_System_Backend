@@ -1,9 +1,11 @@
 package com.david.travel_booking_system.service;
 
+import com.david.travel_booking_system.dto.request.auth.RegisterRequestDTO;
 import com.david.travel_booking_system.dto.request.crud.createRequest.UserCreateRequestDTO;
 import com.david.travel_booking_system.dto.request.crud.patchRequest.UserPatchRequestDTO;
 import com.david.travel_booking_system.dto.request.crud.updateRequest.UserUpdateRequestDTO;
 import com.david.travel_booking_system.enumsAndSets.BookingStatus;
+import com.david.travel_booking_system.enumsAndSets.UserRole;
 import com.david.travel_booking_system.enumsAndSets.entityPatchRequestFieldRules.UserPatchFieldRules;
 import com.david.travel_booking_system.mapper.UserMapper;
 import com.david.travel_booking_system.model.Booking;
@@ -17,11 +19,17 @@ import com.david.travel_booking_system.util.EntityPatcher;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+
+import static com.david.travel_booking_system.enumsAndSets.UserRole.ROLE_USER;
+import static java.util.Collections.singleton;
 
 @Service
 public class UserService {
@@ -32,20 +40,25 @@ public class UserService {
     // Mappers
     private final UserMapper userMapper;
 
+    // Other
+    private final PasswordEncoder passwordEncoder;
+
     @Autowired
-    public UserService(UserRepository userRepository, BookingRepository bookingRepository, UserMapper userMapper) {
+    public UserService(UserRepository userRepository, BookingRepository bookingRepository, UserMapper userMapper,
+                       PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.bookingRepository = bookingRepository;
         this.userMapper = userMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /* CRUD and Basic Methods -------------------------------------------------------------------------------------- */
 
     @Transactional
-    public User createUser(UserCreateRequestDTO userCreateRequestDTO) {
+    public User createUser(RegisterRequestDTO registerRequestDTO) {
         // Validate email and phone number uniqueness
-        String email = userCreateRequestDTO.getEmail();
-        String phoneNumber = userCreateRequestDTO.getPhoneNumber();
+        String email = registerRequestDTO.getEmail();
+        String phoneNumber = registerRequestDTO.getPhoneNumber();
 
         if (existsByEmail(email)) {
             throw new IllegalArgumentException("Email is already in use.");
@@ -55,7 +68,15 @@ public class UserService {
         }
 
         // Create User from DTO
-        User user = userMapper.createUserFromDTO(userCreateRequestDTO);
+        User user = userMapper.createUserFromDTO(registerRequestDTO);
+
+        // Encode the password
+        user.setPassword(passwordEncoder.encode(registerRequestDTO.getPassword()));
+
+        // Set default role
+        Set<UserRole> roles = new HashSet<>();
+        roles.add(ROLE_USER);
+        user.setRoles(roles);
 
         return userRepository.save(user);
     }

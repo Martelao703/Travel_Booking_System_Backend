@@ -1,11 +1,14 @@
 package com.david.travel_booking_system.model;
 
+import com.david.travel_booking_system.enumsAndSets.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
@@ -15,6 +18,10 @@ public class User {
     @SequenceGenerator(name = "user_id_sequence", sequenceName = "user_id_sequence", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_id_sequence")
     private Integer id;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Enumerated(EnumType.STRING)
+    private Set<UserRole> roles = new HashSet<>();
 
     @Column(nullable = false)
     @NotNull(message = "Active status cannot be null")
@@ -35,6 +42,10 @@ public class User {
     @Email(message = "Invalid email format")
     private String email;
 
+    @Column(nullable = false)
+    @NotBlank(message = "Password cannot be blank")
+    private String password;
+
     @Column(name = "phone_number", length = 15, unique = true)
     @Size(max = 15, message = "Phone number cannot exceed 15 characters")
     private String phoneNumber;
@@ -48,6 +59,9 @@ public class User {
     @Column(nullable = false)
     @NotNull(message = "Deleted status cannot be null")
     private boolean deleted = false;
+
+    @OneToMany(mappedBy = "user")
+    private List<Property> properties;
 
     @OneToMany(mappedBy = "user")
     private List<Booking> bookings;

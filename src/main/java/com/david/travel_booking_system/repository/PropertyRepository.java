@@ -17,8 +17,8 @@ public interface PropertyRepository extends JpaRepository<Property, Integer>, Jp
     /* CRUD and Basic methods -------------------------------------------------------------------------------------- */
 
     @Modifying
-    @Query(" UPDATE Property p SET p.deleted = true WHERE p.id = :id ")
-    void softDeleteById(Integer id);
+    @Query(" UPDATE Property p SET p.deleted = true WHERE p.owner.id = :ownerId AND p.deleted = false ")
+    void softDeleteByOwnerId(Integer ownerId);
 
     /* Custom methods ---------------------------------------------------------------------------------------------- */
 

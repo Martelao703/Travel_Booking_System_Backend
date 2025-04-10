@@ -8,6 +8,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class PropertyBasicDTO {
     private Integer id;
+    private Integer ownerId;
     private PropertyType propertyType;
     private String name;
     private String city;

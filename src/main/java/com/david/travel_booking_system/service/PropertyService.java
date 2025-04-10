@@ -8,9 +8,11 @@ import com.david.travel_booking_system.enumsAndSets.entityPatchRequestFieldRules
 import com.david.travel_booking_system.mapper.PropertyMapper;
 import com.david.travel_booking_system.model.Booking;
 import com.david.travel_booking_system.model.Property;
+import com.david.travel_booking_system.model.User;
 import com.david.travel_booking_system.repository.*;
 import com.david.travel_booking_system.specification.BaseSpecifications;
 import com.david.travel_booking_system.specification.BookingSpecifications;
+import com.david.travel_booking_system.specification.PropertySpecifications;
 import com.david.travel_booking_system.util.BookingServiceHelper;
 import com.david.travel_booking_system.util.EntityPatcher;
 import jakarta.persistence.EntityNotFoundException;
@@ -25,6 +27,7 @@ import java.util.List;
 public class PropertyService {
     // Repositories
     private final PropertyRepository propertyRepository;
+    private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final RoomTypeRepository roomTypeRepository;
     private final RoomRepository roomRepository;
@@ -34,23 +37,38 @@ public class PropertyService {
     private final PropertyMapper propertyMapper;
 
     @Autowired
-    public PropertyService(PropertyRepository propertyRepository, BookingRepository bookingRepository,
-                           RoomTypeRepository roomTypeRepository, RoomRepository roomRepository, BedRepository bedRepository,
-                           PropertyMapper propertyMapper) {
+    public PropertyService(PropertyRepository propertyRepository, UserRepository userRepository,
+                           BookingRepository bookingRepository, RoomTypeRepository roomTypeRepository,
+                           RoomRepository roomRepository, BedRepository bedRepository, PropertyMapper propertyMapper)
+    {
         this.propertyRepository = propertyRepository;
         this.bookingRepository = bookingRepository;
         this.roomTypeRepository = roomTypeRepository;
         this.roomRepository = roomRepository;
         this.bedRepository = bedRepository;
         this.propertyMapper = propertyMapper;
+        this.userRepository = userRepository;
     }
 
     /* CRUD and Basic Methods -------------------------------------------------------------------------------------- */
 
     @Transactional
     public Property createProperty(PropertyCreateRequestDTO propertyCreateRequestDTO) {
+        Integer ownerId = propertyCreateRequestDTO.getOwnerId();
+
+        // Ensure the owner exists and is not soft-deleted
+        Specification<User> ownerSpec = BaseSpecifications.filterById(User.class, ownerId)
+                .and(BaseSpecifications.excludeDeleted(User.class));
+
+        // Retrieve the owner
+        User owner = userRepository.findOne(ownerSpec)
+                .orElseThrow(() -> new EntityNotFoundException("User with ID " + ownerId + " not found"));
+
         // Create Property from DTO
         Property property = propertyMapper.createPropertyFromDTO(propertyCreateRequestDTO);
+
+        // Add the new Property to its Owner's properties list
+        owner.getProperties().add(property);
 
         return propertyRepository.save(property);
     }
@@ -173,6 +191,27 @@ public class PropertyService {
         bedRepository.restoreByPropertyId(id);
 
         propertyRepository.save(property);
+    }
+
+    /* Get Lists of Nested Entities */
+
+    @Transactional(readOnly = true)
+    public List<Property> getPropertiesByOwnerId(Integer ownerId, boolean includeDeleted) {
+        // Ensure the owner exists and is not soft-deleted
+        Specification<User> ownerSpec = BaseSpecifications.filterById(User.class, ownerId)
+                .and(BaseSpecifications.excludeDeleted(User.class));
+
+        if (!userRepository.exists(ownerSpec)) {
+            throw new EntityNotFoundException("User with ID " + ownerId + " not found");
+        }
+
+        // Filter by owner ID
+        Specification<Property> propertySpec = includeDeleted
+                ? PropertySpecifications.filterByOwnerId(ownerId) // Owner ID filter
+                : PropertySpecifications.filterByOwnerId(ownerId)
+                .and(BaseSpecifications.excludeDeleted(Property.class)); // Owner ID and non-deleted filter
+
+        return propertyRepository.findAll(propertySpec);
     }
 
     /* Custom methods ---------------------------------------------------------------------------------------------- */

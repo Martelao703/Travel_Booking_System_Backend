@@ -17,6 +17,7 @@ import com.david.travel_booking_system.service.RoomTypeService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -62,6 +63,7 @@ public class RoomTypeController {
         return ResponseEntity.status(201).body(createdRoomType); // Return 201 Created
     }
 
+    @PreAuthorize("hasRole('ROLE_HOST')")
     @GetMapping
     public ResponseEntity<List<RoomTypeBasicDTO>> getRoomTypes() {
         List<RoomTypeBasicDTO> roomTypes = roomTypeMapper.toBasicDTOs(roomTypeService.getRoomTypes(false));
