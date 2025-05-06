@@ -15,7 +15,9 @@ The system is built using a **layered architecture pattern**, ensuring clear sep
 - **Model Layer:** Represents core business entities such as `User`, `Booking`, and `Property`.  
 - **Service Layer:** Encapsulates business logic, including validation, entity relationships, and complex operations.  
 - **Controller Layer:** Exposes REST API endpoints for external interaction.  
-- **DTO Layer:** Facilitates data transfer between API layers, maintaining separation between internal models and API formats.  
+- **DTO Layer:** Facilitates data transfer between API layers, maintaining separation between internal models and API formats.
+
+The application also implements JWT-based authentication to secure API access and enforce role-based access control.
 
 ## Technologies and Tools Used  
 - **Spring Boot:** Core framework for dependency injection, data management, and REST API creation.  
@@ -26,8 +28,7 @@ The system is built using a **layered architecture pattern**, ensuring clear sep
 - **MapStruct:** Automates object mapping between DTOs and Entities, reducing boilerplate code.
 
 ## Future Plans  
-- **Frontend Development:** Expand the project into a full-stack solution using a modern frontend framework like React or Angular.  
-- **Authentication:** Implement JWT-based authentication and role-based access control for secure API endpoints.  
+- **Frontend Development:** Expand the project into a full-stack solution using a modern frontend framework like React or Angular.    
 - **Advanced Features:**  
   - Payment integration for booking confirmations.  
   - Enhanced property search with geolocation and filtering.  
