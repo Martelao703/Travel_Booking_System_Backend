@@ -8,7 +8,7 @@ The project is currently in development and aims to enhance my backend developme
 ## Application Description  
 The backend serves as the foundation of a travel booking platform. It is designed to enable:  
 - **User Management:** Register and manage user accounts.  
-- **Property Listings:** Allow property owners to add, update, or remove listings.
+- **Property Listings:** Allow property owners to add, update, or remove listings, along with all its associated entities.
 - **Booking System:** Provide users with the ability to search for properties, check availability, and create bookings for desired dates.  
 
 The system is built using a **layered architecture pattern**, ensuring clear separation of concerns:  
