@@ -12,12 +12,14 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -217,21 +219,38 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
-    public ResponseEntity<ApiError> handleAccessDeniedException(org.springframework.security.access.AccessDeniedException ex, WebRequest request) {
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiError> handleAccessDeniedException(AccessDeniedException ex, WebRequest request) {
         log.warn("Access denied: {}", ex.getMessage());
-
-        Map<String, String> errors = new HashMap<>();
-        errors.put("error", "Access Denied");
 
         ApiError apiError = new ApiError(
                 HttpStatus.FORBIDDEN,
                 HttpStatus.FORBIDDEN.value(),
                 "Access Denied: " + ex.getMessage(),
-                errors,
                 request.getDescription(false).replace("uri=", "")
         );
         return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiError> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex, WebRequest request) {
+        String name = ex.getName(); // e.g. "id"
+        String value  = String.valueOf(ex.getValue());  // e.g. "properties"
+        String requiredType = ex.getRequiredType() != null
+                ? ex.getRequiredType().getSimpleName()
+                : "unknown";
+
+        String message = String.format("Parameter '%s' must be a %s (received '%s')", name, requiredType, value);
+
+        log.warn("Type mismatch on parameter '{}': {}", name, message);
+
+        ApiError apiError = new ApiError(
+                HttpStatus.BAD_REQUEST,
+                HttpStatus.BAD_REQUEST.value(),
+                message,
+                request.getDescription(false).replace("uri=", "")
+        );
+        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
     }
 
     // Handle general exceptions
@@ -246,5 +265,33 @@ public class GlobalExceptionHandler {
                 request.getDescription(false).replace("uri=", "")
         );
         return new ResponseEntity<>(apiError, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    // Handle missing‐or‐malformed refresh token
+    @ExceptionHandler(MissingTokenException.class)
+    public ResponseEntity<ApiError> handleMissingToken(MissingTokenException ex, WebRequest request) {
+        log.warn("Missing token: {}", ex.getMessage());
+
+        ApiError apiError = new ApiError(
+                HttpStatus.UNAUTHORIZED,
+                HttpStatus.UNAUTHORIZED.value(),
+                ex.getMessage(),
+                request.getDescription(false).replace("uri=", "")
+        );
+        return new ResponseEntity<>(apiError, HttpStatus.UNAUTHORIZED);
+    }
+
+    // Handle invalid or expired refresh token
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<ApiError> handleInvalidToken(InvalidTokenException ex, WebRequest request) {
+        log.warn("Invalid token: {}", ex.getMessage());
+
+        ApiError apiError = new ApiError(
+                HttpStatus.FORBIDDEN,
+                HttpStatus.FORBIDDEN.value(),
+                ex.getMessage(),
+                request.getDescription(false).replace("uri=", "")
+        );
+        return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
     }
 }

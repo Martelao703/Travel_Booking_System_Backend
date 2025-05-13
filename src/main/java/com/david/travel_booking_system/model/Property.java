@@ -2,13 +2,11 @@ package com.david.travel_booking_system.model;
 
 import com.david.travel_booking_system.enumsAndSets.PropertyType;
 import com.david.travel_booking_system.util.Coordinates;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.persistence.CascadeType;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.ToString;
-import org.hibernate.annotations.*;
 
 import java.util.List;
 

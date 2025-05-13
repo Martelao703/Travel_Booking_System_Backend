@@ -6,17 +6,12 @@ import com.david.travel_booking_system.dto.request.crud.updateRequest.BedUpdateR
 import com.david.travel_booking_system.enumsAndSets.BookingStatus;
 import com.david.travel_booking_system.enumsAndSets.entityPatchRequestFieldRules.BedPatchFieldRules;
 import com.david.travel_booking_system.mapper.BedMapper;
-import com.david.travel_booking_system.model.Bed;
-import com.david.travel_booking_system.model.Booking;
-import com.david.travel_booking_system.model.Property;
-import com.david.travel_booking_system.model.RoomType;
-import com.david.travel_booking_system.repository.BedRepository;
-import com.david.travel_booking_system.repository.BookingRepository;
-import com.david.travel_booking_system.repository.PropertyRepository;
-import com.david.travel_booking_system.repository.RoomTypeRepository;
+import com.david.travel_booking_system.model.*;
+import com.david.travel_booking_system.repository.*;
 import com.david.travel_booking_system.specification.BaseSpecifications;
 import com.david.travel_booking_system.specification.BedSpecifications;
 import com.david.travel_booking_system.specification.BookingSpecifications;
+import com.david.travel_booking_system.specification.RoomSpecifications;
 import com.david.travel_booking_system.util.EntityPatcher;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +27,9 @@ public class BedService {
     // Repositories
     private final BedRepository bedRepository;
     private final BookingRepository bookingRepository;
+
+    // Parents Repositories
+    private final UserRepository userRepository;
     private final PropertyRepository propertyRepository;
     private final RoomTypeRepository roomTypeRepository;
 
@@ -39,10 +37,11 @@ public class BedService {
     private final BedMapper bedMapper;
 
     @Autowired
-    public BedService(BedRepository bedRepository, BookingRepository bookingRepository, PropertyRepository propertyRepository,
-                      RoomTypeRepository roomTypeRepository, BedMapper bedMapper) {
+    public BedService(BedRepository bedRepository, BookingRepository bookingRepository, UserRepository userRepository,
+                      PropertyRepository propertyRepository, RoomTypeRepository roomTypeRepository, BedMapper bedMapper) {
         this.bedRepository = bedRepository;
         this.bookingRepository = bookingRepository;
+        this.userRepository = userRepository;
         this.propertyRepository = propertyRepository;
         this.roomTypeRepository = roomTypeRepository;
         this.bedMapper = bedMapper;
@@ -221,7 +220,36 @@ public class BedService {
         return bedRepository.findAll(bedSpec);
     }
 
+    @Transactional(readOnly = true)
+    public List<Bed> getBedsByOwnerId(Integer ownerId, boolean includeDeleted) {
+        // Ensure the owner exists and is not soft-deleted
+        Specification<User> ownerSpec = BaseSpecifications.filterById(User.class, ownerId)
+                .and(BaseSpecifications.excludeDeleted(User.class));
+
+        if (!userRepository.exists(ownerSpec)) {
+            throw new EntityNotFoundException("User with ID " + ownerId + " not found");
+        }
+
+        // Filter by owner ID
+        Specification<Bed> bedSpec = includeDeleted
+                ? BedSpecifications.filterByOwnerId(ownerId) // Owner ID filter
+                : BedSpecifications.filterByOwnerId(ownerId)
+                .and(BaseSpecifications.excludeDeleted(Bed.class)); // Owner ID and non-deleted filter
+
+        return bedRepository.findAll(bedSpec);
+    }
+
     /* Custom methods ---------------------------------------------------------------------------------------------- */
+
+    // Check if the Bed with the given ID is owned by the user with the given email
+    @Transactional(readOnly = true)
+    public boolean isOwner(Integer id, String email) {
+        // Filter by Bed ID and owner email
+        Specification<Bed> spec = BaseSpecifications.filterById(Bed.class, id)
+                .and(BedSpecifications.filterByOwnerEmail(email));
+
+        return bedRepository.exists(spec);
+    }
 
     /* Helper methods ---------------------------------------------------------------------------------------------- */
 

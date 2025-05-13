@@ -9,6 +9,7 @@ import com.david.travel_booking_system.mapper.RoomTypeMapper;
 import com.david.travel_booking_system.model.Booking;
 import com.david.travel_booking_system.model.Property;
 import com.david.travel_booking_system.model.RoomType;
+import com.david.travel_booking_system.model.User;
 import com.david.travel_booking_system.repository.*;
 import com.david.travel_booking_system.specification.BaseSpecifications;
 import com.david.travel_booking_system.specification.BookingSpecifications;
@@ -27,7 +28,12 @@ public class RoomTypeService {
     // Repositories
     private final RoomTypeRepository roomTypeRepository;
     private final BookingRepository bookingRepository;
+
+    // Parents Repositories
+    private final UserRepository userRepository;
     private final PropertyRepository propertyRepository;
+
+    // Children Repositories
     private final RoomRepository roomRepository;
     private final BedRepository bedRepository;
 
@@ -36,10 +42,11 @@ public class RoomTypeService {
 
     @Autowired
     public RoomTypeService(RoomTypeRepository roomTypeRepository, BookingRepository bookingRepository,
-                           PropertyRepository propertyRepository, RoomRepository roomRepository,
-                           BedRepository bedRepository, RoomTypeMapper roomTypeMapper) {
+                           UserRepository userRepository, PropertyRepository propertyRepository,
+                           RoomRepository roomRepository, BedRepository bedRepository, RoomTypeMapper roomTypeMapper) {
         this.roomTypeRepository = roomTypeRepository;
         this.bookingRepository = bookingRepository;
+        this.userRepository = userRepository;
         this.propertyRepository = propertyRepository;
         this.roomRepository = roomRepository;
         this.bedRepository = bedRepository;
@@ -178,11 +185,8 @@ public class RoomTypeService {
             throw new IllegalStateException("Room type is already active");
         }
 
-        // Restore room type and linked entities
+        // Restore room type
         roomType.setDeleted(false);
-        roomRepository.restoreByRoomTypeId(id);
-        bedRepository.restoreByRoomTypeId(id);
-
         roomTypeRepository.save(roomType);
     }
 
@@ -207,7 +211,36 @@ public class RoomTypeService {
         return roomTypeRepository.findAll(roomTypeSpec);
     }
 
+    @Transactional(readOnly = true)
+    public List<RoomType> getRoomTypesByOwnerId(Integer ownerId, boolean includeDeleted) {
+        // Ensure the owner exists and is not soft-deleted
+        Specification<User> ownerSpec = BaseSpecifications.filterById(User.class, ownerId)
+                .and(BaseSpecifications.excludeDeleted(User.class));
+
+        if (!userRepository.exists(ownerSpec)) {
+            throw new EntityNotFoundException("User with ID " + ownerId + " not found");
+        }
+
+        // Filter by user ID
+        Specification<RoomType> roomTypeSpec = includeDeleted
+                ? RoomTypeSpecifications.filterByOwnerId(ownerId) // User ID filter
+                : RoomTypeSpecifications.filterByOwnerId(ownerId)
+                .and(BaseSpecifications.excludeDeleted(RoomType.class)); // User ID and non-deleted filter
+
+        return roomTypeRepository.findAll(roomTypeSpec);
+    }
+
     /* Custom methods ---------------------------------------------------------------------------------------------- */
+
+    // Check if the RoomType with the given ID is owned by the user with the given email
+    @Transactional(readOnly = true)
+    public boolean isOwner(Integer id, String email) {
+        // Filter by RoomType ID and owner email
+        Specification<RoomType> spec = BaseSpecifications.filterById(RoomType.class, id)
+                .and(RoomTypeSpecifications.filterByOwnerEmail(email));
+
+        return roomTypeRepository.exists(spec);
+    }
 
     /* Helper methods ---------------------------------------------------------------------------------------------- */
 

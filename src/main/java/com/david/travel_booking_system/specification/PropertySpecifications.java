@@ -9,4 +9,9 @@ public class PropertySpecifications extends BaseSpecifications {
         return (root, query, criteriaBuilder) ->
                 criteriaBuilder.equal(root.get("owner").get("id"), ownerId);
     }
+
+    public static Specification<Property> filterByOwnerEmail(String email) {
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get("owner").get("email"), email);
+    }
 }

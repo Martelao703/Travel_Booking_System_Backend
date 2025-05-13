@@ -9,4 +9,14 @@ public class RoomTypeSpecifications extends BaseSpecifications {
         return (root, query, criteriaBuilder) ->
                 criteriaBuilder.equal(root.get("property").get("id"), propertyId);
     }
+
+    public static Specification<RoomType> filterByOwnerId(Integer ownerId) {
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get("property").get("owner").get("id"), ownerId);
+    }
+
+    public static Specification<RoomType> filterByOwnerEmail(String email) {
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get("property").get("owner").get("email"), email);
+    }
 }

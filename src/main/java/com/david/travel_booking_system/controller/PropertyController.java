@@ -56,18 +56,18 @@ public class PropertyController {
 
     /* CRUD and Basic Endpoints ------------------------------------------------------------------------------------ */
 
-    @PreAuthorize("hasAnyRole('ROLE_HOST', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('property:create')")
     @PostMapping
     public ResponseEntity<PropertyDetailDTO> createProperty(
-            @RequestBody @Valid PropertyCreateRequestDTO propertyCreateRequestDTO
+            @RequestBody @Valid PropertyCreateRequestDTO createDTO
     ) {
         PropertyDetailDTO createdProperty = propertyMapper.toDetailDTO(
-                propertyService.createProperty(propertyCreateRequestDTO)
+                propertyService.createProperty(createDTO)
         );
         return ResponseEntity.status(201).body(createdProperty); // Return 201 Created
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_HOST')")
+    @PreAuthorize("hasAuthority('property:update') and ( hasRole('ROLE_MANAGER') or @propertyService.isOwner(#id, principal.username) )")
     @GetMapping
     public ResponseEntity<List<PropertyBasicDTO>> getProperties() {
         List<PropertyBasicDTO> properties = propertyMapper.toBasicDTOs(propertyService.getProperties(false));
@@ -83,10 +83,10 @@ public class PropertyController {
     @PutMapping("/{id}")
     public ResponseEntity<PropertyDetailDTO> updateProperty(
             @PathVariable Integer id,
-            @RequestBody @Valid PropertyUpdateRequestDTO propertyUpdateRequestDTO
+            @RequestBody @Valid PropertyUpdateRequestDTO updateDTO
     ) {
         PropertyDetailDTO updatedPropertyDTO = propertyMapper.toDetailDTO(
-                propertyService.updateProperty(id, propertyUpdateRequestDTO)
+                propertyService.updateProperty(id, updateDTO)
         );
         return ResponseEntity.ok(updatedPropertyDTO); // Return 200 OK
     }
@@ -94,10 +94,10 @@ public class PropertyController {
     @PatchMapping("/{id}")
     public ResponseEntity<PropertyDetailDTO> patchProperty(
             @PathVariable Integer id,
-            @RequestBody @Valid PropertyPatchRequestDTO propertyPatchRequestDTO
+            @RequestBody @Valid PropertyPatchRequestDTO patchDTO
     ) {
         PropertyDetailDTO patchedPropertyDTO = propertyMapper.toDetailDTO(
-                propertyService.patchProperty(id, propertyPatchRequestDTO)
+                propertyService.patchProperty(id, patchDTO)
         );
         return ResponseEntity.ok(patchedPropertyDTO); // Return 200 OK
     }

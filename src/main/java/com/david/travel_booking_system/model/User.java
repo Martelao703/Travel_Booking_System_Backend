@@ -1,11 +1,12 @@
 package com.david.travel_booking_system.model;
 
-import com.david.travel_booking_system.enumsAndSets.UserRole;
+import com.david.travel_booking_system.security.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -22,6 +23,9 @@ public class User {
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     private Set<UserRole> roles = new HashSet<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Token> tokens = new ArrayList<>();
 
     @Column(nullable = false)
     @NotNull(message = "Active status cannot be null")
@@ -60,7 +64,7 @@ public class User {
     @NotNull(message = "Deleted status cannot be null")
     private boolean deleted = false;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Property> properties;
 
     @OneToMany(mappedBy = "user")

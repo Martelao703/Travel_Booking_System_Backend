@@ -16,55 +16,95 @@ public interface RoomRepository extends JpaRepository<Room, Integer>, JpaSpecifi
 
     /* CRUD and Basic methods -------------------------------------------------------------------------------------- */
 
-    @Modifying
-    @Query("UPDATE Room r " +
-            "SET r.deleted = true, r.active = false " +
-            "WHERE r.roomType.id = :roomTypeId AND r.deleted = false ")
-    void softDeleteByRoomTypeId(Integer roomTypeId);
+    /* By RoomType */
 
     @Modifying
-    @Query("UPDATE Room r " +
-            "SET r.deleted = true, r.active = false " +
-            "WHERE r.roomType IN (SELECT rt " +
-            "                     FROM RoomType rt " +
-            "                     WHERE rt.property.id = :propertyId" +
-            "                     AND rt.deleted = false) " +
-            "AND r.deleted = false")
+    @Query("""
+            UPDATE Room r SET r.deleted = true, r.active = false
+            WHERE r.roomType.id = :roomTypeId AND r.deleted = false
+            """)
+    void softDeleteByRoomTypeId(@Param("roomTypeId") Integer roomTypeId);
+
+    @Modifying
+    @Query("""
+            UPDATE Room r SET r.deleted = false
+            WHERE r.roomType.id = :roomTypeId AND r.deleted = true
+            """)
+    void restoreByRoomTypeId(@Param("roomTypeId") Integer roomTypeId);
+
+    @Modifying
+    @Query("""
+            UPDATE Room r SET r.active = true
+            WHERE r.roomType.id = :roomTypeId AND r.deleted = false
+            """)
+    void activateByRoomTypeId(@Param("roomTypeId") Integer roomTypeId);
+
+    @Modifying
+    @Query("""
+            UPDATE Room r SET r.active = false
+            WHERE r.roomType.id = :roomTypeId AND r.deleted = false
+            """)
+    void deactivateByRoomTypeId(@Param("roomTypeId") Integer roomTypeId);
+
+    /* By Property */
+
+    @Modifying
+    @Query("""
+            UPDATE Room r SET r.deleted = true, r.active = false
+            WHERE r.roomType.property.id = :propertyId AND r.deleted = false
+            """)
     void softDeleteByPropertyId(@Param("propertyId") Integer propertyId);
 
     @Modifying
-    @Query("UPDATE Room r SET r.deleted = false WHERE r.roomType.id = :roomTypeId AND r.deleted = true")
-    void restoreByRoomTypeId(Integer roomTypeId);
-
-    @Modifying
-    @Query("UPDATE Room r " +
-            "SET r.deleted = false " +
-            "WHERE r.roomType IN (SELECT rt " +
-            "                     FROM RoomType rt " +
-            "                     WHERE rt.property.id = :propertyId" +
-            "                     AND rt.deleted = false) " +
-            "AND r.deleted = true")
+    @Query("""
+            UPDATE Room r SET r.deleted = false
+            WHERE r.roomType.property.id = :propertyId AND r.deleted = true
+            """)
     void restoreByPropertyId(@Param("propertyId") Integer propertyId);
 
     @Modifying
-    @Query("UPDATE Room r " +
-            "SET r.active = true " +
-            "WHERE r.roomType IN (SELECT rt " +
-            "                     FROM RoomType rt " +
-            "                     WHERE rt.property.id = :propertyId" +
-            "                     AND rt.deleted = false) " +
-            "AND r.deleted = true")
-    void activateByPropertyId(Integer propertyId);
+    @Query("""
+            UPDATE Room r SET r.active = true
+            WHERE r.roomType.property.id = :propertyId AND r.deleted = false
+            """)
+    void activateByPropertyId(@Param("propertyId") Integer propertyId);
 
     @Modifying
-    @Query("UPDATE Room r " +
-            "SET r.active = false " +
-            "WHERE r.roomType IN (SELECT rt " +
-            "                     FROM RoomType rt " +
-            "                     WHERE rt.property.id = :propertyId" +
-            "                     AND rt.deleted = false) " +
-            "AND r.deleted = false")
-    void deactivateByPropertyId(Integer propertyId);
+    @Query("""
+            UPDATE Room r SET r.active = false
+            WHERE r.roomType.property.id = :propertyId AND r.deleted = false
+            """)
+    void deactivateByPropertyId(@Param("propertyId") Integer propertyId);
+
+    /* By Owner (User) */
+
+    @Modifying
+    @Query("""
+            UPDATE Room r SET r.deleted = true, r.active = false
+            WHERE r.roomType.property.owner.id = :ownerId AND r.deleted = false
+            """)
+    void softDeleteByOwnerId(@Param("ownerId") Integer ownerId);
+
+    @Modifying
+    @Query("""
+            UPDATE Room r SET r.deleted = false
+            WHERE r.roomType.property.owner.id = :ownerId AND r.deleted = true
+            """)
+    void restoreByOwnerId(@Param("ownerId") Integer ownerId);
+
+    @Modifying
+    @Query("""
+            UPDATE Room r SET r.active = true
+            WHERE r.roomType.property.owner.id = :ownerId AND r.deleted = false
+            """)
+    void activateByOwnerId(@Param("ownerId") Integer ownerId);
+
+    @Modifying
+    @Query("""
+            UPDATE Room r SET r.active = false
+            WHERE r.roomType.property.owner.id = :ownerId AND r.deleted = false
+            """)
+    void deactivateByOwnerId(@Param("ownerId") Integer ownerId);
 
     /* Custom methods ---------------------------------------------------------------------------------------------- */
 }

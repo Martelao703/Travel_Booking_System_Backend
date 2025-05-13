@@ -1,17 +1,15 @@
 package com.david.travel_booking_system.service;
 
 import com.david.travel_booking_system.dto.request.auth.RegisterRequestDTO;
-import com.david.travel_booking_system.dto.request.crud.createRequest.UserCreateRequestDTO;
 import com.david.travel_booking_system.dto.request.crud.patchRequest.UserPatchRequestDTO;
 import com.david.travel_booking_system.dto.request.crud.updateRequest.UserUpdateRequestDTO;
 import com.david.travel_booking_system.enumsAndSets.BookingStatus;
-import com.david.travel_booking_system.enumsAndSets.UserRole;
+import com.david.travel_booking_system.security.UserRole;
 import com.david.travel_booking_system.enumsAndSets.entityPatchRequestFieldRules.UserPatchFieldRules;
 import com.david.travel_booking_system.mapper.UserMapper;
 import com.david.travel_booking_system.model.Booking;
 import com.david.travel_booking_system.model.User;
-import com.david.travel_booking_system.repository.BookingRepository;
-import com.david.travel_booking_system.repository.UserRepository;
+import com.david.travel_booking_system.repository.*;
 import com.david.travel_booking_system.specification.BaseSpecifications;
 import com.david.travel_booking_system.specification.BookingSpecifications;
 import com.david.travel_booking_system.specification.UserSpecifications;
@@ -25,17 +23,21 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
-import static com.david.travel_booking_system.enumsAndSets.UserRole.ROLE_USER;
-import static java.util.Collections.singleton;
+import static com.david.travel_booking_system.security.UserRole.ROLE_USER;
 
 @Service
 public class UserService {
     // Repositories
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
+
+    // Children Repositories
+    private final PropertyRepository propertyRepository;
+    private final RoomTypeRepository roomTypeRepository;
+    private final RoomRepository roomRepository;
+    private final BedRepository bedRepository;
 
     // Mappers
     private final UserMapper userMapper;
@@ -44,10 +46,16 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository, BookingRepository bookingRepository, UserMapper userMapper,
+    public UserService(UserRepository userRepository, BookingRepository bookingRepository,
+                       PropertyRepository propertyRepository, RoomTypeRepository roomTypeRepository,
+                       RoomRepository roomRepository, BedRepository bedRepository, UserMapper userMapper,
                        PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.bookingRepository = bookingRepository;
+        this.propertyRepository = propertyRepository;
+        this.roomTypeRepository = roomTypeRepository;
+        this.roomRepository = roomRepository;
+        this.bedRepository = bedRepository;
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
     }
@@ -181,6 +189,12 @@ public class UserService {
             throw new IllegalStateException("Cannot delete user with active bookings");
         }
 
+        // Soft delete all linked entities
+        propertyRepository.softDeleteByOwnerId(id);
+        roomTypeRepository.softDeleteByOwnerId(id);
+        roomRepository.softDeleteByOwnerId(id);
+        bedRepository.softDeleteByOwnerId(id);
+
         // Soft delete user
         user.setActive(false);
         user.setDeleted(true);
@@ -199,7 +213,7 @@ public class UserService {
             }
         }
 
-        // Hard delete user
+        // Hard delete user (CascadeType.ALL will handle Property, RoomType, Room, and Bed deletion)
         userRepository.delete(user);
     }
 
@@ -247,8 +261,11 @@ public class UserService {
             throw new IllegalStateException("Cannot deactivate user with active bookings");
         }
 
-        // Deactivate user
+        // Deactivate user and all linked entities
+        propertyRepository.deactivateByOwnerId(id);
+        roomRepository.deactivateByOwnerId(id);
         user.setActive(false);
+
         userRepository.save(user);
     }
 

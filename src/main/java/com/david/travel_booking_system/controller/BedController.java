@@ -7,9 +7,11 @@ import com.david.travel_booking_system.dto.request.crud.createRequest.BedCreateR
 import com.david.travel_booking_system.dto.request.crud.patchRequest.BedPatchRequestDTO;
 import com.david.travel_booking_system.mapper.BedMapper;
 import com.david.travel_booking_system.service.BedService;
+import jakarta.annotation.security.PermitAll;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,7 +23,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/beds")
 public class BedController {
+    // Services
     private final BedService bedService;
+
+    // Mappers
     private final BedMapper bedMapper;
 
     @Autowired
@@ -33,9 +38,10 @@ public class BedController {
     /* CRUD and Basic Endpoints ------------------------------------------------------------------------------------ */
 
     /* Returns BasicDTO instead of DetailDTO due to the entity's absence of non-nested collection fields */
+    @PreAuthorize("hasPermission(#createDTO.roomTypeId, 'Bed', 'create')")
     @PostMapping
-    public ResponseEntity<BedBasicDTO> createBed(@RequestBody @Valid BedCreateRequestDTO bedCreateRequestDTO) {
-        BedBasicDTO createdBed = bedMapper.toBasicDTO(bedService.createBed(bedCreateRequestDTO));
+    public ResponseEntity<BedBasicDTO> createBed(@RequestBody @Valid BedCreateRequestDTO createDTO) {
+        BedBasicDTO createdBed = bedMapper.toBasicDTO(bedService.createBed(createDTO));
         return ResponseEntity.status(201).body(createdBed); // Return 201 Created
     }
 
@@ -52,37 +58,42 @@ public class BedController {
     }
 
     /* Returns BasicDTO instead of DetailDTO due to the entity's absence of non-nested collection fields */
+    @PreAuthorize("hasPermission(#id, 'Bed', 'update')")
     @PutMapping("/{id}")
     public ResponseEntity<BedBasicDTO> updateBed(
             @PathVariable Integer id,
-            @RequestBody @Valid BedUpdateRequestDTO bedUpdateRequestDTO
+            @RequestBody @Valid BedUpdateRequestDTO updateDTO
     ) {
-        BedBasicDTO updatedBed = bedMapper.toBasicDTO(bedService.updateBed(id, bedUpdateRequestDTO));
+        BedBasicDTO updatedBed = bedMapper.toBasicDTO(bedService.updateBed(id, updateDTO));
         return ResponseEntity.ok(updatedBed); // Return 200 OK
     }
 
     /* Returns BasicDTO instead of DetailDTO due to the entity's absence of non-nested collection fields */
+    @PreAuthorize("hasPermission(#id, 'Bed', 'update')")
     @PatchMapping("/{id}")
     public ResponseEntity<BedBasicDTO> patchBed(
             @PathVariable Integer id,
-            @RequestBody @Valid BedPatchRequestDTO bedPatchRequestDTO
+            @RequestBody @Valid BedPatchRequestDTO patchDTO
     ) {
-        BedBasicDTO patchedBed = bedMapper.toBasicDTO(bedService.patchBed(id, bedPatchRequestDTO));
+        BedBasicDTO patchedBed = bedMapper.toBasicDTO(bedService.patchBed(id, patchDTO));
         return ResponseEntity.ok(patchedBed); // Return 200 OK
     }
 
+    @PreAuthorize("hasPermission(#id, 'Bed', 'delete')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBed(@PathVariable Integer id) {
         bedService.softDeleteBed(id);
         return ResponseEntity.noContent().build(); // Return 204 No Content
     }
 
+    @PreAuthorize("hasPermission(#id, 'Bed', 'delete')")
     @DeleteMapping("/{id}/hard")
     public ResponseEntity<Void> hardDeleteBed(@PathVariable Integer id) {
         bedService.hardDeleteBed(id);
         return ResponseEntity.noContent().build(); // Return 204 No Content
     }
 
+    @PreAuthorize("hasPermission(#id, 'Bed', 'restore')")
     @PatchMapping("/{id}/restore")
     public ResponseEntity<Void> restoreBed(@PathVariable Integer id) {
         bedService.restoreBed(id);

@@ -52,18 +52,17 @@ public class RoomTypeController {
 
     /* CRUD and Basic Endpoints ------------------------------------------------------------------------------------ */
 
-    /* Receives a general RequestDTO instead of a specific CreateRequestDTO due to the entity not needing specific request DTOs*/
+    @PreAuthorize("hasPermission(#createDTO.propertyId, 'RoomType', 'create')")
     @PostMapping
     public ResponseEntity<RoomTypeDetailDTO> createRoomType(
-            @RequestBody @Valid RoomTypeCreateRequestDTO roomTypeCreateRequestDTO
+            @RequestBody @Valid RoomTypeCreateRequestDTO createDTO
     ) {
         RoomTypeDetailDTO createdRoomType = roomTypeMapper.toDetailDTO(
-                roomTypeService.createRoomType(roomTypeCreateRequestDTO)
+                roomTypeService.createRoomType(createDTO)
         );
         return ResponseEntity.status(201).body(createdRoomType); // Return 201 Created
     }
 
-    @PreAuthorize("hasRole('ROLE_HOST')")
     @GetMapping
     public ResponseEntity<List<RoomTypeBasicDTO>> getRoomTypes() {
         List<RoomTypeBasicDTO> roomTypes = roomTypeMapper.toBasicDTOs(roomTypeService.getRoomTypes(false));
@@ -76,40 +75,45 @@ public class RoomTypeController {
         return ResponseEntity.ok(roomType); // Return 200 OK
     }
 
+    @PreAuthorize("hasPermission(#id, 'RoomType', 'update')")
     @PutMapping("/{id}")
     public ResponseEntity<RoomTypeDetailDTO> updateRoomType(
             @PathVariable Integer id,
-            @RequestBody @Valid RoomTypeUpdateRequestDTO roomTypeUpdateRequestDTO
+            @RequestBody @Valid RoomTypeUpdateRequestDTO updateDTO
     ) {
         RoomTypeDetailDTO updatedRoomType = roomTypeMapper.toDetailDTO(
-                roomTypeService.updateRoomType(id, roomTypeUpdateRequestDTO)
+                roomTypeService.updateRoomType(id, updateDTO)
         );
         return ResponseEntity.ok(updatedRoomType); // Return 200 OK
     }
 
+    @PreAuthorize("hasPermission(#id, 'RoomType', 'update')")
     @PatchMapping("/{id}")
     public ResponseEntity<RoomTypeDetailDTO> patchRoomType(
             @PathVariable Integer id,
-            @RequestBody @Valid RoomTypePatchRequestDTO roomTypePatchRequestDTO
+            @RequestBody @Valid RoomTypePatchRequestDTO patchDTO
     ) {
         RoomTypeDetailDTO patchedRoomType = roomTypeMapper.toDetailDTO(
-                roomTypeService.patchRoomType(id, roomTypePatchRequestDTO)
+                roomTypeService.patchRoomType(id, patchDTO)
         );
         return ResponseEntity.ok(patchedRoomType); // Return 200 OK
     }
 
+    @PreAuthorize("hasPermission(#id, 'RoomType', 'delete')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteRoomType(@PathVariable Integer id) {
         roomTypeService.softDeleteRoomType(id);
         return ResponseEntity.noContent().build(); // Return 204 No Content
     }
 
+    @PreAuthorize("hasPermission(#id, 'RoomType', 'delete')")
     @DeleteMapping("/{id}/hard")
     public ResponseEntity<Void> hardDeleteRoomType(@PathVariable Integer id) {
         roomTypeService.hardDeleteRoomType(id);
         return ResponseEntity.noContent().build(); // Return 204 No Content
     }
 
+    @PreAuthorize("hasPermission(#id, 'RoomType', 'restore')")
     @PatchMapping("/{id}/restore")
     public ResponseEntity<Void> restoreRoomType(@PathVariable Integer id) {
         roomTypeService.restoreRoomType(id);

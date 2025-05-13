@@ -6,17 +6,12 @@ import com.david.travel_booking_system.dto.request.crud.updateRequest.RoomUpdate
 import com.david.travel_booking_system.enumsAndSets.BookingStatus;
 import com.david.travel_booking_system.enumsAndSets.entityPatchRequestFieldRules.RoomPatchFieldRules;
 import com.david.travel_booking_system.mapper.RoomMapper;
-import com.david.travel_booking_system.model.Booking;
-import com.david.travel_booking_system.model.Property;
-import com.david.travel_booking_system.model.Room;
-import com.david.travel_booking_system.model.RoomType;
-import com.david.travel_booking_system.repository.BookingRepository;
-import com.david.travel_booking_system.repository.PropertyRepository;
-import com.david.travel_booking_system.repository.RoomRepository;
-import com.david.travel_booking_system.repository.RoomTypeRepository;
+import com.david.travel_booking_system.model.*;
+import com.david.travel_booking_system.repository.*;
 import com.david.travel_booking_system.specification.BaseSpecifications;
 import com.david.travel_booking_system.specification.BookingSpecifications;
 import com.david.travel_booking_system.specification.RoomSpecifications;
+import com.david.travel_booking_system.specification.RoomTypeSpecifications;
 import com.david.travel_booking_system.util.EntityPatcher;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +25,9 @@ public class RoomService {
     // Repositories
     private final RoomRepository roomRepository;
     private final BookingRepository bookingRepository;
+
+    // Parents Repositories
+    private final UserRepository userRepository;
     private final PropertyRepository propertyRepository;
     private final RoomTypeRepository roomTypeRepository;
 
@@ -37,10 +35,11 @@ public class RoomService {
     private final RoomMapper roomMapper;
 
     @Autowired
-    public RoomService(RoomRepository roomRepository, BookingRepository bookingRepository,
+    public RoomService(RoomRepository roomRepository, BookingRepository bookingRepository, UserRepository userRepository,
                        PropertyRepository propertyRepository, RoomTypeRepository roomTypeRepository, RoomMapper roomMapper) {
         this.roomRepository = roomRepository;
         this.bookingRepository = bookingRepository;
+        this.userRepository = userRepository;
         this.propertyRepository = propertyRepository;
         this.roomTypeRepository = roomTypeRepository;
         this.roomMapper = roomMapper;
@@ -223,7 +222,36 @@ public class RoomService {
         return roomRepository.findAll(roomSpec);
     }
 
+    @Transactional(readOnly = true)
+    public List<Room> getRoomsByOwnerId(Integer ownerId, boolean includeDeleted) {
+        // Ensure the owner exists and is not soft-deleted
+        Specification<User> ownerSpec = BaseSpecifications.filterById(User.class, ownerId)
+                .and(BaseSpecifications.excludeDeleted(User.class));
+
+        if (!userRepository.exists(ownerSpec)) {
+            throw new EntityNotFoundException("User with ID " + ownerId + " not found");
+        }
+
+        // Filter by owner ID
+        Specification<Room> roomSpec = includeDeleted
+                ? RoomSpecifications.filterByOwnerId(ownerId) // Owner ID filter
+                : RoomSpecifications.filterByOwnerId(ownerId)
+                .and(BaseSpecifications.excludeDeleted(Room.class)); // Owner ID and non-deleted filter
+
+        return roomRepository.findAll(roomSpec);
+    }
+
     /* Custom methods ---------------------------------------------------------------------------------------------- */
+
+    // Check if the Room with the given ID is owned by the user with the given email
+    @Transactional(readOnly = true)
+    public boolean isOwner(Integer id, String email) {
+        // Filter by Room ID and owner email
+        Specification<Room> spec = BaseSpecifications.filterById(Room.class, id)
+                .and(RoomSpecifications.filterByOwnerEmail(email));
+
+        return roomRepository.exists(spec);
+    }
 
     @Transactional
     public void activateRoom(Integer id) {
@@ -234,7 +262,7 @@ public class RoomService {
             throw new IllegalStateException("Room is already active");
         }
 
-        // Set room to active
+        // Activate room
         room.setActive(true);
         roomRepository.save(room);
     }
@@ -253,7 +281,7 @@ public class RoomService {
             throw new IllegalStateException("Cannot deactivate a room with active bookings");
         }
 
-        // Set room to inactive
+        // Deactivate room
         room.setActive(false);
         roomRepository.save(room);
     }

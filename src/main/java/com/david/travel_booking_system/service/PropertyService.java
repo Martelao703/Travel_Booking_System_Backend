@@ -13,7 +13,6 @@ import com.david.travel_booking_system.repository.*;
 import com.david.travel_booking_system.specification.BaseSpecifications;
 import com.david.travel_booking_system.specification.BookingSpecifications;
 import com.david.travel_booking_system.specification.PropertySpecifications;
-import com.david.travel_booking_system.util.BookingServiceHelper;
 import com.david.travel_booking_system.util.EntityPatcher;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +25,13 @@ import java.util.List;
 @Service
 public class PropertyService {
     // Repositories
-    private final PropertyRepository propertyRepository;
-    private final UserRepository userRepository;
+    private final PropertyRepository propertyRepository;;
     private final BookingRepository bookingRepository;
+
+    // Parents Repositories
+    private final UserRepository userRepository;
+
+    // Children Repositories
     private final RoomTypeRepository roomTypeRepository;
     private final RoomRepository roomRepository;
     private final BedRepository bedRepository;
@@ -37,17 +40,16 @@ public class PropertyService {
     private final PropertyMapper propertyMapper;
 
     @Autowired
-    public PropertyService(PropertyRepository propertyRepository, UserRepository userRepository,
-                           BookingRepository bookingRepository, RoomTypeRepository roomTypeRepository,
-                           RoomRepository roomRepository, BedRepository bedRepository, PropertyMapper propertyMapper)
-    {
+    public PropertyService(PropertyRepository propertyRepository, BookingRepository bookingRepository,
+                           UserRepository userRepository, RoomTypeRepository roomTypeRepository,
+                           RoomRepository roomRepository, BedRepository bedRepository, PropertyMapper propertyMapper) {
         this.propertyRepository = propertyRepository;
         this.bookingRepository = bookingRepository;
+        this.userRepository = userRepository;
         this.roomTypeRepository = roomTypeRepository;
         this.roomRepository = roomRepository;
         this.bedRepository = bedRepository;
         this.propertyMapper = propertyMapper;
-        this.userRepository = userRepository;
     }
 
     /* CRUD and Basic Methods -------------------------------------------------------------------------------------- */
@@ -184,12 +186,8 @@ public class PropertyService {
             throw new IllegalStateException("Property is not deleted");
         }
 
-        // Restore property and linked entities
+        // Restore property
         property.setDeleted(false);
-        roomTypeRepository.restoreByPropertyId(id);
-        roomRepository.restoreByPropertyId(id);
-        bedRepository.restoreByPropertyId(id);
-
         propertyRepository.save(property);
     }
 
@@ -216,6 +214,16 @@ public class PropertyService {
 
     /* Custom methods ---------------------------------------------------------------------------------------------- */
 
+    // Check if the Property with the given ID is owned by the user with the given email
+    @Transactional(readOnly = true)
+    public boolean isOwner(Integer id, String email) {
+        // Filter by Property ID and owner email
+        Specification<Property> spec = BaseSpecifications.filterById(Property.class, id)
+                .and(PropertySpecifications.filterByOwnerEmail(email));
+
+        return propertyRepository.exists(spec);
+    }
+
     @Transactional
     public void activateProperty(Integer id) {
         Property property = getPropertyById(id, true);
@@ -225,10 +233,8 @@ public class PropertyService {
             throw new IllegalStateException("Property is already active");
         }
 
-        // Set property and linked entities to active
+        // Activate property
         property.setActive(true);
-        roomRepository.activateByPropertyId(id);
-
         propertyRepository.save(property);
     }
 
@@ -246,7 +252,7 @@ public class PropertyService {
             throw new IllegalStateException("Cannot deactivate a property with active bookings");
         }
 
-        // Set property and linked entities to inactive
+        // Deactivate property and linked entities
         roomRepository.deactivateByPropertyId(id);
         property.setActive(false);
 

@@ -1,4 +1,4 @@
-package com.david.travel_booking_system.service;
+package com.david.travel_booking_system.service.auth;
 
 import com.david.travel_booking_system.model.User;
 import com.david.travel_booking_system.repository.UserRepository;
@@ -6,7 +6,6 @@ import com.david.travel_booking_system.security.CustomUserDetails;
 import com.david.travel_booking_system.specification.BaseSpecifications;
 import com.david.travel_booking_system.specification.UserSpecifications;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public CustomUserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         // Filter by email and non-deleted
         Specification<User> spec = UserSpecifications.filterByEmail(email)
                 .and(BaseSpecifications.excludeDeleted(User.class));

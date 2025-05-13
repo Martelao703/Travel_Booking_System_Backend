@@ -41,6 +41,9 @@ public class SecurityConfig {
                         // Public access endpoints
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/properties/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/room-types/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/rooms/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/beds/**").permitAll()
 
                         // All other endpoints require authentication
                         .anyRequest().authenticated()
