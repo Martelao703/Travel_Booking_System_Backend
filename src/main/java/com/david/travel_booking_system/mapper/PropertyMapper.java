@@ -20,21 +20,21 @@ public interface PropertyMapper {
     /* from Entity to DTO -------------------------------------------------------------------------------------------*/
 
     // Map to BasicDTO
-    @Mapping(target = "ownerID", source = "owner.id")
+    @Mapping(target = "ownerId", source = "owner.id")
     @Mapping(target = "latitude", source = "coordinates.latitude")
     @Mapping(target = "longitude", source = "coordinates.longitude")
     PropertyBasicDTO toBasicDTO(Property property);
     List<PropertyBasicDTO> toBasicDTOs(List<Property> properties);
 
     // Map to DetailDTO
-    @Mapping(target = "ownerID", source = "owner.id")
+    @Mapping(target = "ownerId", source = "owner.id")
     @Mapping(target = "latitude", source = "coordinates.latitude")
     @Mapping(target = "longitude", source = "coordinates.longitude")
     PropertyDetailDTO toDetailDTO(Property property);
     List<PropertyDetailDTO> toDetailDTOs(List<Property> properties);
 
     // Map to FullDTO
-    @Mapping(target = "ownerID", source = "owner.id")
+    @Mapping(target = "ownerId", source = "owner.id")
     @Mapping(target = "latitude", source = "coordinates.latitude")
     @Mapping(target = "longitude", source = "coordinates.longitude")
     PropertyFullDTO toFullDTO(Property property);
@@ -45,7 +45,7 @@ public interface PropertyMapper {
     // Create Property from PropertyCreateRequestDTO
     @Mapping(target = "coordinates", expression = "java(mapCoordinates(dto.getLatitude(), dto.getLongitude()))")
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "ownerID", source = "owner.id")
+    @Mapping(target = "owner.id", source = "ownerId")
     @Mapping(target = "active", ignore = true)
     @Mapping(target = "userRating", ignore = true)
     @Mapping(target = "deleted", ignore = true)

@@ -18,10 +18,6 @@ public interface BookingRepository extends JpaRepository<Booking, Integer>, JpaS
 
     /* CRUD and Basic methods -------------------------------------------------------------------------------------- */
 
-    @Modifying
-    @Query(" UPDATE Booking b SET b.deleted = true WHERE b.id = :id ")
-    void softDeleteById(Integer id);
-
     /* Custom methods ---------------------------------------------------------------------------------------------- */
 
     // Find Bookings that are pending and past expiry threshold

@@ -13,6 +13,16 @@ public class BookingSpecifications extends BaseSpecifications {
                 criteriaBuilder.equal(root.get("user").get("id"), userId);
     }
 
+    public static Specification<Booking> filterByUserEmail(String email) {
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get("user").get("email"), email);
+    }
+
+    public static Specification<Booking> filterByPropertyOwnerEmail(String email) {
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get("room").get("roomType").get("property").get("owner").get("email"), email);
+    }
+
     public static Specification<Booking> filterByRoomId(Integer roomId) {
         return (root, query, criteriaBuilder) ->
                 criteriaBuilder.equal(root.get("room").get("id"), roomId);

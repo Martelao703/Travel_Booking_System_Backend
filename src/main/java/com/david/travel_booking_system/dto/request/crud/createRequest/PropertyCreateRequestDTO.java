@@ -1,11 +1,8 @@
 package com.david.travel_booking_system.dto.request.crud.createRequest;
 
 import com.david.travel_booking_system.enumsAndSets.PropertyType;
-import com.david.travel_booking_system.model.User;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 

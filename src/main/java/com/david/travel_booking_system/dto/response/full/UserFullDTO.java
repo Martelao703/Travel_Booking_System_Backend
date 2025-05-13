@@ -2,8 +2,7 @@ package com.david.travel_booking_system.dto.response.full;
 
 import com.david.travel_booking_system.dto.response.basic.BookingBasicDTO;
 import com.david.travel_booking_system.dto.response.basic.PropertyBasicDTO;
-import com.david.travel_booking_system.dto.response.basic.UserBasicDTO;
-import com.david.travel_booking_system.enumsAndSets.UserRole;
+import com.david.travel_booking_system.security.UserRole;
 import lombok.Data;
 
 import java.time.LocalDate;

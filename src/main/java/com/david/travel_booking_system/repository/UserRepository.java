@@ -16,7 +16,5 @@ public interface UserRepository extends JpaRepository<User, Integer>, JpaSpecifi
 
     /* CRUD and Basic methods -------------------------------------------------------------------------------------- */
 
-
-
     /* Custom methods ---------------------------------------------------------------------------------------------- */
 }

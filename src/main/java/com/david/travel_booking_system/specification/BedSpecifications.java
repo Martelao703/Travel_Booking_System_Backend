@@ -14,4 +14,14 @@ public class BedSpecifications extends BaseSpecifications {
         return (root, query, criteriaBuilder) ->
                 criteriaBuilder.equal(root.get("roomType").get("property").get("id"), propertyId);
     }
+
+    public static Specification<Bed> filterByOwnerId(Integer ownerId) {
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get("roomType").get("property").get("owner").get("id"), ownerId);
+    }
+
+    public static Specification<Bed> filterByOwnerEmail(String email) {
+        return (root, query, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get("roomType").get("property").get("owner").get("email"), email);
+    }
 }

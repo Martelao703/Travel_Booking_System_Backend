@@ -32,7 +32,7 @@ public class DateRangeValidator implements ConstraintValidator<ValidDateRange, O
             }
 
             return startDateTime.isBefore(endDateTime);
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException  e) {
             return false;
         }
     }

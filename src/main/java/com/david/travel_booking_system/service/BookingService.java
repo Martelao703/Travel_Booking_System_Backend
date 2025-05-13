@@ -15,6 +15,7 @@ import com.david.travel_booking_system.repository.PropertyRepository;
 import com.david.travel_booking_system.repository.RoomRepository;
 import com.david.travel_booking_system.repository.UserRepository;
 import com.david.travel_booking_system.specification.BookingSpecifications;
+import com.david.travel_booking_system.specification.RoomSpecifications;
 import com.david.travel_booking_system.util.BookingServiceHelper;
 import com.david.travel_booking_system.specification.BaseSpecifications;
 import com.david.travel_booking_system.util.EntityPatcher;
@@ -250,6 +251,26 @@ public class BookingService {
     }
 
     /* Custom methods ---------------------------------------------------------------------------------------------- */
+
+    // Check if the Booking with the given ID is owned by the user with the given email
+    @Transactional(readOnly = true)
+    public boolean isOwner(Integer id, String email) {
+        // Filter by Booking ID and user email
+        Specification<Booking> spec = BaseSpecifications.filterById(Booking.class, id)
+                .and(BookingSpecifications.filterByUserEmail(email));
+
+        return bookingRepository.exists(spec);
+    }
+
+    // Check if the Booking with the given ID was booked in a Property owned by the user with the given email
+    @Transactional(readOnly = true)
+    public boolean isBookingOnOwnedProperty(Integer bookingId, String email) {
+        // Filter by Booking ID and Property Owner email
+        Specification<Booking> spec = BaseSpecifications.filterById(Booking.class, bookingId)
+                .and(BookingSpecifications.filterByPropertyOwnerEmail(email));
+
+        return bookingRepository.exists(spec);
+    }
 
     @Transactional
     public Booking changeBookingDates(Integer id, BookingDateChangeRequestDTO bookingDateChangeRequestDTO) {
