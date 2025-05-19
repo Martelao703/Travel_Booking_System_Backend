@@ -1,44 +1,53 @@
 package com.david.travel_booking_system.security.permissionCheck.entityCheck;
 
-import com.david.travel_booking_system.model.Property;
 import com.david.travel_booking_system.security.permissionCheck.AbstractPermissionChecker;
+import com.david.travel_booking_system.service.PropertyService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
-import java.util.Set;
-
 @Component
-public class PropertyPermissionCheck extends AbstractPermissionChecker<Property> {
+public class PropertyPermissionCheck extends AbstractPermissionChecker {
 
-    @Override
-    public boolean canCreate(Authentication auth, Property property) {
-        Set<String> auths = auths(auth);
-        return hasPerm(auths, "property:create")
-                && hasAnyRole(auths, "ROLE_HOST", "ROLE_MANAGER", "ROLE_ADMIN");
+    private final PropertyService propertyService;
+
+    @Autowired
+    public PropertyPermissionCheck(PropertyService propertyService) {
+        this.propertyService = propertyService;
     }
 
-    @Override
-    public boolean canRead(Authentication auth, Property property) {
-        return false;
+    public boolean canCreate(Authentication auth) {
+        return hasPerm(auth, "property:create");
     }
 
-    @Override
-    public boolean canUpdate(Authentication auth, Property property) {
-        Set<String> auths = auths(auth);
-
-        if (!hasPerm(auths, "property:update")) return false;
-        if (hasAnyRole(auths, "ROLE_MANAGER", "ROLE_ADMIN")) return true;
-
-        return property.getOwnerUsername().equals(auth.getName());
+    public boolean canRead(Authentication auth, Integer propertyId) {
+        return hasPerm(auth, "property:read");
     }
 
-    @Override
-    public boolean canDelete(Authentication auth, Property property) {
-        return false;
+    public boolean canUpdate(Authentication auth, Integer propertyId) {
+        return isOwnerOrManager(auth, propertyId, "property:update");
     }
 
-    @Override
-    public boolean canRestore(Authentication auth, Property property) {
-        return false;
+    public boolean canDelete(Authentication auth, Integer propertyId) {
+        return hasPerm(auth, "property:delete") && propertyService.isOwner(propertyId, auth.getName());
+    }
+
+    public boolean canRestore(Authentication auth, Integer propertyId) {
+        return isOwnerOrManager(auth, propertyId, "property:restore");
+    }
+
+    public boolean canActivate(Authentication auth, Integer propertyId) {
+        return isOwnerOrManager(auth, propertyId, "property:activate");
+    }
+
+    public boolean canDeactivate(Authentication auth, Integer propertyId) {
+        return isOwnerOrManager(auth, propertyId, "property:deactivate");
+    }
+
+    private boolean isOwnerOrManager(Authentication auth, Integer propertyId, String permission) {
+        if (!hasPerm(auth, permission)) return false;
+        if (hasAnyRole(auth, "ROLE_MANAGER")) return true;
+
+        return propertyService.isOwner(propertyId, auth.getName());
     }
 }

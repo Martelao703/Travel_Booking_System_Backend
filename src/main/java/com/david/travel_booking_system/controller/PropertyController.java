@@ -56,7 +56,6 @@ public class PropertyController {
 
     /* CRUD and Basic Endpoints ------------------------------------------------------------------------------------ */
 
-    @PreAuthorize("hasAuthority('property:create')")
     @PostMapping
     public ResponseEntity<PropertyDetailDTO> createProperty(
             @RequestBody @Valid PropertyCreateRequestDTO createDTO
@@ -67,7 +66,6 @@ public class PropertyController {
         return ResponseEntity.status(201).body(createdProperty); // Return 201 Created
     }
 
-    @PreAuthorize("hasAuthority('property:update') and ( hasRole('ROLE_MANAGER') or @propertyService.isOwner(#id, principal.username) )")
     @GetMapping
     public ResponseEntity<List<PropertyBasicDTO>> getProperties() {
         List<PropertyBasicDTO> properties = propertyMapper.toBasicDTOs(propertyService.getProperties(false));

@@ -96,7 +96,8 @@ public enum UserRole {
                 Permission.BED_RESTORE,
                 Permission.BOOKING_CHECK_IN,
                 Permission.BOOKING_CHECK_OUT,
-                Permission.BOOKING_REJECT
+                Permission.BOOKING_REJECT,
+
         ));
         return perms;
     }
