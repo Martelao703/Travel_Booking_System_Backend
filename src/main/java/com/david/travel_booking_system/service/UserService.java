@@ -234,6 +234,12 @@ public class UserService {
     /* Custom methods ---------------------------------------------------------------------------------------------- */
 
     @Transactional
+    public boolean isSelf(Integer id, String email) {
+        User user = getUserById(id, false);
+        return user.getEmail().equals(email);
+    }
+
+    @Transactional
     public void activateUser(Integer id) {
         User user = getUserById(id, true);
 

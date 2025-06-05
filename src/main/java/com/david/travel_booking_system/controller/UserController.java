@@ -61,23 +61,23 @@ public class UserController {
 
     /* Create User endpoint delegated to AuthController endpoint 'register' */
 
-    @PreAuthorize("hasAnyAuthority('ROLE_MANAGER', 'ROLE_ADMIN')")
     @GetMapping
+    @PreAuthorize("@userPermissionChecker.canReadAny(authentication)")
     public ResponseEntity<List<UserBasicDTO>> getUsers() {
         List<UserBasicDTO> users = userMapper.toBasicDTOs(userService.getUsers(false));
         return ResponseEntity.ok(users); // Return 200 OK
     }
 
-    @PreAuthorize("hasPermission(#id, 'User', 'read')")
     @GetMapping("/{id}")
+    @PreAuthorize("@userPermissionChecker.canRead(authentication, #id)")
     public ResponseEntity<UserFullDTO> getUser(@PathVariable Integer id) {
         UserFullDTO user = userMapper.toFullDTO(userService.getUserById(id, false));
         return ResponseEntity.ok(user); // Return 200 OK
     }
 
     /* Returns BasicDTO instead of DetailDTO due to the entity's absence of non-nested collection fields */
-    @PreAuthorize("hasPermission(#id, 'User', 'update')")
     @PutMapping("/{id}")
+    @PreAuthorize("@userPermissionChecker.canUpdate(authentication, #id)")
     public ResponseEntity<UserBasicDTO> updateUser(
             @PathVariable Integer id,
             @RequestBody @Valid UserUpdateRequestDTO updateDTO
@@ -87,8 +87,8 @@ public class UserController {
     }
 
     /* Returns BasicDTO instead of DetailDTO due to the entity's absence of non-nested collection fields */
-    @PreAuthorize("hasPermission(#id, 'User', 'update')")
     @PatchMapping("/{id}")
+    @PreAuthorize("@userPermissionChecker.canUpdate(authentication, #id)")
     public ResponseEntity<UserBasicDTO> patchUser(
             @PathVariable Integer id,
             @RequestBody @Valid UserPatchRequestDTO patchDTO
@@ -97,22 +97,22 @@ public class UserController {
         return ResponseEntity.ok(patchedUser); // Return 200 OK
     }
 
-    @PreAuthorize("hasPermission(#id, 'User', 'delete')")
     @DeleteMapping("/{id}")
+    @PreAuthorize("@userPermissionChecker.canDelete(authentication, #id)")
     public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
         userService.softDeleteUser(id);
         return ResponseEntity.noContent().build(); // Return 204 No Content
     }
 
-    @PreAuthorize("hasPermission(#id, 'User', 'delete')")
     @DeleteMapping("/{id}/hard")
+    @PreAuthorize("@userPermissionChecker.canDelete(authentication, #id)")
     public ResponseEntity<Void> hardDeleteUser(@PathVariable Integer id) {
         userService.hardDeleteUser(id);
         return ResponseEntity.noContent().build(); // Return 204 No Content
     }
 
-    @PreAuthorize("hasPermission(#id, 'User', 'restore')")
     @PatchMapping("/{id}/restore")
+    @PreAuthorize("@userPermissionChecker.canRestore(authentication, #id)")
     public ResponseEntity<Void> restoreUser(@PathVariable Integer id) {
         userService.restoreUser(id);
         return ResponseEntity.noContent().build(); // Return 204 No Content
@@ -120,8 +120,8 @@ public class UserController {
 
     /* Get Lists of Nested Entities */
 
-    @PreAuthorize("hasPermission(#id, 'User', 'read')")
     @GetMapping("/{id}/properties")
+    @PreAuthorize("@userPermissionChecker.canRead(authentication, #id)")
     public ResponseEntity<List<PropertyBasicDTO>> getProperties(@PathVariable Integer id) {
         List<PropertyBasicDTO> properties = propertyMapper.toBasicDTOs(
                 propertyService.getPropertiesByOwnerId(id, false)
@@ -129,8 +129,8 @@ public class UserController {
         return ResponseEntity.ok(properties); // Return 200 OK
     }
 
-    @PreAuthorize("hasPermission(#id, 'User', 'read')")
     @GetMapping("/{id}/roomTypes")
+    @PreAuthorize("@userPermissionChecker.canRead(authentication, #id)")
     public ResponseEntity<List<RoomTypeBasicDTO>> getRoomTypes(@PathVariable Integer id) {
         List<RoomTypeBasicDTO> roomTypes = roomTypeMapper.toBasicDTOs(
                 roomTypeService.getRoomTypesByOwnerId(id, false)
@@ -138,8 +138,8 @@ public class UserController {
         return ResponseEntity.ok(roomTypes); // Return 200 OK
     }
 
-    @PreAuthorize("hasPermission(#id, 'User', 'read')")
     @GetMapping("/{id}/rooms")
+    @PreAuthorize("@userPermissionChecker.canRead(authentication, #id)")
     public ResponseEntity<List<RoomBasicDTO>> getRooms(@PathVariable Integer id) {
         List<RoomBasicDTO> rooms = roomMapper.toBasicDTOs(
                 roomService.getRoomsByOwnerId(id, false)
@@ -147,8 +147,8 @@ public class UserController {
         return ResponseEntity.ok(rooms); // Return 200 OK
     }
 
-    @PreAuthorize("hasPermission(#id, 'User', 'read')")
     @GetMapping("/{id}/beds")
+    @PreAuthorize("@userPermissionChecker.canRead(authentication, #id)")
     public ResponseEntity<List<BedBasicDTO>> getBeds(@PathVariable Integer id) {
         List<BedBasicDTO> beds = bedMapper.toBasicDTOs(
                 bedService.getBedsByOwnerId(id, false)
@@ -156,8 +156,8 @@ public class UserController {
         return ResponseEntity.ok(beds); // Return 200 OK
     }
 
-    @PreAuthorize("hasPermission(#id, 'User', 'read')")
     @GetMapping("/{id}/bookings")
+    @PreAuthorize("@userPermissionChecker.canRead(authentication, #id)")
     public ResponseEntity<List<BookingBasicDTO>> getBookings(@PathVariable Integer id) {
         List<BookingBasicDTO> bookings = bookingMapper.toBasicDTOs(
                 bookingService.getBookingsByUserId(id, false)
@@ -167,22 +167,21 @@ public class UserController {
 
     /* Custom endpoints -------------------------------------------------------------------------------------------- */
 
-    @PreAuthorize("hasPermission(#id, 'User', 'activate')")
     @PatchMapping("/{id}/activate")
+    @PreAuthorize("@userPermissionChecker.canActivate(authentication, #id)")
     public ResponseEntity<Void> activateUser(@PathVariable Integer id) {
         userService.activateUser(id);
         return ResponseEntity.noContent().build(); // Return 204 No Content
     }
 
-    @PreAuthorize("hasPermission(#id, 'User', 'deactivate')")
     @PatchMapping("/{id}/deactivate")
+    @PreAuthorize("@userPermissionChecker.canDeactivate(authentication, #id)")
     public ResponseEntity<Void> deactivateUser(@PathVariable Integer id) {
         userService.deactivateUser(id);
         return ResponseEntity.noContent().build(); // Return 204 No Content
     }
 
-    /*@PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PatchMapping("/{id}/roles")
+    /*@PatchMapping("/{id}/roles")
     public ResponseEntity<Void> changeUserRoles(
             @PathVariable Integer id,
             @Valid @RequestBody RoleChangeRequestDTO dto

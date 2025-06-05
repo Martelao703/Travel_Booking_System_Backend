@@ -1,29 +1,39 @@
 package com.david.travel_booking_system.security.permissionCheck;
 
+import com.david.travel_booking_system.security.Permission;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.Arrays;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 public abstract class AbstractPermissionChecker {
 
-    // Extracts the authority strings from the Authentication
-    private Set<String> authorities(Authentication auth) {
-        return auth.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toSet());
+    /**
+     * Checks if the user either has the ANY variant of the given OWN permission,
+     * or has the OWN permission and owns the resource.
+     */
+    protected boolean canOwnOrAny(Authentication auth, Permission ownPerm, Integer resourceId,
+                                  BiFunction<Authentication, Integer, Boolean> isOwner
+    ) {
+        // derive the ANY variant by swapping suffix
+        Permission anyPerm = Permission.valueOf(
+                ownPerm.name().replace("_OWN", "_ANY")
+        );
+
+        // ANY
+        if (hasPerm(auth, anyPerm)) return true;
+
+        // OWN
+        return hasPerm(auth, ownPerm)
+                && isOwner.apply(auth, resourceId);
     }
 
-    // Checks for a specific permission string (e.g. "property:update")
-    protected boolean hasPerm(Authentication auth, String perm) {
-        return authorities(auth).contains(perm);
-    }
-
-    // Checks if the user has any one of the given roles
-    protected boolean hasAnyRole(Authentication auth, String... roles) {
-        Set<String> auths = authorities(auth);
-        return Arrays.stream(roles).anyMatch(auths::contains);
+    protected boolean hasPerm(Authentication auth, Permission perm) {
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(perm.getPermission());
+        return auth.getAuthorities().contains(authority);
     }
 }

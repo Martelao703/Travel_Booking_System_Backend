@@ -8,9 +8,10 @@ public enum Permission {
 
     /* --- Property --- */
 
+    PROPERTY_CREATE("property:create"),
+
     //OWN
     PROPERTY_READ_OWN("property:read:own"),
-    PROPERTY_CREATE_OWN("property:create:own"),
     PROPERTY_UPDATE_OWN("property:update:own"),
     PROPERTY_DELETE_OWN("property:delete:own"),
     PROPERTY_RESTORE_OWN("property:restore:own"),
@@ -20,7 +21,6 @@ public enum Permission {
 
     //ANY
     PROPERTY_READ_ANY("property:read:any"),
-    PROPERTY_CREATE_ANY("property:create:any"),
     PROPERTY_UPDATE_ANY("property:update:any"),
     PROPERTY_DELETE_ANY("property:delete:any"),
     PROPERTY_RESTORE_ANY("property:restore:any"),
@@ -30,25 +30,26 @@ public enum Permission {
 
     /* --- Room Type --- */
 
+    ROOM_TYPE_CREATE("roomType:create"),
+
     //OWN
     ROOM_TYPE_READ_OWN("roomType:read:own"),
-    ROOM_TYPE_CREATE_OWN("roomType:create:own"),
     ROOM_TYPE_UPDATE_OWN("roomType:update:own"),
     ROOM_TYPE_DELETE_OWN("roomType:delete:own"),
     ROOM_TYPE_RESTORE_OWN("roomType:restore:own"),
 
     //ANY
     ROOM_TYPE_READ_ANY("roomType:read:any"),
-    ROOM_TYPE_CREATE_ANY("roomType:create:any"),
     ROOM_TYPE_UPDATE_ANY("roomType:update:any"),
     ROOM_TYPE_DELETE_ANY("roomType:delete:any"),
     ROOM_TYPE_RESTORE_ANY("roomType:restore:any"),
 
     /* --- Room --- */
 
+    ROOM_CREATE("room:create"),
+
     //OWN
     ROOM_READ_OWN("room:read:own"),
-    ROOM_CREATE_OWN("room:create:own"),
     ROOM_UPDATE_OWN("room:update:own"),
     ROOM_DELETE_OWN("room:delete:own"),
     ROOM_RESTORE_OWN("room:restore:own"),
@@ -58,7 +59,6 @@ public enum Permission {
 
     //ANY
     ROOM_READ_ANY("room:read:any"),
-    ROOM_CREATE_ANY("room:create:any"),
     ROOM_UPDATE_ANY("room:update:any"),
     ROOM_DELETE_ANY("room:delete:any"),
     ROOM_RESTORE_ANY("room:restore:any"),
@@ -68,25 +68,26 @@ public enum Permission {
 
     /* --- Bed --- */
 
+    BED_CREATE("bed:create"),
+
     //OWN
     BED_READ_OWN("bed:read:own"),
-    BED_CREATE_OWN("bed:create:own"),
     BED_UPDATE_OWN("bed:update:own"),
     BED_DELETE_OWN("bed:delete:own"),
     BED_RESTORE_OWN("bed:restore:own"),
 
     //ANY
     BED_READ_ANY("bed:read:any"),
-    BED_CREATE_ANY("bed:create:any"),
     BED_UPDATE_ANY("bed:update:any"),
     BED_DELETE_ANY("bed:delete:any"),
     BED_RESTORE_ANY("bed:restore:any"),
 
     /* --- Booking --- */
 
+    BOOKING_CREATE("booking:create"),
+
     //OWN
     BOOKING_READ_OWN("booking:read:own"),
-    BOOKING_CREATE_OWN("booking:create:own"),
     BOOKING_UPDATE_OWN("booking:update:own"),
     BOOKING_DELETE_OWN("booking:delete:own"),
     BOOKING_RESTORE_OWN("booking:restore:own"),
@@ -99,7 +100,6 @@ public enum Permission {
 
     //ANY
     BOOKING_READ_ANY("booking:read:any"),
-    BOOKING_CREATE_ANY("booking:create:any"),
     BOOKING_UPDATE_ANY("booking:update:any"),
     BOOKING_DELETE_ANY("booking:delete:any"),
     BOOKING_RESTORE_ANY("booking:restore:any"),

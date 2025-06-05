@@ -52,8 +52,8 @@ public class RoomTypeController {
 
     /* CRUD and Basic Endpoints ------------------------------------------------------------------------------------ */
 
-    @PreAuthorize("hasPermission(#createDTO.propertyId, 'RoomType', 'create')")
     @PostMapping
+    @PreAuthorize("@roomTypePermissionChecker.canCreate(authentication, #createDTO.propertyId)")
     public ResponseEntity<RoomTypeDetailDTO> createRoomType(
             @RequestBody @Valid RoomTypeCreateRequestDTO createDTO
     ) {
@@ -64,19 +64,21 @@ public class RoomTypeController {
     }
 
     @GetMapping
+    @PreAuthorize("@roomTypePermissionChecker.canReadAny(authentication)")
     public ResponseEntity<List<RoomTypeBasicDTO>> getRoomTypes() {
         List<RoomTypeBasicDTO> roomTypes = roomTypeMapper.toBasicDTOs(roomTypeService.getRoomTypes(false));
         return ResponseEntity.ok(roomTypes); // Return 200 OK
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("@roomTypePermissionChecker.canRead(authentication, #id)")
     public ResponseEntity<RoomTypeFullDTO> getRoomType(@PathVariable Integer id) {
         RoomTypeFullDTO roomType = roomTypeMapper.toFullDTO(roomTypeService.getRoomTypeById(id, false));
         return ResponseEntity.ok(roomType); // Return 200 OK
     }
 
-    @PreAuthorize("hasPermission(#id, 'RoomType', 'update')")
     @PutMapping("/{id}")
+    @PreAuthorize("@roomTypePermissionChecker.canUpdate(authentication, #id)")
     public ResponseEntity<RoomTypeDetailDTO> updateRoomType(
             @PathVariable Integer id,
             @RequestBody @Valid RoomTypeUpdateRequestDTO updateDTO
@@ -87,8 +89,8 @@ public class RoomTypeController {
         return ResponseEntity.ok(updatedRoomType); // Return 200 OK
     }
 
-    @PreAuthorize("hasPermission(#id, 'RoomType', 'update')")
     @PatchMapping("/{id}")
+    @PreAuthorize("@roomTypePermissionChecker.canUpdate(authentication, #id)")
     public ResponseEntity<RoomTypeDetailDTO> patchRoomType(
             @PathVariable Integer id,
             @RequestBody @Valid RoomTypePatchRequestDTO patchDTO
@@ -99,22 +101,22 @@ public class RoomTypeController {
         return ResponseEntity.ok(patchedRoomType); // Return 200 OK
     }
 
-    @PreAuthorize("hasPermission(#id, 'RoomType', 'delete')")
     @DeleteMapping("/{id}")
+    @PreAuthorize("@roomTypePermissionChecker.canDelete(authentication, #id)")
     public ResponseEntity<Void> deleteRoomType(@PathVariable Integer id) {
         roomTypeService.softDeleteRoomType(id);
         return ResponseEntity.noContent().build(); // Return 204 No Content
     }
 
-    @PreAuthorize("hasPermission(#id, 'RoomType', 'delete')")
     @DeleteMapping("/{id}/hard")
+    @PreAuthorize("@roomTypePermissionChecker.canDelete(authentication, #id)")
     public ResponseEntity<Void> hardDeleteRoomType(@PathVariable Integer id) {
         roomTypeService.hardDeleteRoomType(id);
         return ResponseEntity.noContent().build(); // Return 204 No Content
     }
 
-    @PreAuthorize("hasPermission(#id, 'RoomType', 'restore')")
     @PatchMapping("/{id}/restore")
+    @PreAuthorize("@roomTypePermissionChecker.canRestore(authentication, #id)")
     public ResponseEntity<Void> restoreRoomType(@PathVariable Integer id) {
         roomTypeService.restoreRoomType(id);
         return ResponseEntity.noContent().build(); // Return 204 No Content
@@ -123,12 +125,14 @@ public class RoomTypeController {
     /* Get Lists of Nested Entities */
 
     @GetMapping("/{id}/rooms")
+    @PreAuthorize("@roomTypePermissionChecker.canRead(authentication, #id)")
     public ResponseEntity<List<RoomBasicDTO>> getRooms(@PathVariable Integer id) {
         List<RoomBasicDTO> rooms = roomMapper.toBasicDTOs(roomService.getRoomsByRoomTypeId(id, false));
         return ResponseEntity.ok(rooms); // Return 200 OK
     }
 
     @GetMapping("/{id}/beds")
+    @PreAuthorize("@roomTypePermissionChecker.canRead(authentication, #id)")
     public ResponseEntity<List<BedBasicDTO>> getBeds(@PathVariable Integer id) {
         List<BedBasicDTO> beds = bedMapper.toBasicDTOs(bedService.getBedsByRoomTypeId(id, false));
         return ResponseEntity.ok(beds); // Return 200 OK
