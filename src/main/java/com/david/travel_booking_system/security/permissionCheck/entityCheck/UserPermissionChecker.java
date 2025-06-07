@@ -1,8 +1,11 @@
 package com.david.travel_booking_system.security.permissionCheck.entityCheck;
 
+import com.david.travel_booking_system.model.User;
+import com.david.travel_booking_system.security.UserRole;
 import com.david.travel_booking_system.security.permissionCheck.AbstractPermissionChecker;
 import com.david.travel_booking_system.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
@@ -12,10 +15,12 @@ import static com.david.travel_booking_system.security.Permission.*;
 public class UserPermissionChecker extends AbstractPermissionChecker {
 
     private final UserService userService;
+    private final RoleHierarchy roleHierarchy;
 
     @Autowired
-    public UserPermissionChecker(UserService userService) {
+    public UserPermissionChecker(UserService userService, RoleHierarchy roleHierarchy) {
         this.userService = userService;
+        this.roleHierarchy = roleHierarchy;
     }
 
     public boolean canReadAny(Authentication auth) {
@@ -74,5 +79,17 @@ public class UserPermissionChecker extends AbstractPermissionChecker {
                 userId,
                 (a, id) -> userService.isSelf(id, a.getName())
         );
+    }
+
+    public boolean canChangeRoles(Authentication auth, Integer userId) {
+        if (!hasPerm(auth, USER_UPDATE_ANY)) return false;
+
+        if (hasRole(auth, "ROLE_ADMIN")) {
+            return true;
+        } else {
+            // Non-admins cannot change roles of admins
+            User target = userService.getUserById(userId, false);
+            return !target.getRoles().contains(UserRole.ROLE_ADMIN);
+        }
     }
 }

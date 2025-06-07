@@ -1,5 +1,6 @@
 package com.david.travel_booking_system.controller;
 
+import com.david.travel_booking_system.dto.request.specialized.UserRoleChangeRequestDTO;
 import com.david.travel_booking_system.dto.response.basic.*;
 import com.david.travel_booking_system.dto.request.crud.createRequest.UserCreateRequestDTO;
 import com.david.travel_booking_system.dto.response.full.UserFullDTO;
@@ -181,12 +182,13 @@ public class UserController {
         return ResponseEntity.noContent().build(); // Return 204 No Content
     }
 
-    /*@PatchMapping("/{id}/roles")
+    @PatchMapping("/{id}/roles")
+    @PreAuthorize("@userPermissionChecker.canChangeRoles(authentication, #id)")
     public ResponseEntity<Void> changeUserRoles(
             @PathVariable Integer id,
-            @Valid @RequestBody RoleChangeRequestDTO dto
+            @Valid @RequestBody UserRoleChangeRequestDTO dto
     ) {
         userService.changeUserRoles(id, dto.getRoles());
         return ResponseEntity.noContent().build();
-    }*/
+    }
 }

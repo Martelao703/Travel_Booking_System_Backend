@@ -36,4 +36,8 @@ public abstract class AbstractPermissionChecker {
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority(perm.getPermission());
         return auth.getAuthorities().contains(authority);
     }
+
+    protected boolean hasRole(Authentication auth, String role) {
+        return auth.getAuthorities().contains(new SimpleGrantedAuthority(role));
+    }
 }

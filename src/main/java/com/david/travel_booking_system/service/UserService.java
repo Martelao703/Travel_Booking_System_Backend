@@ -17,6 +17,10 @@ import com.david.travel_booking_system.util.EntityPatcher;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.david.travel_booking_system.security.UserRole.ROLE_USER;
 
@@ -272,6 +277,26 @@ public class UserService {
         roomRepository.deactivateByOwnerId(id);
         user.setActive(false);
 
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void changeUserRoles(Integer id, Set<UserRole> newRoles) {
+        User user = getUserById(id, false);
+
+        // Get the caller’s roles from the SecurityContext
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Set<String> callerRoles = auth.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toSet());
+
+        // If caller is a Manager they can't assign ADMIN role
+        if (callerRoles.contains("ROLE_MANAGER") && newRoles.contains(UserRole.ROLE_ADMIN)) {
+            throw new AccessDeniedException("Managers are not allowed to assign the ADMIN role");
+        }
+
+        // Update user roles
+        user.setRoles(newRoles);
         userRepository.save(user);
     }
 
