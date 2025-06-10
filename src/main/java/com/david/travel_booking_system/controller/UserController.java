@@ -1,5 +1,6 @@
 package com.david.travel_booking_system.controller;
 
+import com.david.travel_booking_system.dto.request.auth.AdminResetPasswordRequestDTO;
 import com.david.travel_booking_system.dto.request.specialized.UserRoleChangeRequestDTO;
 import com.david.travel_booking_system.dto.response.basic.*;
 import com.david.travel_booking_system.dto.request.crud.createRequest.UserCreateRequestDTO;
@@ -183,12 +184,22 @@ public class UserController {
     }
 
     @PatchMapping("/{id}/roles")
-    @PreAuthorize("@userPermissionChecker.canChangeRoles(authentication, #id)")
+    @PreAuthorize("@userPermissionChecker.canChangeRoles(authentication, #id, #dto.roles)")
     public ResponseEntity<Void> changeUserRoles(
             @PathVariable Integer id,
             @Valid @RequestBody UserRoleChangeRequestDTO dto
     ) {
         userService.changeUserRoles(id, dto.getRoles());
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/reset-password")
+    @PreAuthorize("@userPermissionChecker.canResetUserPassword(authentication)")
+    public ResponseEntity<Void> adminResetPassword(
+            @PathVariable Integer id,
+            @RequestBody @Valid AdminResetPasswordRequestDTO dto
+    ) {
+        userService.adminResetPassword(id, dto.getNewPassword());
         return ResponseEntity.noContent().build();
     }
 }

@@ -9,6 +9,8 @@ import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import java.util.Set;
+
 import static com.david.travel_booking_system.security.Permission.*;
 
 @Component
@@ -81,15 +83,24 @@ public class UserPermissionChecker extends AbstractPermissionChecker {
         );
     }
 
-    public boolean canChangeRoles(Authentication auth, Integer userId) {
+    public boolean canChangeRoles(Authentication auth, Integer userId, Set<UserRole> newRoles) {
         if (!hasPerm(auth, USER_UPDATE_ANY)) return false;
 
         if (hasRole(auth, "ROLE_ADMIN")) {
             return true;
-        } else {
-            // Non-admins cannot change roles of admins
-            User target = userService.getUserById(userId, false);
-            return !target.getRoles().contains(UserRole.ROLE_ADMIN);
         }
+
+        // Non-admins cannot change roles of admins, nor assign the admin role to non-admins
+        User target = userService.getUserById(userId, false);
+        boolean targetIsAdmin = target.getRoles().contains(UserRole.ROLE_ADMIN);
+        boolean assigningAdmin = newRoles.contains(UserRole.ROLE_ADMIN);
+
+        return !targetIsAdmin && !assigningAdmin;
+    }
+
+    public boolean canResetUserPassword(Authentication auth) {
+        if (!hasPerm(auth, USER_UPDATE_ANY)) return false;
+
+        return hasRole(auth, "ROLE_ADMIN");
     }
 }

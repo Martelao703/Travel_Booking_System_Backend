@@ -4,6 +4,7 @@ import com.david.travel_booking_system.dto.request.auth.RegisterRequestDTO;
 import com.david.travel_booking_system.dto.request.crud.patchRequest.UserPatchRequestDTO;
 import com.david.travel_booking_system.dto.request.crud.updateRequest.UserUpdateRequestDTO;
 import com.david.travel_booking_system.enumsAndSets.BookingStatus;
+import com.david.travel_booking_system.security.TokenType;
 import com.david.travel_booking_system.security.UserRole;
 import com.david.travel_booking_system.enumsAndSets.entityPatchRequestFieldRules.UserPatchFieldRules;
 import com.david.travel_booking_system.mapper.UserMapper;
@@ -49,12 +50,13 @@ public class UserService {
 
     // Other
     private final PasswordEncoder passwordEncoder;
+    private final TokenService tokenService;
 
     @Autowired
     public UserService(UserRepository userRepository, BookingRepository bookingRepository,
                        PropertyRepository propertyRepository, RoomTypeRepository roomTypeRepository,
                        RoomRepository roomRepository, BedRepository bedRepository, UserMapper userMapper,
-                       PasswordEncoder passwordEncoder) {
+                       PasswordEncoder passwordEncoder, TokenService tokenService) {
         this.userRepository = userRepository;
         this.bookingRepository = bookingRepository;
         this.propertyRepository = propertyRepository;
@@ -63,6 +65,7 @@ public class UserService {
         this.bedRepository = bedRepository;
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
+        this.tokenService = tokenService;
     }
 
     /* CRUD and Basic Methods -------------------------------------------------------------------------------------- */
@@ -281,23 +284,48 @@ public class UserService {
     }
 
     @Transactional
+    public void resetPasswordAndRevokeSessions(String email, String oldPassword, String newPassword) {
+        Specification <User> spec = UserSpecifications.filterByEmail(email)
+                .and(BaseSpecifications.excludeDeleted(User.class));
+        User user = userRepository.findOne(spec).orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        // Verify old password
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new IllegalArgumentException("Old password is incorrect");
+        }
+
+        // Set & save new password
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        // revoke all tokens
+        Integer userId = user.getId();
+        tokenService.revokeAllUserTokens(userId);
+    }
+
+    @Transactional
+    public void adminResetPassword(Integer targetUserId, String newPassword) {
+        User user = getUserById(targetUserId, false);
+
+        // Update to new password
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        // Revoke all tokens
+        Integer userId = user.getId();
+        tokenService.revokeAllUserTokens(userId);
+    }
+
+    @Transactional
     public void changeUserRoles(Integer id, Set<UserRole> newRoles) {
         User user = getUserById(id, false);
-
-        // Get the caller’s roles from the SecurityContext
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Set<String> callerRoles = auth.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toSet());
-
-        // If caller is a Manager they can't assign ADMIN role
-        if (callerRoles.contains("ROLE_MANAGER") && newRoles.contains(UserRole.ROLE_ADMIN)) {
-            throw new AccessDeniedException("Managers are not allowed to assign the ADMIN role");
-        }
 
         // Update user roles
         user.setRoles(newRoles);
         userRepository.save(user);
+
+        // Revoke all existing ACCESS tokens so that they must refresh
+        tokenService.revokeUserTokensByType(user.getId(), TokenType.ACCESS);
     }
 
     /* Helper methods ---------------------------------------------------------------------------------------------- */
