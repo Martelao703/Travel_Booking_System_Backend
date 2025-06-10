@@ -6,60 +6,127 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum Permission {
 
-    // Property
-    PROPERTY_READ("property:read"),
+    /* --- Property --- */
+
     PROPERTY_CREATE("property:create"),
-    PROPERTY_UPDATE("property:update"),
-    PROPERTY_DELETE("property:delete"),
-    PROPERTY_RESTORE("property:restore"),
-    PROPERTY_ACTIVATE("property:activate"),
-    PROPERTY_DEACTIVATE("property:deactivate"),
-    PROPERTY_READ_BOOKINGS("property:read-bookings"),
 
-    // Room Type
-    ROOM_TYPE_READ("roomType:read"),
+    //OWN
+    PROPERTY_READ_OWN("property:read:own"),
+    PROPERTY_UPDATE_OWN("property:update:own"),
+    PROPERTY_DELETE_OWN("property:delete:own"),
+    PROPERTY_RESTORE_OWN("property:restore:own"),
+    PROPERTY_ACTIVATE_OWN("property:activate:own"),
+    PROPERTY_DEACTIVATE_OWN("property:deactivate:own"),
+    PROPERTY_READ_BOOKINGS_OWN("property:read-bookings:own"),
+
+    //ANY
+    PROPERTY_READ_ANY("property:read:any"),
+    PROPERTY_UPDATE_ANY("property:update:any"),
+    PROPERTY_DELETE_ANY("property:delete:any"),
+    PROPERTY_RESTORE_ANY("property:restore:any"),
+    PROPERTY_ACTIVATE_ANY("property:activate:any"),
+    PROPERTY_DEACTIVATE_ANY("property:deactivate:any"),
+    PROPERTY_READ_BOOKINGS_ANY("property:read-bookings:any"),
+
+    /* --- Room Type --- */
+
     ROOM_TYPE_CREATE("roomType:create"),
-    ROOM_TYPE_UPDATE("roomType:update"),
-    ROOM_TYPE_DELETE("roomType:delete"),
-    ROOM_TYPE_RESTORE("roomType:restore"),
 
-    // Room
-    ROOM_READ("room:read"),
+    //OWN
+    ROOM_TYPE_READ_OWN("roomType:read:own"),
+    ROOM_TYPE_UPDATE_OWN("roomType:update:own"),
+    ROOM_TYPE_DELETE_OWN("roomType:delete:own"),
+    ROOM_TYPE_RESTORE_OWN("roomType:restore:own"),
+
+    //ANY
+    ROOM_TYPE_READ_ANY("roomType:read:any"),
+    ROOM_TYPE_UPDATE_ANY("roomType:update:any"),
+    ROOM_TYPE_DELETE_ANY("roomType:delete:any"),
+    ROOM_TYPE_RESTORE_ANY("roomType:restore:any"),
+
+    /* --- Room --- */
+
     ROOM_CREATE("room:create"),
-    ROOM_UPDATE("room:update"),
-    ROOM_DELETE("room:delete"),
-    ROOM_RESTORE("room:restore"),
-    ROOM_ACTIVATE("room:activate"),
-    ROOM_DEACTIVATE("room:deactivate"),
-    ROOM_READ_BOOKINGS("room:read-bookings"),
 
-    // Bed
-    BED_READ("bed:read"),
+    //OWN
+    ROOM_READ_OWN("room:read:own"),
+    ROOM_UPDATE_OWN("room:update:own"),
+    ROOM_DELETE_OWN("room:delete:own"),
+    ROOM_RESTORE_OWN("room:restore:own"),
+    ROOM_ACTIVATE_OWN("room:activate:own"),
+    ROOM_DEACTIVATE_OWN("room:deactivate:own"),
+    ROOM_READ_BOOKINGS_OWN("room:read-bookings:own"),
+
+    //ANY
+    ROOM_READ_ANY("room:read:any"),
+    ROOM_UPDATE_ANY("room:update:any"),
+    ROOM_DELETE_ANY("room:delete:any"),
+    ROOM_RESTORE_ANY("room:restore:any"),
+    ROOM_ACTIVATE_ANY("room:activate:any"),
+    ROOM_DEACTIVATE_ANY("room:deactivate:any"),
+    ROOM_READ_BOOKINGS_ANY("room:read-bookings:any"),
+
+    /* --- Bed --- */
+
     BED_CREATE("bed:create"),
-    BED_UPDATE("bed:update"),
-    BED_DELETE("bed:delete"),
-    BED_RESTORE("bed:restore"),
 
-    // Booking
-    BOOKING_READ("booking:read"),
+    //OWN
+    BED_READ_OWN("bed:read:own"),
+    BED_UPDATE_OWN("bed:update:own"),
+    BED_DELETE_OWN("bed:delete:own"),
+    BED_RESTORE_OWN("bed:restore:own"),
+
+    //ANY
+    BED_READ_ANY("bed:read:any"),
+    BED_UPDATE_ANY("bed:update:any"),
+    BED_DELETE_ANY("bed:delete:any"),
+    BED_RESTORE_ANY("bed:restore:any"),
+
+    /* --- Booking --- */
+
     BOOKING_CREATE("booking:create"),
-    BOOKING_UPDATE("booking:update"),
-    BOOKING_DELETE("booking:delete"),
-    BOOKING_RESTORE("booking:restore"),
-    BOOKING_CHANGE_DATES("booking:change-dates"),
-    BOOKING_CONFIRM_PAYMENT("booking:confirm-payment"),
-    BOOKING_CHECK_IN("booking:check-in"),
-    BOOKING_CHECK_OUT("booking:check-out"),
-    BOOKING_CANCEL("booking:cancel"),
-    BOOKING_REJECT("booking:reject"),
 
-    // User
-    USER_READ("user:read"),
-    USER_UPDATE("user:update"),
-    USER_DELETE("user:delete"),
-    USER_RESTORE("user:restore"),
-    USER_ACTIVATE("user:activate"),
-    USER_DEACTIVATE("user:deactivate");
+    //OWN
+    BOOKING_READ_OWN("booking:read:own"),
+    BOOKING_UPDATE_OWN("booking:update:own"),
+    BOOKING_DELETE_OWN("booking:delete:own"),
+    BOOKING_RESTORE_OWN("booking:restore:own"),
+    BOOKING_CHANGE_DATES_OWN("booking:change-dates:own"),
+    BOOKING_CONFIRM_PAYMENT_OWN("booking:confirm-payment:own"),
+    BOOKING_CHECK_IN_OWN("booking:check-in:own"),
+    BOOKING_CHECK_OUT_OWN("booking:check-out:own"),
+    BOOKING_CANCEL_OWN("booking:cancel:own"),
+    BOOKING_REJECT_OWN("booking:reject:own"),
+
+    //ANY
+    BOOKING_READ_ANY("booking:read:any"),
+    BOOKING_UPDATE_ANY("booking:update:any"),
+    BOOKING_DELETE_ANY("booking:delete:any"),
+    BOOKING_RESTORE_ANY("booking:restore:any"),
+    BOOKING_CHANGE_DATES_ANY("booking:change-dates:any"),
+    BOOKING_CONFIRM_PAYMENT_ANY("booking:confirm-payment:any"),
+    BOOKING_CHECK_IN_ANY("booking:check-in:any"),
+    BOOKING_CHECK_OUT_ANY("booking:check-out:any"),
+    BOOKING_CANCEL_ANY("booking:cancel:any"),
+    BOOKING_REJECT_ANY("booking:reject:any"),
+
+    /* --- User --- */
+
+    //ANY
+    USER_READ_OWN("user:read:own"),
+    USER_UPDATE_OWN("user:update:own"),
+    USER_DELETE_OWN("user:delete:own"),
+    USER_RESTORE_OWN("user:restore:own"),
+    USER_ACTIVATE_OWN("user:activate:own"),
+    USER_DEACTIVATE_OWN("user:deactivate:own"),
+
+    //ANY
+    USER_READ_ANY("user:read:any"),
+    USER_UPDATE_ANY("user:update:any"),
+    USER_DELETE_ANY("user:delete:any"),
+    USER_RESTORE_ANY("user:restore:any"),
+    USER_ACTIVATE_ANY("user:activate:any"),
+    USER_DEACTIVATE_ANY("user:deactivate:any");
 
     @Getter
     private final String permission;

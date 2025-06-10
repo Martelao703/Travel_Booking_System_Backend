@@ -84,7 +84,6 @@ public class Property {
     private List<String> houseRules;
 
     @OneToMany(mappedBy = "property", cascade = CascadeType.ALL, orphanRemoval = true)
-    //@JsonManagedReference
     @Column(name = "room_types")
     private List<RoomType> roomTypes;
 

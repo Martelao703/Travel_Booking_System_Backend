@@ -34,8 +34,8 @@ public class BookingController {
     /* CRUD and Basic Endpoints ------------------------------------------------------------------------------------ */
 
     /* Returns BasicDTO instead of DetailDTO due to the entity's absence of non-nested collection fields */
-    @PreAuthorize("isAuthenticated()")
     @PostMapping
+    @PreAuthorize("@bookingPermissionChecker.canCreate(authentication)")
     public ResponseEntity<BookingBasicDTO> createBooking(
             @RequestBody @Valid BookingCreateRequestDTO createDTO
     ) {
@@ -43,24 +43,24 @@ public class BookingController {
         return ResponseEntity.status(201).body(createdBooking); // Return 201 Created
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_MANAGER', 'ROLE_ADMIN')")
     @GetMapping
+    @PreAuthorize("@bookingPermissionChecker.canReadAny(authentication)")
     public ResponseEntity<List<BookingBasicDTO>> getBookings() {
         List<BookingBasicDTO> bookings = bookingMapper.toBasicDTOs(bookingService.getBookings(false));
         return ResponseEntity.ok(bookings); // Return 200 OK
     }
 
     /* Returns BasicDTO instead of FullDTO due to the entity's absence of collection fields */
-    @PreAuthorize("hasPermission(#id, 'Booking', 'read')")
     @GetMapping("/{id}")
+    @PreAuthorize("@bookingPermissionChecker.canRead(authentication, #id)")
     public ResponseEntity<BookingBasicDTO> getBooking(@PathVariable Integer id) {
         BookingBasicDTO booking = bookingMapper.toBasicDTO(bookingService.getBookingById(id, false));
         return ResponseEntity.ok(booking); // Return 200 OK
     }
 
     /* Returns BasicDTO instead of DetailDTO due to the entity's absence of non-nested collection fields */
-    @PreAuthorize("hasPermission(#id, 'Booking', 'update')")
     @PutMapping("/{id}")
+    @PreAuthorize("@bookingPermissionChecker.canUpdate(authentication, #id)")
     public ResponseEntity<BookingBasicDTO> updateBooking(
             @PathVariable Integer id,
             @RequestBody @Valid BookingUpdateRequestDTO updateDTO
@@ -70,8 +70,8 @@ public class BookingController {
     }
 
     /* Returns BasicDTO instead of DetailDTO due to the entity's absence of non-nested collection fields */
-    @PreAuthorize("hasPermission(#id, 'Booking', 'update')")
     @PatchMapping("/{id}")
+    @PreAuthorize("@bookingPermissionChecker.canUpdate(authentication, #id)")
     public ResponseEntity<BookingBasicDTO> patchBooking(
             @PathVariable Integer id,
             @RequestBody @Valid BookingPatchRequestDTO patchDTO
@@ -80,22 +80,22 @@ public class BookingController {
         return ResponseEntity.ok(patchedBooking); // Return 200 OK
     }
 
-    @PreAuthorize("hasPermission(#id, 'Booking', 'delete')")
     @DeleteMapping("/{id}")
+    @PreAuthorize("@bookingPermissionChecker.canDelete(authentication, #id)")
     public ResponseEntity<Void> deleteBooking(@PathVariable Integer id) {
         bookingService.softDeleteBooking(id);
         return ResponseEntity.noContent().build(); // Return 204 No Content
     }
 
-    @PreAuthorize("hasPermission(#id, 'Booking', 'delete')")
     @DeleteMapping("/{id}/hard")
+    @PreAuthorize("@bookingPermissionChecker.canDelete(authentication, #id)")
     public ResponseEntity<Void> hardDeleteBooking(@PathVariable Integer id) {
         bookingService.hardDeleteBooking(id);
         return ResponseEntity.noContent().build(); // Return 204 No Content
     }
 
-    @PreAuthorize("hasPermission(#id, 'Booking', 'restore')")
     @PatchMapping("/{id}/restore")
+    @PreAuthorize("@bookingPermissionChecker.canRestore(authentication, #id)")
     public ResponseEntity<Void> restoreBooking(@PathVariable Integer id) {
         bookingService.restoreBooking(id);
         return ResponseEntity.noContent().build(); // Return 204 No Content
@@ -104,8 +104,8 @@ public class BookingController {
     /* Custom Endpoints -------------------------------------------------------------------------------------------- */
 
     // Change check-in and/or check-out dates of a booking
-    @PreAuthorize("hasPermission(#id, 'Booking', 'changeBookingDates')")
     @PatchMapping("/{id}/dates")
+    @PreAuthorize("@bookingPermissionChecker.canChangeDates(authentication, #id)")
     public ResponseEntity<BookingBasicDTO> changeBookingDates(
             @PathVariable Integer id,
             @RequestBody @Valid BookingDateChangeRequestDTO dateChangeDTO
@@ -116,38 +116,38 @@ public class BookingController {
         return ResponseEntity.ok(updatedBooking);
     }
 
-    @PreAuthorize("hasPermission(#id, 'Booking', 'confirmPayment')")
     @PatchMapping("/{id}/confirm-payment")
+    @PreAuthorize("@bookingPermissionChecker.canConfirmPayment(authentication, #id)")
     public ResponseEntity<BookingBasicDTO> confirmPayment(@PathVariable Integer id) {
         BookingBasicDTO updatedBooking = bookingMapper.toBasicDTO(bookingService.confirmPayment(id));
         return ResponseEntity.ok(updatedBooking);
     }
 
-    @PreAuthorize("hasPermission(#id, 'Booking', 'checkIn')")
     @PatchMapping("/{id}/check-in")
+    @PreAuthorize("@bookingPermissionChecker.canCheckIn(authentication, #id)")
     public ResponseEntity<BookingBasicDTO> checkIn(@PathVariable Integer id) {
         BookingBasicDTO updatedBooking = bookingMapper.toBasicDTO(bookingService.checkIn(id));
         return ResponseEntity.ok(updatedBooking);
     }
 
-    @PreAuthorize("hasPermission(#id, 'Booking', 'checkOut')")
     @PatchMapping("/{id}/check-out")
+    @PreAuthorize("@bookingPermissionChecker.canCheckOut(authentication, #id)")
     public ResponseEntity<BookingBasicDTO> checkOut(@PathVariable Integer id) {
         BookingBasicDTO updatedBooking = bookingMapper.toBasicDTO(bookingService.checkOut(id));
         return ResponseEntity.ok(updatedBooking);
     }
 
     // User cancels a booking
-    @PreAuthorize("hasPermission(#id, 'Booking', 'cancelBooking')")
     @PatchMapping("/{id}/cancel")
+    @PreAuthorize("@bookingPermissionChecker.canCancel(authentication, #id)")
     public ResponseEntity<BookingBasicDTO> cancelBooking(@PathVariable Integer id) {
         BookingBasicDTO updatedBooking = bookingMapper.toBasicDTO(bookingService.cancelBooking(id));
         return ResponseEntity.ok(updatedBooking);
     }
 
     // Property/Admin rejects a booking
-    @PreAuthorize("hasPermission(#id, 'Booking', 'rejectBooking')")
     @PatchMapping("/{id}/reject")
+    @PreAuthorize("@bookingPermissionChecker.canReject(authentication, #id)")
     public ResponseEntity<BookingBasicDTO> rejectBooking(@PathVariable Integer id) {
         BookingBasicDTO updatedBooking = bookingMapper.toBasicDTO(bookingService.rejectBooking(id));
         return ResponseEntity.ok(updatedBooking);

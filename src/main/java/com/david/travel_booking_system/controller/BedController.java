@@ -38,28 +38,30 @@ public class BedController {
     /* CRUD and Basic Endpoints ------------------------------------------------------------------------------------ */
 
     /* Returns BasicDTO instead of DetailDTO due to the entity's absence of non-nested collection fields */
-    @PreAuthorize("hasPermission(#createDTO.roomTypeId, 'Bed', 'create')")
     @PostMapping
+    @PreAuthorize("@bedPermissionChecker.canCreate(authentication, #createDTO.roomTypeId)")
     public ResponseEntity<BedBasicDTO> createBed(@RequestBody @Valid BedCreateRequestDTO createDTO) {
         BedBasicDTO createdBed = bedMapper.toBasicDTO(bedService.createBed(createDTO));
         return ResponseEntity.status(201).body(createdBed); // Return 201 Created
     }
 
     @GetMapping
+    @PreAuthorize("@bedPermissionChecker.canReadAny(authentication)")
     public ResponseEntity<List<BedBasicDTO>> getBeds() {
         List<BedBasicDTO> beds = bedMapper.toBasicDTOs(bedService.getBeds(false));
         return ResponseEntity.ok(beds); // Return 200 OK
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("@bedPermissionChecker.canRead(authentication, #id)")
     public ResponseEntity<BedFullDTO> getBed(@PathVariable Integer id) {
         BedFullDTO bed = bedMapper.toFullDTO(bedService.getBedById(id, false));
         return ResponseEntity.ok(bed); // Return 200 OK
     }
 
     /* Returns BasicDTO instead of DetailDTO due to the entity's absence of non-nested collection fields */
-    @PreAuthorize("hasPermission(#id, 'Bed', 'update')")
     @PutMapping("/{id}")
+    @PreAuthorize("@bedPermissionChecker.canUpdate(authentication, #id)")
     public ResponseEntity<BedBasicDTO> updateBed(
             @PathVariable Integer id,
             @RequestBody @Valid BedUpdateRequestDTO updateDTO
@@ -69,8 +71,8 @@ public class BedController {
     }
 
     /* Returns BasicDTO instead of DetailDTO due to the entity's absence of non-nested collection fields */
-    @PreAuthorize("hasPermission(#id, 'Bed', 'update')")
     @PatchMapping("/{id}")
+    @PreAuthorize("@bedPermissionChecker.canUpdate(authentication, #id)")
     public ResponseEntity<BedBasicDTO> patchBed(
             @PathVariable Integer id,
             @RequestBody @Valid BedPatchRequestDTO patchDTO
@@ -79,22 +81,22 @@ public class BedController {
         return ResponseEntity.ok(patchedBed); // Return 200 OK
     }
 
-    @PreAuthorize("hasPermission(#id, 'Bed', 'delete')")
     @DeleteMapping("/{id}")
+    @PreAuthorize("@bedPermissionChecker.canDelete(authentication, #id)")
     public ResponseEntity<Void> deleteBed(@PathVariable Integer id) {
         bedService.softDeleteBed(id);
         return ResponseEntity.noContent().build(); // Return 204 No Content
     }
 
-    @PreAuthorize("hasPermission(#id, 'Bed', 'delete')")
     @DeleteMapping("/{id}/hard")
+    @PreAuthorize("@bedPermissionChecker.canDelete(authentication, #id)")
     public ResponseEntity<Void> hardDeleteBed(@PathVariable Integer id) {
         bedService.hardDeleteBed(id);
         return ResponseEntity.noContent().build(); // Return 204 No Content
     }
 
-    @PreAuthorize("hasPermission(#id, 'Bed', 'restore')")
     @PatchMapping("/{id}/restore")
+    @PreAuthorize("@bedPermissionChecker.canRestore(authentication, #id)")
     public ResponseEntity<Void> restoreBed(@PathVariable Integer id) {
         bedService.restoreBed(id);
         return ResponseEntity.noContent().build(); // Return 204 No Content

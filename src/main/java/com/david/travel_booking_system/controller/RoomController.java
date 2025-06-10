@@ -45,28 +45,30 @@ public class RoomController {
     /* CRUD and Basic Endpoints ------------------------------------------------------------------------------------ */
 
     /* Returns BasicDTO instead of DetailDTO due to the entity's absence of non-nested collection fields */
-    @PreAuthorize("hasPermission(#createDTO.roomTypeId, 'RoomType', 'create')")
     @PostMapping
+    @PreAuthorize("@roomPermissionChecker.canCreate(authentication, #createDTO.roomTypeId)")
     public ResponseEntity<RoomBasicDTO> createRoom(@RequestBody @Valid RoomCreateRequestDTO createDTO) {
         RoomBasicDTO createdRoom = roomMapper.toBasicDTO(roomService.createRoom(createDTO));
         return ResponseEntity.status(201).body(createdRoom); // Return 201 Created
     }
 
     @GetMapping
+    @PreAuthorize("@roomPermissionChecker.canReadAny(authentication)")
     public ResponseEntity<List<RoomBasicDTO>> getRooms() {
         List<RoomBasicDTO> rooms = roomMapper.toBasicDTOs(roomService.getRooms(false));
         return ResponseEntity.ok(rooms); // Return 200 OK
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("@roomPermissionChecker.canRead(authentication, #id)")
     public ResponseEntity<RoomFullDTO> getRoom(@PathVariable Integer id) {
         RoomFullDTO room = roomMapper.toFullDTO(roomService.getRoomById(id, false));
         return ResponseEntity.ok(room); // Return 200 OK
     }
 
     /* Returns BasicDTO instead of DetailDTO due to the entity's absence of non-nested collection fields */
-    @PreAuthorize("hasPermission(#id, 'Room', 'update')")
     @PutMapping("/{id}")
+    @PreAuthorize("@roomPermissionChecker.canUpdate(authentication, #id)")
     public ResponseEntity<RoomBasicDTO> updateRoom(
             @PathVariable Integer id,
             @RequestBody @Valid RoomUpdateRequestDTO updateDTO
@@ -76,8 +78,8 @@ public class RoomController {
     }
 
     /* Returns BasicDTO instead of DetailDTO due to the entity's absence of non-nested collection fields */
-    @PreAuthorize("hasPermission(#id, 'Room', 'update')")
     @PatchMapping("/{id}")
+    @PreAuthorize("@roomPermissionChecker.canUpdate(authentication, #id)")
     public ResponseEntity<RoomBasicDTO> patchRoom(
             @PathVariable Integer id,
             @RequestBody @Valid RoomPatchRequestDTO patchDTO
@@ -86,22 +88,22 @@ public class RoomController {
         return ResponseEntity.ok(patchedRoom); // Return 200 OK
     }
 
-    @PreAuthorize("hasPermission(#id, 'Room', 'delete')")
     @DeleteMapping("/{id}")
+    @PreAuthorize("@roomPermissionChecker.canDelete(authentication, #id)")
     public ResponseEntity<Void> deleteRoom(@PathVariable Integer id) {
         roomService.softDeleteRoom(id);
         return ResponseEntity.noContent().build(); // Return 204 No Content
     }
 
-    @PreAuthorize("hasPermission(#id, 'Room', 'delete')")
     @DeleteMapping("/{id}/hard")
+    @PreAuthorize("@roomPermissionChecker.canDelete(authentication, #id)")
     public ResponseEntity<Void> hardDeleteRoom(@PathVariable Integer id) {
         roomService.hardDeleteRoom(id);
         return ResponseEntity.noContent().build(); // Return 204 No Content
     }
 
-    @PreAuthorize("hasPermission(#id, 'Room', 'restore')")
     @PatchMapping("/{id}/restore")
+    @PreAuthorize("@roomPermissionChecker.canRestore(authentication, #id)")
     public ResponseEntity<Void> restoreRoom(@PathVariable Integer id) {
         roomService.restoreRoom(id);
         return ResponseEntity.noContent().build(); // Return 204 No Content
@@ -109,8 +111,8 @@ public class RoomController {
 
     /* Get Lists of Nested Entities */
 
-    @PreAuthorize("hasPermission(#id, 'Room', 'read-bookings')")
     @GetMapping("/{id}/bookings")
+    @PreAuthorize("@roomPermissionChecker.canReadBookings(authentication, #id)")
     public ResponseEntity<List<BookingBasicDTO>> getBookings(@PathVariable Integer id) {
         List<BookingBasicDTO> bookings = bookingMapper.toBasicDTOs(
                 bookingService.getBookingsByRoomId(id, false)
@@ -120,15 +122,15 @@ public class RoomController {
 
     /* Custom Endpoints -------------------------------------------------------------------------------------------- */
 
-    @PreAuthorize("hasPermission(#id, 'Room', 'activate')")
     @PatchMapping("/{id}/activate")
+    @PreAuthorize("@roomPermissionChecker.canActivate(authentication, #id)")
     public ResponseEntity<Void> activateRoom(@PathVariable Integer id) {
         roomService.activateRoom(id);
         return ResponseEntity.noContent().build(); // Return 204 No Content
     }
 
-    @PreAuthorize("hasPermission(#id, 'Room', 'deactivate')")
     @PatchMapping("/{id}/deactivate")
+    @PreAuthorize("@roomPermissionChecker.canDeactivate(authentication, #id)")
     public ResponseEntity<Void> deactivateRoom(@PathVariable Integer id) {
         roomService.deactivateRoom(id);
         return ResponseEntity.noContent().build(); // Return 204 No Content

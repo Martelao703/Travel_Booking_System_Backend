@@ -3,7 +3,6 @@ package com.david.travel_booking_system.mapper;
 import com.david.travel_booking_system.dto.request.auth.RegisterRequestDTO;
 import com.david.travel_booking_system.dto.response.basic.UserBasicDTO;
 import com.david.travel_booking_system.dto.response.full.UserFullDTO;
-import com.david.travel_booking_system.dto.request.crud.createRequest.UserCreateRequestDTO;
 import com.david.travel_booking_system.dto.request.crud.updateRequest.UserUpdateRequestDTO;
 import com.david.travel_booking_system.model.User;
 import org.mapstruct.AfterMapping;
@@ -51,7 +50,7 @@ public interface UserMapper {
     /* Helper methods -----------------------------------------------------------------------------------------------*/
 
     @AfterMapping
-    default void afterCreateMapping(@MappingTarget User user, UserCreateRequestDTO dto) {
+    default void afterCreateMapping(@MappingTarget User user, RegisterRequestDTO dto) {
         user.setProperties(new ArrayList<>());
         user.setBookings(new ArrayList<>());
     }

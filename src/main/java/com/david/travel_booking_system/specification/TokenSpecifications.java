@@ -1,6 +1,7 @@
 package com.david.travel_booking_system.specification;
 
 import com.david.travel_booking_system.model.Token;
+import com.david.travel_booking_system.security.TokenType;
 import org.springframework.data.jpa.domain.Specification;
 
 public class TokenSpecifications extends BaseSpecifications {
@@ -15,9 +16,9 @@ public class TokenSpecifications extends BaseSpecifications {
                 criteriaBuilder.equal(root.get("token"), token);
     }
 
-    public static Specification<Token> filterByType(String type) {
+    public static Specification<Token> filterByType(TokenType type) {
         return (root, query, criteriaBuilder) ->
-                criteriaBuilder.equal(root.get("type"), type);
+                criteriaBuilder.equal(root.get("tokenType"), type);
     }
 
     public static Specification<Token> excludeExpired() {

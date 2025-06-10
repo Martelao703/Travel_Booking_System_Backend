@@ -4,6 +4,7 @@ import com.david.travel_booking_system.dto.request.auth.RegisterRequestDTO;
 import com.david.travel_booking_system.dto.request.crud.patchRequest.UserPatchRequestDTO;
 import com.david.travel_booking_system.dto.request.crud.updateRequest.UserUpdateRequestDTO;
 import com.david.travel_booking_system.enumsAndSets.BookingStatus;
+import com.david.travel_booking_system.security.TokenType;
 import com.david.travel_booking_system.security.UserRole;
 import com.david.travel_booking_system.enumsAndSets.entityPatchRequestFieldRules.UserPatchFieldRules;
 import com.david.travel_booking_system.mapper.UserMapper;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.david.travel_booking_system.security.UserRole.ROLE_USER;
 
@@ -44,12 +46,13 @@ public class UserService {
 
     // Other
     private final PasswordEncoder passwordEncoder;
+    private final TokenService tokenService;
 
     @Autowired
     public UserService(UserRepository userRepository, BookingRepository bookingRepository,
                        PropertyRepository propertyRepository, RoomTypeRepository roomTypeRepository,
                        RoomRepository roomRepository, BedRepository bedRepository, UserMapper userMapper,
-                       PasswordEncoder passwordEncoder) {
+                       PasswordEncoder passwordEncoder, TokenService tokenService) {
         this.userRepository = userRepository;
         this.bookingRepository = bookingRepository;
         this.propertyRepository = propertyRepository;
@@ -58,6 +61,7 @@ public class UserService {
         this.bedRepository = bedRepository;
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
+        this.tokenService = tokenService;
     }
 
     /* CRUD and Basic Methods -------------------------------------------------------------------------------------- */
@@ -234,6 +238,12 @@ public class UserService {
     /* Custom methods ---------------------------------------------------------------------------------------------- */
 
     @Transactional
+    public boolean isSelf(Integer id, String email) {
+        User user = getUserById(id, false);
+        return user.getEmail().equals(email);
+    }
+
+    @Transactional
     public void activateUser(Integer id) {
         User user = getUserById(id, true);
 
@@ -269,6 +279,57 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional
+    public void resetPasswordAndRevokeSessions(String email, String oldPassword, String newPassword) {
+        Specification <User> spec = UserSpecifications.filterByEmail(email)
+                .and(BaseSpecifications.excludeDeleted(User.class));
+        User user = userRepository.findOne(spec).orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        // Verify old password
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw new IllegalArgumentException("Old password is incorrect");
+        }
+
+        // Set & save new password
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        // revoke all tokens
+        Integer userId = user.getId();
+        tokenService.revokeAllUserTokens(userId);
+    }
+
+    @Transactional
+    public void adminResetPassword(Integer targetUserId, String newPassword) {
+        User user = getUserById(targetUserId, false);
+
+        // Update to new password
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        // Revoke all tokens
+        Integer userId = user.getId();
+        tokenService.revokeAllUserTokens(userId);
+    }
+
+    @Transactional
+    public void changeUserRoles(Integer id, Set<UserRole> newRoles) {
+        // Validate payload is one of the allowed combinations
+        if (!ALLOWED_ROLE_COMBINATIONS.contains(newRoles)) {
+            throw new IllegalArgumentException("Invalid role combination: " + newRoles +
+                    ". Allowed: " + ALLOWED_ROLE_COMBINATIONS);
+        }
+
+        User user = getUserById(id, false);
+
+        // Update user roles
+        user.setRoles(new HashSet<>(newRoles));
+        userRepository.save(user);
+
+        // Revoke all existing ACCESS tokens so that they must refresh
+        tokenService.revokeUserTokensByType(user.getId(), TokenType.ACCESS);
+    }
+
     /* Helper methods ---------------------------------------------------------------------------------------------- */
 
     private boolean hasActiveBookings(Integer id) {
@@ -298,4 +359,13 @@ public class UserService {
         Specification<User> userSpec = UserSpecifications.filterByPhoneNumber(phoneNumber);
         return userRepository.exists(userSpec);
     }
+
+    // Precompute allowed combinations
+    private static final Set<Set<UserRole>> ALLOWED_ROLE_COMBINATIONS = Set.of(
+            Set.of(UserRole.ROLE_USER),
+            Set.of(UserRole.ROLE_HOST),
+            Set.of(UserRole.ROLE_MANAGER),
+            Set.of(UserRole.ROLE_ADMIN),
+            Set.of(UserRole.ROLE_HOST, UserRole.ROLE_MANAGER)
+    );
 }
