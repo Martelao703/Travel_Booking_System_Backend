@@ -4,11 +4,13 @@ import com.david.travel_booking_system.validation.annotation.ValidDateRange;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Data
+@Builder
 @ValidDateRange
 public class BookingCreateRequestDTO {
     @NotNull(message = "User ID cannot be null")

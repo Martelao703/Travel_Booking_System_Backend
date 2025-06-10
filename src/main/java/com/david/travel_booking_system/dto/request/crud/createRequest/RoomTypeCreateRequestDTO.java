@@ -5,12 +5,14 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import jakarta.validation.constraints.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 
 import java.util.List;
 
 @Data
+@Builder
 public class RoomTypeCreateRequestDTO {
     @NotNull(message = "Property ID cannot be null")
     private Integer propertyId;

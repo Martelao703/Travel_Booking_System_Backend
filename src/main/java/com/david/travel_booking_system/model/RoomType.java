@@ -23,7 +23,6 @@ public class RoomType {
     private Integer id;
 
     @ManyToOne
-    //@JsonBackReference
     @JoinColumn(name = "property_id", nullable = false)
     @NotNull(message = "Property cannot be null")
     private Property property;

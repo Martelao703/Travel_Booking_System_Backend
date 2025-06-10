@@ -4,11 +4,13 @@ import com.david.travel_booking_system.enumsAndSets.PropertyType;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import jakarta.validation.constraints.*;
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
+@Builder
 public class PropertyCreateRequestDTO {
     @NotNull(message = "OwnerId cannot be null")
     private Integer ownerId;

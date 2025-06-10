@@ -18,10 +18,6 @@ import com.david.travel_booking_system.util.EntityPatcher;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -318,10 +314,16 @@ public class UserService {
 
     @Transactional
     public void changeUserRoles(Integer id, Set<UserRole> newRoles) {
+        // Validate payload is one of the allowed combinations
+        if (!ALLOWED_ROLE_COMBINATIONS.contains(newRoles)) {
+            throw new IllegalArgumentException("Invalid role combination: " + newRoles +
+                    ". Allowed: " + ALLOWED_ROLE_COMBINATIONS);
+        }
+
         User user = getUserById(id, false);
 
         // Update user roles
-        user.setRoles(newRoles);
+        user.setRoles(new HashSet<>(newRoles));
         userRepository.save(user);
 
         // Revoke all existing ACCESS tokens so that they must refresh
@@ -357,4 +359,13 @@ public class UserService {
         Specification<User> userSpec = UserSpecifications.filterByPhoneNumber(phoneNumber);
         return userRepository.exists(userSpec);
     }
+
+    // Precompute allowed combinations
+    private static final Set<Set<UserRole>> ALLOWED_ROLE_COMBINATIONS = Set.of(
+            Set.of(UserRole.ROLE_USER),
+            Set.of(UserRole.ROLE_HOST),
+            Set.of(UserRole.ROLE_MANAGER),
+            Set.of(UserRole.ROLE_ADMIN),
+            Set.of(UserRole.ROLE_HOST, UserRole.ROLE_MANAGER)
+    );
 }

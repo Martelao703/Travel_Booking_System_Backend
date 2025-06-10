@@ -18,7 +18,7 @@ public class TokenSpecifications extends BaseSpecifications {
 
     public static Specification<Token> filterByType(TokenType type) {
         return (root, query, criteriaBuilder) ->
-                criteriaBuilder.equal(root.get("type"), type);
+                criteriaBuilder.equal(root.get("tokenType"), type);
     }
 
     public static Specification<Token> excludeExpired() {
