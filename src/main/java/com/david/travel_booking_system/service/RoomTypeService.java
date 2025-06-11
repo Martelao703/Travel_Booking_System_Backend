@@ -16,6 +16,7 @@ import com.david.travel_booking_system.specification.BookingSpecifications;
 import com.david.travel_booking_system.specification.RoomTypeSpecifications;
 import com.david.travel_booking_system.util.EntityPatcher;
 import jakarta.persistence.EntityNotFoundException;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -94,6 +95,21 @@ public class RoomTypeService {
 
         return roomTypeRepository.findOne(spec)
                 .orElseThrow(() -> new EntityNotFoundException("RoomType with ID " + id + " not found"));
+    }
+
+    @Transactional(readOnly = true)
+    public RoomType getRoomTypeByIdWithCollections(Integer id, boolean includeDeleted) {
+        RoomType roomType = getRoomTypeById(id, includeDeleted);
+
+        // Load collections
+        Hibernate.initialize(roomType.getRoomFacilities());
+        Hibernate.initialize(roomType.getBathroomFacilities());
+        Hibernate.initialize(roomType.getKitchenFacilities());
+        Hibernate.initialize(roomType.getRoomRules());
+        Hibernate.initialize(roomType.getRooms());
+        Hibernate.initialize(roomType.getBeds());
+
+        return roomType;
     }
 
     @Transactional

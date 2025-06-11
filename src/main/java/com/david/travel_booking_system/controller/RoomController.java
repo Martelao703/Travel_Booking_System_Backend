@@ -62,7 +62,7 @@ public class RoomController {
     @GetMapping("/{id}")
     @PreAuthorize("@roomPermissionChecker.canRead(authentication, #id)")
     public ResponseEntity<RoomFullDTO> getRoom(@PathVariable Integer id) {
-        RoomFullDTO room = roomMapper.toFullDTO(roomService.getRoomById(id, false));
+        RoomFullDTO room = roomMapper.toFullDTO(roomService.getRoomByIdWithCollections(id, false));
         return ResponseEntity.ok(room); // Return 200 OK
     }
 

@@ -16,6 +16,7 @@ import com.david.travel_booking_system.specification.BookingSpecifications;
 import com.david.travel_booking_system.specification.UserSpecifications;
 import com.david.travel_booking_system.util.EntityPatcher;
 import jakarta.persistence.EntityNotFoundException;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -111,6 +112,17 @@ public class UserService {
 
         return userRepository.findOne(spec)
                 .orElseThrow(() -> new EntityNotFoundException("User with ID " + id + " not found"));
+    }
+
+    @Transactional(readOnly = true)
+    public User getUserByIdWithCollections(Integer id, boolean includeDeleted) {
+        User user = getUserById(id, includeDeleted);
+
+        // Load collections
+        Hibernate.initialize(user.getProperties());
+        Hibernate.initialize(user.getBookings());
+
+        return user;
     }
 
     @Transactional

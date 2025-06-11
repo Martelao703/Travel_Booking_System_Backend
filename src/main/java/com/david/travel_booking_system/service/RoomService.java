@@ -14,6 +14,7 @@ import com.david.travel_booking_system.specification.RoomSpecifications;
 import com.david.travel_booking_system.specification.RoomTypeSpecifications;
 import com.david.travel_booking_system.util.EntityPatcher;
 import jakarta.persistence.EntityNotFoundException;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -89,6 +90,16 @@ public class RoomService {
 
         return roomRepository.findOne(spec)
                 .orElseThrow(() -> new EntityNotFoundException("Room with ID " + id + " not found"));
+    }
+
+    @Transactional(readOnly = true)
+    public Room getRoomByIdWithCollections(Integer id, boolean includeDeleted) {
+        Room room = getRoomById(id, includeDeleted);
+
+        // Load collections
+        Hibernate.initialize(room.getBookings());
+
+        return room;
     }
 
     @Transactional

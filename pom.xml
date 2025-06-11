@@ -248,4 +248,37 @@
 
         </plugins>
     </build>
+
+    <profiles>
+        <!-- Dev profile -->
+        <profile>
+            <id>dev</id>
+            <activation>
+                <!-- Activate when -Denv=dev is passed -->
+                <property>
+                    <name>env</name>
+                    <value>dev</value>
+                </property>
+            </activation>
+            <properties>
+                <!-- This property is honored by the spring-boot plugin -->
+                <spring-boot.run.profiles>dev</spring-boot.run.profiles>
+            </properties>
+        </profile>
+
+        <!-- Local profile -->
+        <profile>
+            <id>local</id>
+            <activation>
+                <!-- Activate when -Denv=local is passed -->
+                <property>
+                    <name>env</name>
+                    <value>local</value>
+                </property>
+            </activation>
+            <properties>
+                <spring-boot.run.profiles>local</spring-boot.run.profiles>
+            </properties>
+        </profile>
+    </profiles>
 </project>

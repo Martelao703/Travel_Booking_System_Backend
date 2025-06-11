@@ -19,7 +19,7 @@ public class BookingPermissionChecker extends AbstractPermissionChecker {
     }
 
     public boolean canCreate(Authentication auth) {
-        return hasPerm(auth, BOOKING_CREATE);
+        return hasPerm(auth, BOOKING_CREATE); //must also be self
     }
 
     public boolean canReadAny(Authentication auth) {

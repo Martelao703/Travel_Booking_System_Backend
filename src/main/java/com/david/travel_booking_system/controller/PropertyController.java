@@ -75,14 +75,16 @@ public class PropertyController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("@propertyPermissionChecker.canRead(auth, #id)")
+    @PreAuthorize("@propertyPermissionChecker.canRead(authentication, #id)")
     public ResponseEntity<PropertyFullDTO> getProperty(@PathVariable Integer id) {
-        PropertyFullDTO property = propertyMapper.toFullDTO(propertyService.getPropertyById(id, false));
+        PropertyFullDTO property = propertyMapper.toFullDTO(
+                propertyService.getPropertyByIdWithCollections(id, false)
+        );
         return ResponseEntity.ok(property); // Return 200 OK
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("@propertyPermissionChecker.canUpdate(auth, #id)")
+    @PreAuthorize("@propertyPermissionChecker.canUpdate(authentication, #id)")
     public ResponseEntity<PropertyDetailDTO> updateProperty(
             @PathVariable Integer id,
             @RequestBody @Valid PropertyUpdateRequestDTO updateDTO
@@ -94,7 +96,7 @@ public class PropertyController {
     }
 
     @PatchMapping("/{id}")
-    @PreAuthorize("@propertyPermissionChecker.canUpdate(auth, #id)")
+    @PreAuthorize("@propertyPermissionChecker.canUpdate(authentication, #id)")
     public ResponseEntity<PropertyDetailDTO> patchProperty(
             @PathVariable Integer id,
             @RequestBody @Valid PropertyPatchRequestDTO patchDTO
@@ -106,21 +108,21 @@ public class PropertyController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("@propertyPermissionChecker.canDelete(auth, #id)")
+    @PreAuthorize("@propertyPermissionChecker.canDelete(authentication, #id)")
     public ResponseEntity<Void> softDeleteProperty(@PathVariable Integer id) {
         propertyService.softDeleteProperty(id);
         return ResponseEntity.noContent().build(); // Return 204 No Content
     }
 
     @DeleteMapping("/{id}/hard")
-    @PreAuthorize("@propertyPermissionChecker.canDelete(auth, #id)")
+    @PreAuthorize("@propertyPermissionChecker.canDelete(authentication, #id)")
     public ResponseEntity<Void> hardDeleteProperty(@PathVariable Integer id) {
         propertyService.hardDeleteProperty(id);
         return ResponseEntity.noContent().build(); // Return 204 No Content
     }
 
     @PatchMapping("/{id}/restore")
-    @PreAuthorize("@propertyPermissionChecker.canRestore(auth, #id)")
+    @PreAuthorize("@propertyPermissionChecker.canRestore(authentication, #id)")
     public ResponseEntity<Void> restoreProperty(@PathVariable Integer id) {
         propertyService.restoreProperty(id);
         return ResponseEntity.noContent().build(); // 204 No Content
@@ -128,8 +130,8 @@ public class PropertyController {
 
     /* Get Lists of Nested Entities */
 
-    @GetMapping("/{id}/roomTypes")
-    @PreAuthorize("@propertyPermissionChecker.canRead(auth, #id)")
+    @GetMapping("/{id}/room-types")
+    @PreAuthorize("@propertyPermissionChecker.canRead(authentication, #id)")
     public ResponseEntity<List<RoomTypeBasicDTO>> getRoomTypes(@PathVariable Integer id) {
         List<RoomTypeBasicDTO> roomTypes = roomTypeMapper.toBasicDTOs(
                 roomTypeService.getRoomTypesByPropertyId(id, false)
@@ -138,21 +140,21 @@ public class PropertyController {
     }
 
     @GetMapping("/{id}/rooms")
-    @PreAuthorize("@propertyPermissionChecker.canRead(auth, #id)")
+    @PreAuthorize("@propertyPermissionChecker.canRead(authentication, #id)")
     public ResponseEntity<List<RoomBasicDTO>> getRooms(@PathVariable Integer id) {
         List<RoomBasicDTO> rooms = roomMapper.toBasicDTOs(roomService.getRoomsByPropertyId(id, false));
         return ResponseEntity.ok(rooms); // Return 200 OK
     }
 
     @GetMapping("/{id}/beds")
-    @PreAuthorize("@propertyPermissionChecker.canRead(auth, #id)")
+    @PreAuthorize("@propertyPermissionChecker.canRead(authentication, #id)")
     public ResponseEntity<List<BedBasicDTO>> getBeds(@PathVariable Integer id) {
         List<BedBasicDTO> beds = bedMapper.toBasicDTOs(bedService.getBedsByPropertyId(id, false));
         return ResponseEntity.ok(beds); // Return 200 OK
     }
 
     @GetMapping("/{id}/bookings")
-    @PreAuthorize("@propertyPermissionChecker.canReadBookings(auth, #id)")
+    @PreAuthorize("@propertyPermissionChecker.canReadBookings(authentication, #id)")
     public ResponseEntity<List<BookingBasicDTO>> getBookings(@PathVariable Integer id) {
         List<BookingBasicDTO> bookings = bookingMapper.toBasicDTOs(
                 bookingService.getBookingsByPropertyId(id, false)
@@ -163,14 +165,14 @@ public class PropertyController {
     /* Custom Endpoints -------------------------------------------------------------------------------------------- */
 
     @PatchMapping("/{id}/activate")
-    @PreAuthorize("@propertyPermissionChecker.canActivate(auth, #id)")
+    @PreAuthorize("@propertyPermissionChecker.canActivate(authentication, #id)")
     public ResponseEntity<Void> activateProperty(@PathVariable Integer id) {
         propertyService.activateProperty(id);
         return ResponseEntity.noContent().build(); // Return 204 No Content
     }
 
     @PatchMapping("/{id}/deactivate")
-    @PreAuthorize("@propertyPermissionChecker.canDeactivate(auth, #id)")
+    @PreAuthorize("@propertyPermissionChecker.canDeactivate(authentication, #id)")
     public ResponseEntity<Void> deactivateProperty(@PathVariable Integer id) {
         propertyService.deactivateProperty(id);
         return ResponseEntity.noContent().build(); // Return 204 No Content

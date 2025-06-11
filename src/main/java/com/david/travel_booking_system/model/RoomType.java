@@ -70,25 +70,31 @@ public class RoomType {
     private boolean deleted = false;
 
     @ElementCollection
+    @Fetch(FetchMode.SUBSELECT)
     @Column(name = "room_facilities")
     private List<String> roomFacilities;
 
     @ElementCollection
+    @Fetch(FetchMode.SUBSELECT)
     @Column(name = "bathroom_facilities")
     private List<String> bathroomFacilities;
 
     @ElementCollection
+    @Fetch(FetchMode.SUBSELECT)
     @Column(name = "kitchen_facilities")
     private List<String> kitchenFacilities;
 
     @ElementCollection
+    @Fetch(FetchMode.SUBSELECT)
     @Column(name = "room_rules")
     private List<String> roomRules;
 
     @OneToMany(mappedBy = "roomType", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(FetchMode.SUBSELECT)
     private List<Room> rooms;
 
     @OneToMany(mappedBy = "roomType", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(FetchMode.SUBSELECT)
     private List<Bed> beds;
 
     public RoomType() {}

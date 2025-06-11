@@ -15,6 +15,7 @@ import com.david.travel_booking_system.specification.BookingSpecifications;
 import com.david.travel_booking_system.specification.PropertySpecifications;
 import com.david.travel_booking_system.util.EntityPatcher;
 import jakarta.persistence.EntityNotFoundException;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -93,6 +94,19 @@ public class PropertyService {
 
         return propertyRepository.findOne(spec)
                 .orElseThrow(() -> new EntityNotFoundException("Property with ID " + id + " not found"));
+    }
+
+    @Transactional(readOnly = true)
+    public Property getPropertyByIdWithCollections(Integer id, boolean includeDeleted) {
+        Property property = getPropertyById(id, includeDeleted);
+
+        // Load collections
+        Hibernate.initialize(property.getAmenities());
+        Hibernate.initialize(property.getNearbyServices());
+        Hibernate.initialize(property.getHouseRules());
+        Hibernate.initialize(property.getRoomTypes());
+
+        return property;
     }
 
     @Transactional
