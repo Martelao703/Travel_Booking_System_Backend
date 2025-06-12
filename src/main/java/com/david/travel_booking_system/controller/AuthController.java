@@ -34,6 +34,7 @@ public class AuthController {
     }
 
     @PostMapping("/refresh-token")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<JwtResponseDTO> refreshToken(HttpServletRequest request) {
         JwtResponseDTO response = authService.refreshToken(request);
         return ResponseEntity.ok(response);

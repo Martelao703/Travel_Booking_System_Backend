@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.ToString;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.SQLDelete;
 
 import java.util.ArrayList;
@@ -49,6 +51,7 @@ public class Room {
     private boolean deleted = false;
 
     @OneToMany(mappedBy = "room")
+    @Fetch(FetchMode.SUBSELECT)
     private List<Booking> bookings;
 
     public Room() {}

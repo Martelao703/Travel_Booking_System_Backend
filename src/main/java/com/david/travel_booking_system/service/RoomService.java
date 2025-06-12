@@ -96,8 +96,8 @@ public class RoomService {
     public Room getRoomByIdWithCollections(Integer id, boolean includeDeleted) {
         Room room = getRoomById(id, includeDeleted);
 
-        // Load collections
-        Hibernate.initialize(room.getBookings());
+        // Init collections so the mapper can access them later on the controller
+        initCollections(room);
 
         return room;
     }
@@ -144,6 +144,9 @@ public class RoomService {
                 hasBookings,
                 hasOngoingBookings
         );
+
+        // Init collections so the mapper can access them later on the controller
+        initCollections(room);
 
         return roomRepository.save(room);
     }
@@ -313,5 +316,10 @@ public class RoomService {
         Specification<Booking> bookingSpec = BookingSpecifications.filterByRoomId(id)
                 .and(BookingSpecifications.filterByStatus(BookingStatus.ONGOING));
         return bookingRepository.exists(bookingSpec);
+    }
+
+    private void initCollections(Room room) {
+        Hibernate.initialize(room.getBookings());
+        Hibernate.initialize(room.getRoomType());
     }
 }

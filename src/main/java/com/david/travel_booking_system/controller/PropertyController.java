@@ -57,7 +57,7 @@ public class PropertyController {
     /* CRUD and Basic Endpoints ------------------------------------------------------------------------------------ */
 
     @PostMapping
-    @PreAuthorize("@propertyPermissionChecker.canCreate(authentication)")
+    @PreAuthorize("@propertyPermissionChecker.canCreate(authentication, #createDTO.ownerId)")
     public ResponseEntity<PropertyDetailDTO> createProperty(
             @RequestBody @Valid PropertyCreateRequestDTO createDTO
     ) {

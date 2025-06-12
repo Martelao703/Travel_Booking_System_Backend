@@ -32,7 +32,7 @@ public enum UserRole {
                 Permission.BED_READ_ANY,
 
                 // Booking
-                Permission.BOOKING_CREATE,
+                Permission.BOOKING_CREATE_OWN,
                 Permission.BOOKING_READ_OWN,
                 Permission.BOOKING_UPDATE_OWN,
                 Permission.BOOKING_DELETE_OWN,
@@ -58,7 +58,7 @@ public enum UserRole {
         // Add host-specific permissions
         perms.addAll(EnumSet.of(
                 // Property
-                Permission.PROPERTY_CREATE,
+                Permission.PROPERTY_CREATE_OWN,
                 Permission.PROPERTY_READ_OWN,
                 Permission.PROPERTY_UPDATE_OWN,
                 Permission.PROPERTY_DELETE_OWN,
@@ -68,14 +68,14 @@ public enum UserRole {
                 Permission.PROPERTY_READ_BOOKINGS_OWN,
 
                 // Room Type
-                Permission.ROOM_TYPE_CREATE,
+                Permission.ROOM_TYPE_CREATE_OWN,
                 Permission.ROOM_TYPE_READ_OWN,
                 Permission.ROOM_TYPE_UPDATE_OWN,
                 Permission.ROOM_TYPE_DELETE_OWN,
                 Permission.ROOM_TYPE_RESTORE_OWN,
 
                 // Room
-                Permission.ROOM_CREATE,
+                Permission.ROOM_CREATE_OWN,
                 Permission.ROOM_READ_OWN,
                 Permission.ROOM_UPDATE_OWN,
                 Permission.ROOM_DELETE_OWN,
@@ -85,7 +85,7 @@ public enum UserRole {
                 Permission.ROOM_READ_BOOKINGS_OWN,
 
                 // Bed
-                Permission.BED_CREATE,
+                Permission.BED_CREATE_OWN,
                 Permission.BED_READ_OWN,
                 Permission.BED_UPDATE_OWN,
                 Permission.BED_DELETE_OWN,

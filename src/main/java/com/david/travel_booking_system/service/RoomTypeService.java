@@ -101,13 +101,8 @@ public class RoomTypeService {
     public RoomType getRoomTypeByIdWithCollections(Integer id, boolean includeDeleted) {
         RoomType roomType = getRoomTypeById(id, includeDeleted);
 
-        // Load collections
-        Hibernate.initialize(roomType.getRoomFacilities());
-        Hibernate.initialize(roomType.getBathroomFacilities());
-        Hibernate.initialize(roomType.getKitchenFacilities());
-        Hibernate.initialize(roomType.getRoomRules());
-        Hibernate.initialize(roomType.getRooms());
-        Hibernate.initialize(roomType.getBeds());
+        // Init collections so the mapper can access them later on the controller
+        initCollections(roomType);
 
         return roomType;
     }
@@ -154,6 +149,9 @@ public class RoomTypeService {
                 hasBookings,
                 hasOngoingBookings
         );
+
+        // Init collections so the mapper can access them later on the controller
+        initCollections(roomType);
 
         return roomTypeRepository.save(roomType);
     }
@@ -274,5 +272,14 @@ public class RoomTypeService {
         Specification<Booking> bookingSpec = BookingSpecifications.filterByRoomTypeId(id)
                 .and(BookingSpecifications.filterByStatus(BookingStatus.ONGOING));
         return bookingRepository.exists(bookingSpec);
+    }
+
+    private void initCollections(RoomType roomType) {
+        Hibernate.initialize(roomType.getRoomFacilities());
+        Hibernate.initialize(roomType.getBathroomFacilities());
+        Hibernate.initialize(roomType.getKitchenFacilities());
+        Hibernate.initialize(roomType.getRoomRules());
+        Hibernate.initialize(roomType.getRooms());
+        Hibernate.initialize(roomType.getBeds());
     }
 }

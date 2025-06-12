@@ -7,6 +7,8 @@ import jakarta.persistence.CascadeType;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import lombok.ToString;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.util.List;
 
@@ -73,17 +75,21 @@ public class Property {
     private boolean deleted = false;
 
     @ElementCollection
+    @Fetch(FetchMode.SUBSELECT)
     private List<String> amenities;
 
     @ElementCollection
+    @Fetch(FetchMode.SUBSELECT)
     @Column(name = "nearby_services")
     private List<String> nearbyServices;
 
     @ElementCollection
+    @Fetch(FetchMode.SUBSELECT)
     @Column(name = "house_rules")
     private List<String> houseRules;
 
     @OneToMany(mappedBy = "property", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(FetchMode.SUBSELECT)
     @Column(name = "room_types")
     private List<RoomType> roomTypes;
 

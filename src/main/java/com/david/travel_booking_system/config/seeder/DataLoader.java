@@ -1,4 +1,4 @@
-package com.david.travel_booking_system.config;
+package com.david.travel_booking_system.config.seeder;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;

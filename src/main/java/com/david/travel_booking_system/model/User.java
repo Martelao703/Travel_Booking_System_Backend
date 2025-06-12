@@ -4,6 +4,8 @@ import com.david.travel_booking_system.security.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -65,9 +67,11 @@ public class User {
     private boolean deleted = false;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(FetchMode.SUBSELECT)
     private List<Property> properties;
 
     @OneToMany(mappedBy = "user")
+    @Fetch(FetchMode.SUBSELECT)
     private List<Booking> bookings;
 
     public User() {

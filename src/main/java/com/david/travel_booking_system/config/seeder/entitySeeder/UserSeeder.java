@@ -1,9 +1,8 @@
-package com.david.travel_booking_system.config.seeder;
+package com.david.travel_booking_system.config.seeder.entitySeeder;
 
-import com.david.travel_booking_system.config.DataSeeder;
+import com.david.travel_booking_system.config.seeder.DataSeeder;
 import com.david.travel_booking_system.dto.request.auth.RegisterRequestDTO;
 import com.david.travel_booking_system.model.User;
-import com.david.travel_booking_system.repository.UserRepository;
 import com.david.travel_booking_system.security.UserRole;
 import com.david.travel_booking_system.service.UserService;
 import org.springframework.context.annotation.Profile;

@@ -2,6 +2,7 @@ package com.david.travel_booking_system.security.permissionCheck.entityCheck;
 
 import com.david.travel_booking_system.security.permissionCheck.AbstractPermissionChecker;
 import com.david.travel_booking_system.service.BookingService;
+import com.david.travel_booking_system.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -12,14 +13,22 @@ import static com.david.travel_booking_system.security.Permission.*;
 public class BookingPermissionChecker extends AbstractPermissionChecker {
 
     private final BookingService bookingService;
+    private final UserService userService;
 
     @Autowired
-    public BookingPermissionChecker(BookingService bookingService) {
+    public BookingPermissionChecker(BookingService bookingService, UserService userService) {
         this.bookingService = bookingService;
+        this.userService = userService;
     }
 
-    public boolean canCreate(Authentication auth) {
-        return hasPerm(auth, BOOKING_CREATE); //must also be self
+    public boolean canCreate(Authentication auth, Integer userId) {
+        return canOwnOrAny(
+                auth,
+                BOOKING_CREATE_OWN,
+                userId,
+                // Only the authenticated user can create a booking for themselves if they are not an admin
+                (a, id) -> userService.isSelf(id, a.getName())
+        );
     }
 
     public boolean canReadAny(Authentication auth) {

@@ -100,11 +100,8 @@ public class PropertyService {
     public Property getPropertyByIdWithCollections(Integer id, boolean includeDeleted) {
         Property property = getPropertyById(id, includeDeleted);
 
-        // Load collections
-        Hibernate.initialize(property.getAmenities());
-        Hibernate.initialize(property.getNearbyServices());
-        Hibernate.initialize(property.getHouseRules());
-        Hibernate.initialize(property.getRoomTypes());
+        // Init collections so the mapper can access them later on the controller
+        initCollections(property);
 
         return property;
     }
@@ -151,6 +148,9 @@ public class PropertyService {
                 hasAnyBookings,
                 hasOngoingBookings
         );
+
+        // Init collections so the mapper can access them later on the controller
+        initCollections(property);
 
         return propertyRepository.save(property);
     }
@@ -289,5 +289,12 @@ public class PropertyService {
         Specification<Booking> bookingSpec = BookingSpecifications.filterByPropertyId(id)
                 .and(BookingSpecifications.filterByStatus(BookingStatus.ONGOING));
         return bookingRepository.exists(bookingSpec);
+    }
+
+    private void initCollections(Property property) {
+        Hibernate.initialize(property.getAmenities());
+        Hibernate.initialize(property.getNearbyServices());
+        Hibernate.initialize(property.getHouseRules());
+        Hibernate.initialize(property.getRoomTypes());
     }
 }

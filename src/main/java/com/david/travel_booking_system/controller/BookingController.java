@@ -35,7 +35,7 @@ public class BookingController {
 
     /* Returns BasicDTO instead of DetailDTO due to the entity's absence of non-nested collection fields */
     @PostMapping
-    @PreAuthorize("@bookingPermissionChecker.canCreate(authentication)")
+    @PreAuthorize("@bookingPermissionChecker.canCreate(authentication, #createDTO.userId)")
     public ResponseEntity<BookingBasicDTO> createBooking(
             @RequestBody @Valid BookingCreateRequestDTO createDTO
     ) {

@@ -1,6 +1,6 @@
-package com.david.travel_booking_system.config.seeder;
+package com.david.travel_booking_system.config.seeder.entitySeeder;
 
-import com.david.travel_booking_system.config.DataSeeder;
+import com.david.travel_booking_system.config.seeder.DataSeeder;
 import com.david.travel_booking_system.dto.request.crud.createRequest.BookingCreateRequestDTO;
 import com.david.travel_booking_system.service.BookingService;
 import org.springframework.context.annotation.Profile;
