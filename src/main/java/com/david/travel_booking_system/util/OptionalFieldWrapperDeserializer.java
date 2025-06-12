@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -23,6 +24,10 @@ public class OptionalFieldWrapperDeserializer extends JsonDeserializer<OptionalF
         // Configure it to be strict about type conversion.
         strictMapper = new ObjectMapper();
         strictMapper.configure(DeserializationFeature.ACCEPT_FLOAT_AS_INT, false);
+
+        // Register the JavaTimeModule to handle LocalDateTime
+        strictMapper.registerModule(new JavaTimeModule());
+        strictMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
 
     // Private constructor used by createContextual
@@ -38,8 +43,10 @@ public class OptionalFieldWrapperDeserializer extends JsonDeserializer<OptionalF
         if (property != null) {
             // Get the type of OptionalFieldWrapper<T>
             JavaType wrapperType = property.getType();
+
             // Extract T from OptionalFieldWrapper<T>
             JavaType innerType = wrapperType.containedType(0);
+
             return new OptionalFieldWrapperDeserializer(innerType, strictMapper);
         }
         return this;
@@ -57,6 +64,7 @@ public class OptionalFieldWrapperDeserializer extends JsonDeserializer<OptionalF
         // Use the strictly configured mapper to convert the node to the expected type
         // If the type in JSON doesn’t match exactly, this will throw an exception
         Object value = strictMapper.readValue(p.getCodec().treeAsTokens(node), valueType);
+
         return new OptionalFieldWrapper<>(value);
     }
 }

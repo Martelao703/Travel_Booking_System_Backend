@@ -16,6 +16,7 @@ import com.david.travel_booking_system.specification.BookingSpecifications;
 import com.david.travel_booking_system.specification.RoomTypeSpecifications;
 import com.david.travel_booking_system.util.EntityPatcher;
 import jakarta.persistence.EntityNotFoundException;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -96,6 +97,16 @@ public class RoomTypeService {
                 .orElseThrow(() -> new EntityNotFoundException("RoomType with ID " + id + " not found"));
     }
 
+    @Transactional(readOnly = true)
+    public RoomType getRoomTypeByIdWithCollections(Integer id, boolean includeDeleted) {
+        RoomType roomType = getRoomTypeById(id, includeDeleted);
+
+        // Init collections so the mapper can access them later on the controller
+        initCollections(roomType);
+
+        return roomType;
+    }
+
     @Transactional
     public RoomType updateRoomType(Integer id, RoomTypeUpdateRequestDTO roomTypeUpdateRequestDTO) {
         RoomType roomType = getRoomTypeById(id, false);
@@ -138,6 +149,9 @@ public class RoomTypeService {
                 hasBookings,
                 hasOngoingBookings
         );
+
+        // Init collections so the mapper can access them later on the controller
+        initCollections(roomType);
 
         return roomTypeRepository.save(roomType);
     }
@@ -258,5 +272,14 @@ public class RoomTypeService {
         Specification<Booking> bookingSpec = BookingSpecifications.filterByRoomTypeId(id)
                 .and(BookingSpecifications.filterByStatus(BookingStatus.ONGOING));
         return bookingRepository.exists(bookingSpec);
+    }
+
+    private void initCollections(RoomType roomType) {
+        Hibernate.initialize(roomType.getRoomFacilities());
+        Hibernate.initialize(roomType.getBathroomFacilities());
+        Hibernate.initialize(roomType.getKitchenFacilities());
+        Hibernate.initialize(roomType.getRoomRules());
+        Hibernate.initialize(roomType.getRooms());
+        Hibernate.initialize(roomType.getBeds());
     }
 }

@@ -128,6 +128,13 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- JSON -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>2.18.2</version>
+        </dependency>
+
         <!-- OpenAPI / Swagger UI -->
         <dependency>
             <groupId>org.springdoc</groupId>
@@ -248,4 +255,37 @@
 
         </plugins>
     </build>
+
+    <profiles>
+        <!-- Dev profile -->
+        <profile>
+            <id>dev</id>
+            <activation>
+                <!-- Activate when -Denv=dev is passed -->
+                <property>
+                    <name>env</name>
+                    <value>dev</value>
+                </property>
+            </activation>
+            <properties>
+                <!-- This property is honored by the spring-boot plugin -->
+                <spring-boot.run.profiles>dev</spring-boot.run.profiles>
+            </properties>
+        </profile>
+
+        <!-- Local profile -->
+        <profile>
+            <id>local</id>
+            <activation>
+                <!-- Activate when -Denv=local is passed -->
+                <property>
+                    <name>env</name>
+                    <value>local</value>
+                </property>
+            </activation>
+            <properties>
+                <spring-boot.run.profiles>local</spring-boot.run.profiles>
+            </properties>
+        </profile>
+    </profiles>
 </project>

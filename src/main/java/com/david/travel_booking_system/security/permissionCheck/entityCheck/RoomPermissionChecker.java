@@ -22,8 +22,12 @@ public class RoomPermissionChecker extends AbstractPermissionChecker {
     }
 
     public boolean canCreate(Authentication auth, Integer roomTypeId) {
-        return hasPerm(auth, ROOM_CREATE)
-                && roomTypeService.isOwner(roomTypeId, auth.getName());
+        return canOwnOrAny(
+                auth,
+                ROOM_CREATE_OWN,
+                roomTypeId,
+                (a, id) -> roomTypeService.isOwner(id, a.getName())
+        );
     }
 
     public boolean canReadAny(Authentication auth) {

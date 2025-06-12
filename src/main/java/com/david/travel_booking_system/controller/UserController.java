@@ -72,7 +72,7 @@ public class UserController {
     @GetMapping("/{id}")
     @PreAuthorize("@userPermissionChecker.canRead(authentication, #id)")
     public ResponseEntity<UserFullDTO> getUser(@PathVariable Integer id) {
-        UserFullDTO user = userMapper.toFullDTO(userService.getUserById(id, false));
+        UserFullDTO user = userMapper.toFullDTO(userService.getUserByIdWithCollections(id, false));
         return ResponseEntity.ok(user); // Return 200 OK
     }
 
@@ -130,7 +130,7 @@ public class UserController {
         return ResponseEntity.ok(properties); // Return 200 OK
     }
 
-    @GetMapping("/{id}/roomTypes")
+    @GetMapping("/{id}/room-types")
     @PreAuthorize("@userPermissionChecker.canRead(authentication, #id)")
     public ResponseEntity<List<RoomTypeBasicDTO>> getRoomTypes(@PathVariable Integer id) {
         List<RoomTypeBasicDTO> roomTypes = roomTypeMapper.toBasicDTOs(

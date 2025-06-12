@@ -1,6 +1,7 @@
 package com.david.travel_booking_system.specification;
 
 import com.david.travel_booking_system.model.RoomType;
+import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;
 
 public class RoomTypeSpecifications extends BaseSpecifications {

@@ -16,6 +16,7 @@ import com.david.travel_booking_system.specification.BookingSpecifications;
 import com.david.travel_booking_system.specification.UserSpecifications;
 import com.david.travel_booking_system.util.EntityPatcher;
 import jakarta.persistence.EntityNotFoundException;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -113,6 +114,16 @@ public class UserService {
                 .orElseThrow(() -> new EntityNotFoundException("User with ID " + id + " not found"));
     }
 
+    @Transactional(readOnly = true)
+    public User getUserByIdWithCollections(Integer id, boolean includeDeleted) {
+        User user = getUserById(id, includeDeleted);
+
+        // Init collections so the mapper can access them later on the controller
+        initCollections(user);
+
+        return user;
+    }
+
     @Transactional
     public User updateUser(Integer id, UserUpdateRequestDTO userUpdateRequestDTO) {
         User user = getUserById(id, false);
@@ -181,6 +192,9 @@ public class UserService {
         // Patch User
         EntityPatcher.patchEntity(user, userPatchRequestDTO);
 
+        // Init collections so the mapper can access them later on the controller
+        initCollections(user);
+
         return userRepository.save(user);
     }
 
@@ -237,6 +251,7 @@ public class UserService {
 
     /* Custom methods ---------------------------------------------------------------------------------------------- */
 
+    // Check if the user with the given ID is the same as the user with the given email
     @Transactional
     public boolean isSelf(Integer id, String email) {
         User user = getUserById(id, false);
@@ -281,7 +296,7 @@ public class UserService {
 
     @Transactional
     public void resetPasswordAndRevokeSessions(String email, String oldPassword, String newPassword) {
-        Specification <User> spec = UserSpecifications.filterByEmail(email)
+        Specification<User> spec = UserSpecifications.filterByEmail(email)
                 .and(BaseSpecifications.excludeDeleted(User.class));
         User user = userRepository.findOne(spec).orElseThrow(() -> new EntityNotFoundException("User not found"));
 
@@ -368,4 +383,9 @@ public class UserService {
             Set.of(UserRole.ROLE_ADMIN),
             Set.of(UserRole.ROLE_HOST, UserRole.ROLE_MANAGER)
     );
+
+    private void initCollections(User user) {
+        Hibernate.initialize(user.getProperties());
+        Hibernate.initialize(user.getBookings());
+    }
 }

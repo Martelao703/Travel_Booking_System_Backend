@@ -14,6 +14,7 @@ import com.david.travel_booking_system.specification.RoomSpecifications;
 import com.david.travel_booking_system.specification.RoomTypeSpecifications;
 import com.david.travel_booking_system.util.EntityPatcher;
 import jakarta.persistence.EntityNotFoundException;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -91,6 +92,16 @@ public class RoomService {
                 .orElseThrow(() -> new EntityNotFoundException("Room with ID " + id + " not found"));
     }
 
+    @Transactional(readOnly = true)
+    public Room getRoomByIdWithCollections(Integer id, boolean includeDeleted) {
+        Room room = getRoomById(id, includeDeleted);
+
+        // Init collections so the mapper can access them later on the controller
+        initCollections(room);
+
+        return room;
+    }
+
     @Transactional
     public Room updateRoom(Integer id, RoomUpdateRequestDTO roomUpdateRequestDTO) {
         Room room = getRoomById(id, false);
@@ -133,6 +144,9 @@ public class RoomService {
                 hasBookings,
                 hasOngoingBookings
         );
+
+        // Init collections so the mapper can access them later on the controller
+        initCollections(room);
 
         return roomRepository.save(room);
     }
@@ -302,5 +316,10 @@ public class RoomService {
         Specification<Booking> bookingSpec = BookingSpecifications.filterByRoomId(id)
                 .and(BookingSpecifications.filterByStatus(BookingStatus.ONGOING));
         return bookingRepository.exists(bookingSpec);
+    }
+
+    private void initCollections(Room room) {
+        Hibernate.initialize(room.getBookings());
+        Hibernate.initialize(room.getRoomType());
     }
 }

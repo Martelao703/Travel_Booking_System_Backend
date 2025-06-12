@@ -73,7 +73,9 @@ public class RoomTypeController {
     @GetMapping("/{id}")
     @PreAuthorize("@roomTypePermissionChecker.canRead(authentication, #id)")
     public ResponseEntity<RoomTypeFullDTO> getRoomType(@PathVariable Integer id) {
-        RoomTypeFullDTO roomType = roomTypeMapper.toFullDTO(roomTypeService.getRoomTypeById(id, false));
+        RoomTypeFullDTO roomType = roomTypeMapper.toFullDTO(
+                roomTypeService.getRoomTypeByIdWithCollections(id, false)
+        );
         return ResponseEntity.ok(roomType); // Return 200 OK
     }
 

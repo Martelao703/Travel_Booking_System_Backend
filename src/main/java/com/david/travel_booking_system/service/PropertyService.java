@@ -15,6 +15,7 @@ import com.david.travel_booking_system.specification.BookingSpecifications;
 import com.david.travel_booking_system.specification.PropertySpecifications;
 import com.david.travel_booking_system.util.EntityPatcher;
 import jakarta.persistence.EntityNotFoundException;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -95,6 +96,16 @@ public class PropertyService {
                 .orElseThrow(() -> new EntityNotFoundException("Property with ID " + id + " not found"));
     }
 
+    @Transactional(readOnly = true)
+    public Property getPropertyByIdWithCollections(Integer id, boolean includeDeleted) {
+        Property property = getPropertyById(id, includeDeleted);
+
+        // Init collections so the mapper can access them later on the controller
+        initCollections(property);
+
+        return property;
+    }
+
     @Transactional
     public Property updateProperty(Integer id, PropertyUpdateRequestDTO propertyUpdateRequestDTO) {
         Property property = getPropertyById(id, false);
@@ -137,6 +148,9 @@ public class PropertyService {
                 hasAnyBookings,
                 hasOngoingBookings
         );
+
+        // Init collections so the mapper can access them later on the controller
+        initCollections(property);
 
         return propertyRepository.save(property);
     }
@@ -275,5 +289,12 @@ public class PropertyService {
         Specification<Booking> bookingSpec = BookingSpecifications.filterByPropertyId(id)
                 .and(BookingSpecifications.filterByStatus(BookingStatus.ONGOING));
         return bookingRepository.exists(bookingSpec);
+    }
+
+    private void initCollections(Property property) {
+        Hibernate.initialize(property.getAmenities());
+        Hibernate.initialize(property.getNearbyServices());
+        Hibernate.initialize(property.getHouseRules());
+        Hibernate.initialize(property.getRoomTypes());
     }
 }

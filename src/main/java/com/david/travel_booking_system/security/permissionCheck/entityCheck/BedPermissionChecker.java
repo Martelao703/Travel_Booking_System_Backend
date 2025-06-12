@@ -22,8 +22,12 @@ public class BedPermissionChecker extends AbstractPermissionChecker {
     }
 
     public boolean canCreate(Authentication auth, Integer roomTypeId) {
-        return hasPerm(auth, BED_CREATE)
-                && roomTypeService.isOwner(roomTypeId, auth.getName());
+        return canOwnOrAny(
+                auth,
+                BED_CREATE_OWN,
+                roomTypeId,
+                (a, id) -> roomTypeService.isOwner(id, a.getName())
+        );
     }
 
     public boolean canReadAny(Authentication auth) {
