@@ -1,4 +1,4 @@
-package com.david.travel_booking_system.dto.request.auth;
+package com.david.travel_booking_system.dto.request.specialized;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;

@@ -1,6 +1,6 @@
 package com.david.travel_booking_system.controller;
 
-import com.david.travel_booking_system.dto.request.auth.AdminResetPasswordRequestDTO;
+import com.david.travel_booking_system.dto.request.specialized.AdminResetPasswordRequestDTO;
 import com.david.travel_booking_system.dto.request.specialized.UserRoleChangeRequestDTO;
 import com.david.travel_booking_system.dto.response.basic.*;
 import com.david.travel_booking_system.dto.response.full.UserFullDTO;

@@ -28,7 +28,7 @@ The application also implements JWT-based authentication to secure API access an
 - **MapStruct:** Automates object mapping between DTOs and Entities, reducing boilerplate code.
 
 ## Future Plans  
-- **Frontend Development:** Expand the project into a full-stack solution using a modern frontend framework like React or Angular.    
+- **Frontend Development:** Expand the project into a full-stack solution using Angular and TypeScript.    
 - **Advanced Features:**  
   - Payment integration for booking confirmations.  
   - Enhanced property search with geolocation and filtering.  
