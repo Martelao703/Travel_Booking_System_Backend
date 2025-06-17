@@ -3,7 +3,7 @@
 ## Overview  
 This project is a backend application for a travel booking system, developed using **Java** and **Spring Boot** with a layered architecture pattern. It provides core business logic and API endpoints to support functionalities such as property management, user registration, booking creation, and browsing properties.
 
-The project is currently in development and aims to enhance my backend development skills, with plans to expand into frontend development, with **Angular**, to build a complete full-stack solution.
+The project is currently in development and aims to enhance my backend and frontend development skills. I'm currently developing the frontend using Angular with TypeScript to complete the full-stack solution.
 
 ## Application Description  
 The backend serves as the foundation of a travel booking platform. It is designed to enable:  
